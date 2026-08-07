@@ -117,5 +117,19 @@
             "tags": ["a", "b", "a"]
         },
         "expected": {"ok":false,"status":400,"message":"duplicate tags are not allowed"}
+    },
+    "chinese":{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "mdk 说话的原始内容",
+            "objective_context": "这个原始内容的上下文信息",
+            "ai_analysis": "AI 对 mdk 所说话的理解和分析",
+            "tags": ["涉及的 tag", "学习", "健身", "阅读", "工作"]
+        },
+        "expected": {"ok":true,"status":201,"record":{"id":"{integer}","created_at":"{time}",
+            "raw_content":"mdk 说话的原始内容","objective_context":"这个原始内容的上下文信息",
+            "ai_analysis":"AI 对 mdk 所说话的理解和分析","tags":["涉及的 tag", "学习", "健身", "阅读", "工作"]}}
     }
 }
