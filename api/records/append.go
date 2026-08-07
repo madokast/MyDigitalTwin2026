@@ -12,13 +12,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type AppendRecordResponse struct {
+type AppendResponse struct {
 	Ok     bool   `json:"ok"`
 	Status int    `json:"status"`
 	Record Record `json:"record"`
 }
 
-func (r AppendRecordResponse) GetStatus() int {
+func (r AppendResponse) GetStatus() int {
 	return r.Status
 }
 
@@ -27,9 +27,9 @@ func Append(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Resp
 		return err
 	}
 
-	var response = AppendRecordResponse{
+	var response = AppendResponse{
 		Ok:     true,
-		Status: http.StatusOK,
+		Status: http.StatusCreated,
 		Record: Record{
 			CreatedAt:        JSONTime(time.Now().UTC()),
 			RawContent:       record.RawContent,

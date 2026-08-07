@@ -22,6 +22,11 @@ VALUES ($1,$2,$3,$4,$5)
 RETURNING id;
 `
 
+const queryRecordSQL = `
+SELECT id, created_at, raw_content, objective_context, ai_analysis, tags
+FROM records WHERE 1=1
+`
+
 const insertRecordNotifyMessage = `New record created: %d
 Raw content: %s
 Objective context: %s

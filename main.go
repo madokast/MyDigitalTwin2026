@@ -13,6 +13,10 @@ import (
 func main() {
 	slog.Info("Starting")
 
+	if err := env.LoadEnv(".env"); err != nil {
+		slog.Error("failed to load env", "err", err)
+		os.Exit(1)
+	}
 	server := server.NewServer()
 
 	mux := http.NewServeMux()
@@ -21,6 +25,7 @@ func main() {
 	mux.HandleFunc("GET /api/probe/postgresql", middleware.Auth(server.ProbePostgreSQL))
 	mux.HandleFunc("GET /api/probe/qqbot", middleware.Auth(server.ProbeQQBot))
 	mux.HandleFunc("POST /api/records", middleware.Auth(server.RecordsAppend))
+	mux.HandleFunc("GET /api/records", middleware.Auth(server.RecordsQuery))
 
 	httpServer := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),

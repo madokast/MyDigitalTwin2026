@@ -9,11 +9,7 @@ import (
 )
 
 func LoadEnv(file string) error {
-	err := godotenv.Load(file)
-	if err != nil {
-		slog.Warn("failed to load env", "file", file, "err", err)
-	}
-	return err
+	return godotenv.Load(file)
 }
 
 func CheckEnv(names []string) error {
