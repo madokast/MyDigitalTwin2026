@@ -44,24 +44,21 @@ def check(file: str, name: str, case: dict):
         if key not in result:
             raise AssertionError(f"Missing key '{key}' in response: {result}")
         
-        if value == "{time}":
-            # 确定时间合法
-            try:
-                datetime.fromisoformat(result[key])
-            except ValueError:
+        if value == "{time}": # 确定时间合法
+            try: datetime.fromisoformat(result[key])
+            except ValueError: 
                 raise AssertionError(f"Expected '{key}' to be a valid time, but got: {result[key]}")
-        elif value == "{integer}":
-            # 确定是数字
+        elif value == "{integer}": # 确定是数字
             if not isinstance(result[key], int):
                 raise AssertionError(f"Expected '{key}' to be a integer, but got: {result[key]}")
-        elif value == "{existed}":
-            # 确定存在
+        elif value == "{existed}": # 确定存在
             if result[key] is None:
                 raise AssertionError(f"Expected '{key}' to exist, but got: {result[key]}")
         elif result[key] != value:
             raise AssertionError(f"Expected '{key}': {value}, but got: {result[key]}")
 
 def main():
+    all_pass = True
     # 获取同目录下所有 json
     json_files = list(Path(__file__).parent.glob("*.json"))
     for json_file in json_files:
@@ -72,7 +69,13 @@ def main():
                 check(json_file.name, name, case)
                 print(f"{json_file.name} - {name} passed")
             except Exception as e:
+                all_pass = False
                 print(f"{json_file.name} - {name} failed: {e}")
+    
+    if all_pass:
+        print("All tests passed")
+    else:
+        print("Some tests failed")
 
 if __name__ == "__main__":
     main()
