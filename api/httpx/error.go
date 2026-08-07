@@ -23,3 +23,11 @@ func NewUnauthorizedError(message string) *Error {
 func NewInternalServerError(message string) *Error {
 	return NewError(http.StatusInternalServerError, message)
 }
+
+func (e *Error) IsOk() bool {
+	return false
+}
+
+func (e *Error) GetStatus() int {
+	return e.Status
+}

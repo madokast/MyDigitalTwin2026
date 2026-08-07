@@ -5,9 +5,14 @@ import (
 	"net/http"
 )
 
-func WriteJSONError(w http.ResponseWriter, err *Error) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(err.Status)
+type Response interface {
+	IsOk() bool
+	GetStatus() int
+}
 
-	json.NewEncoder(w).Encode(err)
+func WriteJSON[R Response](w http.ResponseWriter, response R) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.GetStatus())
+
+	_ = json.NewEncoder(w).Encode(response)
 }

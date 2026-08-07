@@ -14,21 +14,21 @@ func Auth(next handleFunc) handleFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, ok := env.Get(envkeys.Token)
 		if !ok {
-			httpx.WriteJSONError(w, httpx.NewInternalServerError("token not set"))
+			httpx.WriteJSON(w, httpx.NewInternalServerError("token not set"))
 			return
 		}
 
 		auth := r.Header.Get("Authorization")
 
 		if auth == "" {
-			httpx.WriteJSONError(w, httpx.NewUnauthorizedError("missing authorization header"))
+			httpx.WriteJSON(w, httpx.NewUnauthorizedError("missing authorization header"))
 			return
 		}
 
 		const prefix = "Bearer "
 
 		if !strings.HasPrefix(auth, prefix) {
-			httpx.WriteJSONError(w, httpx.NewUnauthorizedError("invalid authorization header"+auth))
+			httpx.WriteJSON(w, httpx.NewUnauthorizedError("invalid authorization header"+auth))
 			return
 		}
 
@@ -37,7 +37,7 @@ func Auth(next handleFunc) handleFunc {
 		)
 
 		if provided != token {
-			httpx.WriteJSONError(w, httpx.NewUnauthorizedError("invalid token "+provided))
+			httpx.WriteJSON(w, httpx.NewUnauthorizedError("invalid token "+provided))
 			return
 		}
 
