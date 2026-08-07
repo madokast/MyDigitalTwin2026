@@ -1,7 +1,7 @@
 package probe
 
 import (
-	"dt2026/api/httpx"
+	"dt2026/httpx"
 	"net/http"
 )
 

@@ -1,4 +1,5 @@
 import json
+import time
 from pathlib import Path
 import urllib.request
 import urllib.parse
@@ -72,11 +73,12 @@ def main():
             cases = json.load(f)
         for name, case in cases.items():
             try:
+                start = time.time()
                 check(case)
-                print(f"{json_file.name} - {name} passed")
+                print(f"{json_file} - {name} passed - {time.time() - start:.2f}s")
             except Exception as e:
                 all_pass = False
-                print(f"{json_file.name} - {name} failed: {e}")
+                print(f"{json_file} - {name} failed: {e}")
     
     if all_pass:
         print("All tests passed")
