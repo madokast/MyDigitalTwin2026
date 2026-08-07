@@ -54,6 +54,10 @@ def check(file: str, name: str, case: dict):
             # 确定是数字
             if not isinstance(result[key], int):
                 raise AssertionError(f"Expected '{key}' to be a integer, but got: {result[key]}")
+        elif value == "{existed}":
+            # 确定存在
+            if result[key] is None:
+                raise AssertionError(f"Expected '{key}' to exist, but got: {result[key]}")
         elif result[key] != value:
             raise AssertionError(f"Expected '{key}': {value}, but got: {result[key]}")
 
