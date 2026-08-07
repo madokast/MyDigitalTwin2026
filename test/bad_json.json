@@ -1,0 +1,8 @@
+{
+    "bad_json" : {
+        "api": "/api/probe/bad-json",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":500}
+    }
+}

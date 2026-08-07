@@ -1,17 +1,17 @@
 {
-    "miss-token" : {
+    "miss_token" : {
         "api": "/api/probe/health",
         "method": "GET",
         "headers": {},
         "expected": {"ok":false,"status":401,"message":"missing authorization header"}
     },
-    "invalid-token" : {
+    "invalid_token" : {
         "api": "/api/probe/health",
         "method": "GET",
         "headers": {"Authorization": "Bearer YOUR_TOKEN_HERE"},
         "expected": {"ok":false,"status":401,"message":"invalid token YOUR_TOKEN_HERE"}
     },
-    "valid-token" : {
+    "valid_token" : {
         "api": "/api/probe/health",
         "method": "GET",
         "headers": {"Authorization": "{token}"},

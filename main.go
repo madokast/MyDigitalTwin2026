@@ -23,6 +23,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /api/probe/health", middleware.Auth(probe.Health))
+	mux.HandleFunc("GET /api/probe/bad-json", middleware.Auth(probe.BadJSON))
 
 	server := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),
