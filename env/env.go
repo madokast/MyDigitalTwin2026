@@ -32,3 +32,12 @@ func Get(name string) (string, bool) {
 	}
 	return value, true
 }
+
+func MustGet(name string) string {
+	value, ok := Get(name)
+	if !ok {
+		slog.Error("env not set", "name", name)
+		os.Exit(1)
+	}
+	return value
+}

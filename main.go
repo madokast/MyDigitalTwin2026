@@ -1,35 +1,37 @@
 package main
 
 import (
-	"dt2026/api"
+	"dt2026/api/envkeys"
 	"dt2026/api/middleware"
+	"dt2026/api/probe"
 	"dt2026/env"
 	"log/slog"
 	"net/http"
 	"os"
 )
 
-var mustHaveEnvNames = []string{
-	"DT_ENV",
-}
-
 func main() {
 	slog.Info("Starting")
 
 	_ = env.LoadEnv(".env")
-	if err := env.CheckEnv(mustHaveEnvNames); err != nil {
+	if err := env.CheckEnv(envkeys.All); err != nil {
 		slog.Error("check env", "err", err)
 		os.Exit(1)
 	}
+	slog.Info("Env loaded")
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /api/health", middleware.Auth(api.Health))
+	mux.HandleFunc("GET /api/probe/health", middleware.Auth(probe.Health))
 
 	server := http.Server{
-		Addr:    ":29300",
+		Addr:    ":" + env.MustGet(envkeys.ServerPort),
 		Handler: mux,
 	}
 
-	server.ListenAndServe()
+	slog.Info("Server starting", "addr", server.Addr)
+	if err := server.ListenAndServe(); err != nil {
+		slog.Error("server error", "err", err)
+		os.Exit(1)
+	}
 }

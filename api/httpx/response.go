@@ -5,11 +5,9 @@ import (
 	"net/http"
 )
 
-func writeJSONError(w http.ResponseWriter, status int, message string) {
+func WriteJSONError(w http.ResponseWriter, err *Error) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
+	w.WriteHeader(err.Status)
 
-	json.NewEncoder(w).Encode(map[string]any{
-		"error": message,
-	})
+	json.NewEncoder(w).Encode(err)
 }

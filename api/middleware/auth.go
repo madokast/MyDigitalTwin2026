@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"dt2026/api/envkeys"
+	"dt2026/api/httpx"
 	"dt2026/env"
 	"net/http"
 	"strings"
@@ -13,16 +14,21 @@ func Auth(next handleFunc) handleFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, ok := env.Get(envkeys.Token)
 		if !ok {
-			http.Error(w, "token not set", http.StatusInternalServerError)
+			httpx.WriteJSONError(w, httpx.NewInternalServerError("token not set"))
 			return
 		}
 
 		auth := r.Header.Get("Authorization")
 
+		if auth == "" {
+			httpx.WriteJSONError(w, httpx.NewUnauthorizedError("missing authorization header"))
+			return
+		}
+
 		const prefix = "Bearer "
 
 		if !strings.HasPrefix(auth, prefix) {
-			http.Error(w, "unauthorized", 401)
+			httpx.WriteJSONError(w, httpx.NewUnauthorizedError("invalid authorization header"+auth))
 			return
 		}
 
@@ -31,7 +37,7 @@ func Auth(next handleFunc) handleFunc {
 		)
 
 		if provided != token {
-			http.Error(w, "unauthorized", 401)
+			httpx.WriteJSONError(w, httpx.NewUnauthorizedError("invalid token "+provided))
 			return
 		}
 

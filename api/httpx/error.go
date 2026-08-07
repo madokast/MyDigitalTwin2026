@@ -1,9 +1,25 @@
 package httpx
 
+import "net/http"
+
 type Error struct {
-	Ok      bool
-	Status  int
-	Message string
+	Ok      bool   `json:"ok"`
+	Status  int    `json:"status"`
+	Message string `json:"message"`
 }
 
-func NewError()
+func NewError(status int, message string) *Error {
+	return &Error{
+		Ok:      false,
+		Status:  status,
+		Message: message,
+	}
+}
+
+func NewUnauthorizedError(message string) *Error {
+	return NewError(http.StatusUnauthorized, message)
+}
+
+func NewInternalServerError(message string) *Error {
+	return NewError(http.StatusInternalServerError, message)
+}

@@ -1,7 +1,7 @@
 package envkeys
 
+const ServerPort = "DT_SERVER_PORT"
+const DatabaseUrl = "DT_DATABASE_URL"
 const Token = "DT_TOKEN"
 
-const DatabaseUrl = "DT_DATABASE_URL"
-
-var All = []string{Token, DatabaseUrl}
+var All = []string{ServerPort, Token, DatabaseUrl}
