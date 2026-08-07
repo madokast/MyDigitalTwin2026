@@ -3,7 +3,7 @@ package records
 import "time"
 
 const createRecordSQL = `
-CREATE TABLE records (
+CREATE TABLE IF NOT EXISTS records (
     id BIGSERIAL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL,
 
@@ -40,9 +40,15 @@ type NewRecord struct {
 	Tags             []string `json:"tags"`
 }
 
+func (t *JSONTime) Time() time.Time {
+	return time.Time(*t)
+}
+
+var loc = time.FixedZone("CST", 8*3600)
+
 func (t JSONTime) MarshalJSON() ([]byte, error) {
 	return []byte(
-		`"` + time.Time(t).Format(time.RFC3339) + `"`,
+		`"` + time.Time(t).In(loc).Format(time.RFC3339) + `"`,
 	), nil
 }
 

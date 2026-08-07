@@ -32,14 +32,16 @@ def request(api: str, headers: dict | None, data: dict | None) -> dict:
     except urllib.error.URLError as e:
         return {"error": "Connection error", "message": str(e)}
 
-def check(file: str, name: str, case: dict):
+def check(case: dict):
     headers = case.get("headers", {})
     if headers.get("Authorization") == "{token}":
         headers["Authorization"] = f"Bearer {TOKEN}"
 
     expected = case["expected"]
     result = request(case["api"], headers, case.get("data", None))
+    check_result(expected, result)
 
+def check_result(expected: dict, result: dict):
     for key, value in expected.items():
         if key not in result:
             raise AssertionError(f"Missing key '{key}' in response: {result}")
@@ -54,6 +56,10 @@ def check(file: str, name: str, case: dict):
         elif value == "{existed}": # 确定存在
             if result[key] is None:
                 raise AssertionError(f"Expected '{key}' to exist, but got: {result[key]}")
+        elif isinstance(value, dict): # 递归检查字典
+            if not isinstance(result[key], dict):
+                raise AssertionError(f"Expected '{key}' to be a dict, but got: {result[key]}")
+            check_result(value, result[key])
         elif result[key] != value:
             raise AssertionError(f"Expected '{key}': {value}, but got: {result[key]}")
 
@@ -66,7 +72,7 @@ def main():
             cases = json.load(f)
         for name, case in cases.items():
             try:
-                check(json_file.name, name, case)
+                check(case)
                 print(f"{json_file.name} - {name} passed")
             except Exception as e:
                 all_pass = False

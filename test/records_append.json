@@ -1,0 +1,93 @@
+{
+    "empty_record" : {
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {},
+        "expected": {"ok":false,"status":400,"message":"raw content cannot be empty"}
+    },
+    "only_raw_content" : {
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record."
+        },
+        "expected": {"ok":false,"status":400,"message":"objective context cannot be empty"}
+    },
+    "only_raw_content_and_objective_context" : {
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record.",
+            "objective_context": "Test Objective"
+        },
+        "expected": {"ok":false,"status":400,"message":"AI analysis cannot be empty"}
+    },
+    "no_tags":{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record.",
+            "objective_context": "Test Objective",
+            "ai_analysis": "Test AI Analysis"
+        },
+        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
+            "raw_content":"This is a test record.","objective_context":"Test Objective",
+            "ai_analysis":"Test AI Analysis","tags":[]}}
+    },
+    "null_tags":{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record.",
+            "objective_context": "Test Objective",
+            "ai_analysis": "Test AI Analysis",
+            "tags": null
+        },
+        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
+            "raw_content":"This is a test record.","objective_context":"Test Objective",
+            "ai_analysis":"Test AI Analysis","tags":[]}}
+    },
+    "empty_tags":{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record.",
+            "objective_context": "Test Objective",
+            "ai_analysis": "Test AI Analysis",
+            "tags": []
+        },
+        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
+            "raw_content":"This is a test record.","objective_context":"Test Objective",
+            "ai_analysis":"Test AI Analysis","tags":[]}}
+    },
+    "empty_string_tags":{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record.",
+            "objective_context": "Test Objective",
+            "ai_analysis": "Test AI Analysis",
+            "tags": [" "]
+        },
+        "expected": {"ok":false,"status":400,"message":"tags cannot contain empty strings"}
+    },
+    "duplicate_tags":{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record.",
+            "objective_context": "Test Objective",
+            "ai_analysis": "Test AI Analysis",
+            "tags": ["a", "b", "a"]
+        },
+        "expected": {"ok":false,"status":400,"message":"duplicate tags are not allowed"}
+    }
+}

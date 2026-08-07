@@ -1,5 +1,5 @@
 {
-    "bad_json" : {
+    "probe_pg" : {
         "api": "/api/probe/postgresql",
         "method": "GET",
         "headers": {"Authorization": "{token}"},

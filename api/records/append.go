@@ -66,8 +66,14 @@ func Append(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
+	_, err = pool.Exec(r.Context(), createRecordSQL)
+	if err != nil {
+		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to create records table: "+err.Error()))
+		return
+	}
+
 	err = pool.QueryRow(r.Context(), insertRecordSQL,
-		response.Record.CreatedAt,
+		response.Record.CreatedAt.Time(),
 		response.Record.RawContent,
 		response.Record.ObjectiveContext,
 		response.Record.AIAnalysis,
@@ -110,6 +116,10 @@ func normalizeNewRecord(record *NewRecord) *httpx.Error {
 		}
 		seenTags[tag] = true
 		tags = append(tags, tag)
+	}
+	// null value in column \"tags\" of relation \"records\" violates not-null constraint (SQLSTATE 23502)
+	if len(tags) == 0 {
+		tags = []string{}
 	}
 	record.Tags = tags
 

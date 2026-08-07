@@ -1,0 +1,8 @@
+{
+    "probe_qqbot" : {
+        "api": "/api/probe/qqbot",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200}
+    }
+}
