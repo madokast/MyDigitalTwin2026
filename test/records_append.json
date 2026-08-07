@@ -30,7 +30,7 @@
         "method": "POST",
         "headers": {"Authorization": "{token}"},
         "data": {
-            "raw_content": "This is a test record.",
+            "raw_content": "This is a test record for no tags.",
             "objective_context": "Test Objective",
             "ai_analysis": "Test AI Analysis"
         },
@@ -43,7 +43,7 @@
         "method": "POST",
         "headers": {"Authorization": "{token}"},
         "data": {
-            "raw_content": "This is a test record.",
+            "raw_content": "This is a test record for null tags.",
             "objective_context": "Test Objective",
             "ai_analysis": "Test AI Analysis",
             "tags": null
@@ -57,14 +57,42 @@
         "method": "POST",
         "headers": {"Authorization": "{token}"},
         "data": {
-            "raw_content": "This is a test record.",
+            "raw_content": "This is a test record for empty tags.",
             "objective_context": "Test Objective",
             "ai_analysis": "Test AI Analysis",
             "tags": []
         },
         "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
-            "raw_content":"This is a test record.","objective_context":"Test Objective",
+            "raw_content":"This is a test record for empty tags.","objective_context":"Test Objective",
             "ai_analysis":"Test AI Analysis","tags":[]}}
+    },
+    "one_tag":{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record for one tag.",
+            "objective_context": "Test Objective",
+            "ai_analysis": "Test AI Analysis",
+            "tags": ["apple"]
+        },
+        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
+            "raw_content":"This is a test record for one tag.","objective_context":"Test Objective",
+            "ai_analysis":"Test AI Analysis","tags":["apple"]}}
+    },
+    "two_tags":{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {
+            "raw_content": "This is a test record for two tags.",
+            "objective_context": "Test Objective",
+            "ai_analysis": "Test AI Analysis",
+            "tags": ["apple", "学习"]
+        },
+        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
+            "raw_content":"This is a test record for two tags.","objective_context":"Test Objective",
+            "ai_analysis":"Test AI Analysis","tags":["apple", "学习"]}}
     },
     "empty_string_tags":{
         "api": "/api/records",

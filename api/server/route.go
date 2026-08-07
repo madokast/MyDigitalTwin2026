@@ -1,6 +1,7 @@
 package server
 
 import (
+	"dt2026/api/notify/qqbot"
 	"dt2026/api/probe"
 	"dt2026/api/records"
 	"dt2026/httpx"
@@ -34,11 +35,20 @@ func (s *Server) RecordsAppend(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSON(w, err)
 		return
 	}
-	pool, err := s.db()
+	pool, err := s.pool()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
 	}
 
-	httpx.WriteJSON(w, records.Append(&record, pool))
+	var bot *qqbot.Sender = nil
+	if !s.testMode {
+		bot, err = s.qqbot()
+		if err != nil {
+			httpx.WriteJSON(w, err)
+			return
+		}
+	}
+
+	httpx.WriteJSON(w, records.Append(&record, pool, bot))
 }

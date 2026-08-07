@@ -4,6 +4,7 @@ import (
 	"context"
 	"dt2026/api/envkeys"
 	"dt2026/api/notify/qqbot"
+	"dt2026/api/records"
 	"dt2026/env"
 	"dt2026/httpx"
 	"encoding/json/v2"
@@ -15,13 +16,16 @@ import (
 )
 
 type Server struct {
-	db    func() (*pgxpool.Pool, *httpx.Error)
-	qqbot func() (*qqbot.Sender, *httpx.Error)
+	pool     func() (*pgxpool.Pool, *httpx.Error)
+	qqbot    func() (*qqbot.Sender, *httpx.Error)
+	testMode bool
 }
 
 func NewServer() *Server {
+	tm, _ := env.Get(envkeys.TestMode)
+
 	return &Server{
-		db: sync.OnceValues(func() (*pgxpool.Pool, *httpx.Error) {
+		pool: sync.OnceValues(func() (*pgxpool.Pool, *httpx.Error) {
 			url, ok := env.Get(envkeys.DatabaseUrl)
 			if !ok {
 				return nil, httpx.NewInternalServerError("database url not set")
@@ -29,6 +33,10 @@ func NewServer() *Server {
 			pool, err := pgxpool.New(context.Background(), url)
 			if err != nil {
 				return nil, httpx.NewInternalServerError("failed to connect to database: " + err.Error())
+			}
+			_, err = pool.Exec(context.Background(), records.CreateRecordSQL)
+			if err != nil {
+				return nil, httpx.NewInternalServerError("failed to create records table: " + err.Error())
 			}
 			return pool, nil
 		}),
@@ -49,17 +57,14 @@ func NewServer() *Server {
 			}
 
 			sender := qqbot.NewSender(appID, appSecret, userOpenID)
-			err := sender.SendMessage("Probe test message")
-			if err != nil {
-				return nil, httpx.NewInternalServerError("failed to send message via QQ Bot: " + err.Error())
-			}
 			return sender, nil
 		}),
+		testMode: tm == "true",
 	}
 }
 
 func (s *Server) DB() (*pgxpool.Pool, *httpx.Error) {
-	return s.db()
+	return s.pool()
 }
 
 func (s *Server) QQBot() (*qqbot.Sender, *httpx.Error) {

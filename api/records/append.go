@@ -2,7 +2,9 @@ package records
 
 import (
 	"context"
+	"dt2026/api/notify/qqbot"
 	"dt2026/httpx"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -20,7 +22,7 @@ func (r AppendRecordResponse) GetStatus() int {
 	return r.Status
 }
 
-func Append(record *NewRecord, pool *pgxpool.Pool) httpx.Response {
+func Append(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Response {
 	if err := normalizeNewRecord(record); err != nil {
 		return err
 	}
@@ -37,12 +39,7 @@ func Append(record *NewRecord, pool *pgxpool.Pool) httpx.Response {
 		},
 	}
 
-	_, err := pool.Exec(context.Background(), CreateRecordSQL)
-	if err != nil {
-		return httpx.NewInternalServerError("failed to create records table: " + err.Error())
-	}
-
-	err = pool.QueryRow(context.Background(), insertRecordSQL,
+	err := pool.QueryRow(context.Background(), insertRecordSQL,
 		response.Record.CreatedAt.Time(),
 		response.Record.RawContent,
 		response.Record.ObjectiveContext,
@@ -53,6 +50,16 @@ func Append(record *NewRecord, pool *pgxpool.Pool) httpx.Response {
 	if err != nil {
 		return httpx.NewInternalServerError("failed to insert record: " + err.Error())
 	}
+
+	go func() {
+		_ = bot.SendMessage(fmt.Sprintf(insertRecordNotifyMessage,
+			response.Record.ID,
+			response.Record.RawContent,
+			response.Record.ObjectiveContext,
+			response.Record.AIAnalysis,
+			"["+strings.Join(response.Record.Tags, ", ")+"]",
+		))
+	}()
 
 	return response
 }

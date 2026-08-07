@@ -8,7 +8,9 @@ const QQBotAppID = "DT_QQBOT_APP_ID"
 const QQBotAppSecret = "DT_QQBOT_APP_SECRET"
 const QQBotUserOpenID = "DT_QQBOT_USER_OPENID"
 
-var All = []string{
+const TestMode = "DT_TEST_MODE" // 测试模式
+
+var MustHave = []string{
 	ServerPort,
 	Token,
 	DatabaseUrl,

@@ -137,6 +137,10 @@ func (s *Sender) getToken(forceRefresh bool) (string, error) {
 }
 
 func (s *Sender) SendMessage(text string) error {
+	if s == nil {
+		return nil
+	}
+
 	path := "/v2/users/" + url.PathEscape(s.userOpenID) + "/messages"
 	payload := map[string]any{
 		"content":  text,

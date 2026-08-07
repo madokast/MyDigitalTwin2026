@@ -22,6 +22,12 @@ VALUES ($1,$2,$3,$4,$5)
 RETURNING id;
 `
 
+const insertRecordNotifyMessage = `New record created: %d
+Raw content: %s
+Objective context: %s
+Ai analysis: %s
+Tags: %s`
+
 type JSONTime time.Time
 
 type Record struct {

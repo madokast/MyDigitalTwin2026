@@ -13,13 +13,6 @@ import (
 func main() {
 	slog.Info("Starting")
 
-	_ = env.LoadEnv(".env")
-	if err := env.CheckEnv(envkeys.All); err != nil {
-		slog.Error("check env", "err", err)
-		os.Exit(1)
-	}
-	slog.Info("Env loaded")
-
 	server := server.NewServer()
 
 	mux := http.NewServeMux()
