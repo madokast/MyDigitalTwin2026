@@ -26,8 +26,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/probe/health", middleware.Wrap(server.ProbeHealth))
-	mux.HandleFunc("GET /api/probe/bad-json", middleware.Wrap(probe.BadJSON))
-	mux.HandleFunc("GET /api/probe/postgresql", middleware.Wrap(probe.ProbePostgreSQL))
+	mux.HandleFunc("GET /api/probe/bad-json", middleware.Wrap(server.ProbeBadJson))
+	mux.HandleFunc("GET /api/probe/postgresql", middleware.Wrap(server.ProbePostgreSQL))
 	mux.HandleFunc("GET /api/probe/qqbot", middleware.Wrap(probe.ProbeQQBot))
 	mux.HandleFunc("POST /api/records", middleware.Wrap(records.Append))
 

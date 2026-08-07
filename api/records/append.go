@@ -18,10 +18,6 @@ type AppendRecordResponse struct {
 	Record Record `json:"record"`
 }
 
-func (r AppendRecordResponse) IsOk() bool {
-	return r.Ok
-}
-
 func (r AppendRecordResponse) GetStatus() int {
 	return r.Status
 }

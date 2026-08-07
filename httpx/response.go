@@ -8,7 +8,6 @@ import (
 )
 
 type Response interface {
-	IsOk() bool
 	GetStatus() int
 }
 

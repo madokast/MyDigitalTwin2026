@@ -13,10 +13,6 @@ type ProbeQQBotResponse struct {
 	Status int  `json:"status"`
 }
 
-func (r ProbeQQBotResponse) IsOk() bool {
-	return r.Ok
-}
-
 func (r ProbeQQBotResponse) GetStatus() int {
 	return r.Status
 }

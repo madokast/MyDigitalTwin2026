@@ -1,6 +1,7 @@
 package probe
 
 import (
+	"context"
 	"dt2026/api/envkeys"
 	"dt2026/env"
 	"dt2026/httpx"
@@ -18,16 +19,12 @@ type ProbePostgreSQLResponse struct {
 	QueryNowTextResult string `json:"query_now_text_result"`
 }
 
-func (r ProbePostgreSQLResponse) IsOk() bool {
-	return r.Ok
-}
-
-func (r ProbePostgreSQLResponse) GetStatus() int {
+func (r *ProbePostgreSQLResponse) GetStatus() int {
 	return r.Status
 }
 
-func ProbePostgreSQL(w http.ResponseWriter, r *http.Request) {
-	var response = ProbePostgreSQLResponse{
+func ProbePostgreSQL(ctx context.Context) httpx.Response {
+	var response = &ProbePostgreSQLResponse{
 		Ok:     true,
 		Status: http.StatusOK,
 	}
@@ -36,27 +33,24 @@ func ProbePostgreSQL(w http.ResponseWriter, r *http.Request) {
 
 	url, ok := env.Get(envkeys.DatabaseUrl)
 	if !ok {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("database url not set"))
-		return
+		return httpx.NewInternalServerError("database url not set")
 	}
 
-	conn, err := pgx.Connect(r.Context(), url)
+	conn, err := pgx.Connect(ctx, url)
 	if err != nil {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to connect to database: "+err.Error()))
-		return
+		return httpx.NewInternalServerError("failed to connect to database: " + err.Error())
 	}
 	response.ConnectionTimeMs = time.Since(start).Milliseconds()
 	start = time.Now()
 
 	defer func() {
-		_ = conn.Close(r.Context())
+		_ = conn.Close(ctx)
 	}()
 
-	err = conn.QueryRow(r.Context(), "SELECT NOW()::text").Scan(&response.QueryNowTextResult)
+	err = conn.QueryRow(ctx, "SELECT NOW()::text").Scan(&response.QueryNowTextResult)
 	if err != nil {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to query database: "+err.Error()))
-		return
+		return httpx.NewInternalServerError("failed to query database: " + err.Error())
 	}
 	response.QueryTimeMs = time.Since(start).Milliseconds()
-	httpx.WriteJSON(w, response)
+	return response
 }

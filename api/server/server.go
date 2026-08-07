@@ -6,7 +6,6 @@ import (
 	"dt2026/api/notify/qqbot"
 	"dt2026/env"
 	"dt2026/httpx"
-	"net/http"
 	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -62,8 +61,4 @@ func (s *Server) DB() (*pgxpool.Pool, *httpx.Error) {
 
 func (s *Server) QQBot() (*qqbot.Sender, *httpx.Error) {
 	return s.qqbot()
-}
-
-func Handle(w http.ResponseWriter, r *http.Request) {
-
 }
