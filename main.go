@@ -23,11 +23,11 @@ func main() {
 	server := server.NewServer()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/probe/health", middleware.Wrap(server.ProbeHealth))
-	mux.HandleFunc("GET /api/probe/bad-json", middleware.Wrap(server.ProbeBadJson))
-	mux.HandleFunc("GET /api/probe/postgresql", middleware.Wrap(server.ProbePostgreSQL))
-	mux.HandleFunc("GET /api/probe/qqbot", middleware.Wrap(server.ProbeQQBot))
-	mux.HandleFunc("POST /api/records", middleware.Wrap(server.RecordsAppend))
+	mux.HandleFunc("GET /api/probe/health", middleware.Auth(server.ProbeHealth))
+	mux.HandleFunc("GET /api/probe/bad-json", middleware.Auth(server.ProbeBadJson))
+	mux.HandleFunc("GET /api/probe/postgresql", middleware.Auth(server.ProbePostgreSQL))
+	mux.HandleFunc("GET /api/probe/qqbot", middleware.Auth(server.ProbeQQBot))
+	mux.HandleFunc("POST /api/records", middleware.Auth(server.RecordsAppend))
 
 	httpServer := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),
