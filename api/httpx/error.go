@@ -20,6 +20,10 @@ func NewUnauthorizedError(message string) *Error {
 	return NewError(http.StatusUnauthorized, message)
 }
 
+func NewBadRequestError(message string) *Error {
+	return NewError(http.StatusBadRequest, message)
+}
+
 func NewInternalServerError(message string) *Error {
 	return NewError(http.StatusInternalServerError, message)
 }

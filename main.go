@@ -4,6 +4,7 @@ import (
 	"dt2026/api/envkeys"
 	"dt2026/api/middleware"
 	"dt2026/api/probe"
+	"dt2026/api/records"
 	"dt2026/env"
 	"log/slog"
 	"net/http"
@@ -26,6 +27,7 @@ func main() {
 	mux.HandleFunc("GET /api/probe/bad-json", middleware.Auth(probe.BadJSON))
 	mux.HandleFunc("GET /api/probe/postgresql", middleware.Auth(probe.ProbePostgreSQL))
 	mux.HandleFunc("GET /api/probe/qqbot", middleware.Auth(probe.ProbeQQBot))
+	mux.HandleFunc("POST /api/records", middleware.Auth(records.Append))
 
 	server := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),
