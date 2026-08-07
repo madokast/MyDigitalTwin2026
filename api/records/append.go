@@ -4,7 +4,7 @@ import (
 	"dt2026/api/envkeys"
 	"dt2026/api/httpx"
 	"dt2026/env"
-	"encoding/json"
+	"encoding/json/v2"
 	"net/http"
 	"strings"
 	"time"
@@ -30,8 +30,7 @@ func Append(w http.ResponseWriter, r *http.Request) {
 	var record NewRecord
 
 	// 获取和校验 NewRecord
-
-	err := json.NewDecoder(r.Body).Decode(&record)
+	err := json.UnmarshalRead(r.Body, &record)
 	if err != nil {
 		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to decode request body: "+err.Error()))
 		return

@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -20,9 +20,7 @@ func WriteJSON[R Response](w http.ResponseWriter, response R) {
 
 	bs, err := json.Marshal(response)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := fmt.Sprintf(`{"ok":false,"status":500, "error":"failed to marshal response: %s"}`, err.Error())
-		_, _ = w.Write([]byte(msg))
+		WriteJSON(w, NewInternalServerError(fmt.Sprintf("failed to marshal response: %s", err.Error())))
 		return
 	}
 

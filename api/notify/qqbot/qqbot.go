@@ -2,11 +2,12 @@ package qqbot
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -95,9 +96,9 @@ func (s *Sender) getToken(forceRefresh bool) (string, error) {
 	}
 
 	var parsed struct {
-		AccessToken string      `json:"access_token"`
-		ExpiresIn   json.Number `json:"expires_in"`
-		Message     string      `json:"message"`
+		AccessToken string `json:"access_token"`
+		ExpiresIn   string `json:"expires_in"`
+		Message     string `json:"message"`
 	}
 	if err := json.Unmarshal(body, &parsed); err != nil {
 		if oldToken != "" && time.Now().Before(oldExpiry) {
@@ -118,7 +119,7 @@ func (s *Sender) getToken(forceRefresh bool) (string, error) {
 	}
 
 	// 修正过期时间计算：max(1, expiresIn - 60)
-	expiresIn, err := parsed.ExpiresIn.Int64()
+	expiresIn, err := strconv.ParseInt(parsed.ExpiresIn, 10, 64)
 	if err != nil {
 		expiresIn = 7200 // 默认值
 	}
