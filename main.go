@@ -25,6 +25,7 @@ func main() {
 	mux.HandleFunc("GET /api/probe/health", middleware.Auth(probe.Health))
 	mux.HandleFunc("GET /api/probe/bad-json", middleware.Auth(probe.BadJSON))
 	mux.HandleFunc("GET /api/probe/postgresql", middleware.Auth(probe.ProbePostgreSQL))
+	mux.HandleFunc("GET /api/probe/qqbot", middleware.Auth(probe.ProbeQQBot))
 
 	server := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),
