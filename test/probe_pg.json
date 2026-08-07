@@ -1,0 +1,8 @@
+{
+    "bad_json" : {
+        "api": "/api/probe/postgresql",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"connection_time_ms":"{integer}","query_time_ms":"{integer}"}
+    }
+}

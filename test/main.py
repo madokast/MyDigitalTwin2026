@@ -50,6 +50,10 @@ def check(file: str, name: str, case: dict):
                 datetime.fromisoformat(result[key])
             except ValueError:
                 raise AssertionError(f"Expected '{key}' to be a valid time, but got: {result[key]}")
+        elif value == "{integer}":
+            # 确定是数字
+            if not isinstance(result[key], int):
+                raise AssertionError(f"Expected '{key}' to be a integer, but got: {result[key]}")
         elif result[key] != value:
             raise AssertionError(f"Expected '{key}': {value}, but got: {result[key]}")
 
