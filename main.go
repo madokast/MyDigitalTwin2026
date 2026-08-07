@@ -2,6 +2,7 @@ package main
 
 import (
 	"dt2026/api"
+	"dt2026/api/middleware"
 	"dt2026/env"
 	"log/slog"
 	"net/http"
@@ -23,7 +24,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /api/health", api.Health)
+	mux.HandleFunc("GET /api/health", middleware.Auth(api.Health))
 
 	server := http.Server{
 		Addr:    ":29300",

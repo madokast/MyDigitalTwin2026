@@ -24,3 +24,11 @@ func CheckEnv(names []string) error {
 	}
 	return nil
 }
+
+func Get(name string) (string, bool) {
+	value := os.Getenv(name)
+	if value == "" {
+		return "", false
+	}
+	return value, true
+}

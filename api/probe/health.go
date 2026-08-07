@@ -1,4 +1,4 @@
-package api
+package probe
 
 import (
 	"encoding/json"
