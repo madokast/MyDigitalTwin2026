@@ -3,8 +3,6 @@ package main
 import (
 	"dt2026/api/envkeys"
 	"dt2026/api/middleware"
-	"dt2026/api/probe"
-	"dt2026/api/records"
 	"dt2026/api/server"
 	"dt2026/env"
 	"log/slog"
@@ -28,8 +26,8 @@ func main() {
 	mux.HandleFunc("GET /api/probe/health", middleware.Wrap(server.ProbeHealth))
 	mux.HandleFunc("GET /api/probe/bad-json", middleware.Wrap(server.ProbeBadJson))
 	mux.HandleFunc("GET /api/probe/postgresql", middleware.Wrap(server.ProbePostgreSQL))
-	mux.HandleFunc("GET /api/probe/qqbot", middleware.Wrap(probe.ProbeQQBot))
-	mux.HandleFunc("POST /api/records", middleware.Wrap(records.Append))
+	mux.HandleFunc("GET /api/probe/qqbot", middleware.Wrap(server.ProbeQQBot))
+	mux.HandleFunc("POST /api/records", middleware.Wrap(server.RecordsAppend))
 
 	httpServer := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),

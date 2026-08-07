@@ -6,6 +6,9 @@ import (
 	"dt2026/api/notify/qqbot"
 	"dt2026/env"
 	"dt2026/httpx"
+	"encoding/json/v2"
+	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -61,4 +64,12 @@ func (s *Server) DB() (*pgxpool.Pool, *httpx.Error) {
 
 func (s *Server) QQBot() (*qqbot.Sender, *httpx.Error) {
 	return s.qqbot()
+}
+
+func (s *Server) JsonUnmarshal(r *http.Request, v any) *httpx.Error {
+	err := json.UnmarshalRead(r.Body, v, json.RejectUnknownMembers(true))
+	if err != nil {
+		return httpx.NewInternalServerError(fmt.Sprintf("failed to unmarshal request body: %s", err.Error()))
+	}
+	return nil
 }

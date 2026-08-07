@@ -2,7 +2,7 @@ package records
 
 import "time"
 
-const createRecordSQL = `
+const CreateRecordSQL = `
 CREATE TABLE IF NOT EXISTS records (
     id BIGSERIAL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL,

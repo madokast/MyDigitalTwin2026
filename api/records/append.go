@@ -1,10 +1,8 @@
 package records
 
 import (
-	"dt2026/api/envkeys"
-	"dt2026/env"
+	"context"
 	"dt2026/httpx"
-	"encoding/json/v2"
 	"net/http"
 	"strings"
 	"time"
@@ -22,31 +20,9 @@ func (r AppendRecordResponse) GetStatus() int {
 	return r.Status
 }
 
-func Append(w http.ResponseWriter, r *http.Request) {
-	var record NewRecord
-
-	// 获取和校验 NewRecord
-	err := json.UnmarshalRead(r.Body, &record)
-	if err != nil {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to decode request body: "+err.Error()))
-		return
-	}
-
-	if err := normalizeNewRecord(&record); err != nil {
-		httpx.WriteJSON(w, err)
-		return
-	}
-
-	url, ok := env.Get(envkeys.DatabaseUrl)
-	if !ok {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("database url not set"))
-		return
-	}
-
-	pool, err := pgxpool.New(r.Context(), url)
-	if err != nil {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to create database pool: "+err.Error()))
-		return
+func Append(record *NewRecord, pool *pgxpool.Pool) httpx.Response {
+	if err := normalizeNewRecord(record); err != nil {
+		return err
 	}
 
 	var response = AppendRecordResponse{
@@ -61,13 +37,12 @@ func Append(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	_, err = pool.Exec(r.Context(), createRecordSQL)
+	_, err := pool.Exec(context.Background(), CreateRecordSQL)
 	if err != nil {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to create records table: "+err.Error()))
-		return
+		return httpx.NewInternalServerError("failed to create records table: " + err.Error())
 	}
 
-	err = pool.QueryRow(r.Context(), insertRecordSQL,
+	err = pool.QueryRow(context.Background(), insertRecordSQL,
 		response.Record.CreatedAt.Time(),
 		response.Record.RawContent,
 		response.Record.ObjectiveContext,
@@ -76,11 +51,10 @@ func Append(w http.ResponseWriter, r *http.Request) {
 	).Scan(&response.Record.ID)
 
 	if err != nil {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to insert record: "+err.Error()))
-		return
+		return httpx.NewInternalServerError("failed to insert record: " + err.Error())
 	}
 
-	httpx.WriteJSON(w, response)
+	return response
 }
 
 func normalizeNewRecord(record *NewRecord) *httpx.Error {

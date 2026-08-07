@@ -1,9 +1,7 @@
 package probe
 
 import (
-	"dt2026/api/envkeys"
 	"dt2026/api/notify/qqbot"
-	"dt2026/env"
 	"dt2026/httpx"
 	"net/http"
 )
@@ -13,40 +11,18 @@ type ProbeQQBotResponse struct {
 	Status int  `json:"status"`
 }
 
-func (r ProbeQQBotResponse) GetStatus() int {
+func (r *ProbeQQBotResponse) GetStatus() int {
 	return r.Status
 }
 
-func ProbeQQBot(w http.ResponseWriter, r *http.Request) {
-
-	appID, ok := env.Get(envkeys.QQBotAppID)
-	if !ok {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("QQ Bot App ID not set"))
-		return
-	}
-
-	appSecret, ok := env.Get(envkeys.QQBotAppSecret)
-	if !ok {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("QQ Bot App Secret not set"))
-		return
-	}
-
-	userOpenID, ok := env.Get(envkeys.QQBotUserOpenID)
-	if !ok {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("QQ Bot User OpenID not set"))
-		return
-	}
-
-	sender := qqbot.NewSender(appID, appSecret, userOpenID)
+func ProbeQQBot(sender *qqbot.Sender) httpx.Response {
 	err := sender.SendMessage("Probe test message")
 	if err != nil {
-		httpx.WriteJSON(w, httpx.NewInternalServerError("failed to send message via QQ Bot: "+err.Error()))
-		return
+		return httpx.NewInternalServerError("failed to send message via QQ Bot: " + err.Error())
 	}
 
-	response := ProbeQQBotResponse{
+	return &ProbeQQBotResponse{
 		Ok:     true,
 		Status: http.StatusOK,
 	}
-	httpx.WriteJSON(w, response)
 }
