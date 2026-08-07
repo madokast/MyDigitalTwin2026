@@ -13,6 +13,11 @@ type Response interface {
 }
 
 func WriteJSON[R Response](w http.ResponseWriter, response R) {
+	if response.GetStatus() == 0 {
+		WriteJSON(w, NewInternalServerError("response status not set"))
+		return
+	}
+
 	bs, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -24,5 +29,7 @@ func WriteJSON[R Response](w http.ResponseWriter, response R) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.GetStatus())
 	_, err = w.Write(bs)
-	slog.Error("failed to write response", "err", err)
+	if err != nil {
+		slog.Error("failed to write response", "err", err)
+	}
 }
