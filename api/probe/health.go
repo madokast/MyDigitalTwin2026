@@ -22,12 +22,12 @@ func (r HealthResponse) GetStatus() int {
 
 var loc = time.FixedZone("CST", 8*3600)
 
-func Health(w http.ResponseWriter, r *http.Request) {
+func Health() httpx.Response {
 	// 2026-08-06T22:39:47+08:00
 	now := time.Now().In(loc).Format(time.RFC3339)
-	httpx.WriteJSON(w, HealthResponse{
+	return HealthResponse{
 		Ok:     true,
 		Status: http.StatusOK,
 		Now:    now,
-	})
+	}
 }

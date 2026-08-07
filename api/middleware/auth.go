@@ -10,7 +10,7 @@ import (
 
 type handleFunc = func(w http.ResponseWriter, r *http.Request)
 
-func Auth(next handleFunc) handleFunc {
+func auth(next handleFunc) handleFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, ok := env.Get(envkeys.Token)
 		if !ok {

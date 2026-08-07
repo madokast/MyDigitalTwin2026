@@ -5,6 +5,7 @@ import (
 	"dt2026/api/middleware"
 	"dt2026/api/probe"
 	"dt2026/api/records"
+	"dt2026/api/server"
 	"dt2026/env"
 	"log/slog"
 	"net/http"
@@ -21,21 +22,22 @@ func main() {
 	}
 	slog.Info("Env loaded")
 
+	server := server.NewServer()
+
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /api/probe/health", middleware.Wrap(server.ProbeHealth))
+	mux.HandleFunc("GET /api/probe/bad-json", middleware.Wrap(probe.BadJSON))
+	mux.HandleFunc("GET /api/probe/postgresql", middleware.Wrap(probe.ProbePostgreSQL))
+	mux.HandleFunc("GET /api/probe/qqbot", middleware.Wrap(probe.ProbeQQBot))
+	mux.HandleFunc("POST /api/records", middleware.Wrap(records.Append))
 
-	mux.HandleFunc("GET /api/probe/health", middleware.Auth(probe.Health))
-	mux.HandleFunc("GET /api/probe/bad-json", middleware.Auth(probe.BadJSON))
-	mux.HandleFunc("GET /api/probe/postgresql", middleware.Auth(probe.ProbePostgreSQL))
-	mux.HandleFunc("GET /api/probe/qqbot", middleware.Auth(probe.ProbeQQBot))
-	mux.HandleFunc("POST /api/records", middleware.Auth(records.Append))
-
-	server := http.Server{
+	httpServer := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),
 		Handler: mux,
 	}
 
-	slog.Info("Server starting", "addr", server.Addr)
-	if err := server.ListenAndServe(); err != nil {
+	slog.Info("Server starting", "addr", httpServer.Addr)
+	if err := httpServer.ListenAndServe(); err != nil {
 		slog.Error("server error", "err", err)
 		os.Exit(1)
 	}
