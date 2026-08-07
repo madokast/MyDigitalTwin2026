@@ -1,3 +1,4 @@
+import re
 import json
 import time
 from pathlib import Path
@@ -42,7 +43,12 @@ def check(case: dict):
     result = request(case["api"], headers, case.get("data", None))
     check_result(expected, result)
 
-def check_result(expected: dict, result: dict):
+def check_result(expected: str | dict, result: str | dict):
+    if isinstance(expected, str):
+        if expected != result:
+            raise AssertionError(f"Expected: {expected}, but got: {result}")
+        return
+
     for key, value in expected.items():
         if key not in result:
             raise AssertionError(f"Missing key '{key}' in response: {result}")
@@ -57,6 +63,21 @@ def check_result(expected: dict, result: dict):
         elif value == "{existed}": # 确定存在
             if result[key] is None:
                 raise AssertionError(f"Expected '{key}' to exist, but got: {result[key]}")
+        elif value == "{array}": # 确定是数组
+            if not isinstance(result[key], list):
+                raise AssertionError(f"Expected '{key}' to be a array, but got: {result[key]}")
+        elif (m := re.fullmatch(r"\{array:(\d+)\}", str(value))): # 固定长度的数组
+            if not isinstance(result[key], list):
+                raise AssertionError(f"Expected '{key}' to be a array, but got: {result[key]}")
+            if len(result[key]) != int(m.group(1)):
+                raise AssertionError(f"Expected '{key}' to be a array with length {m.group(1)}, but got: {result[key]}")
+        elif isinstance(value, list):
+            if not isinstance(result[key], list):
+                raise AssertionError(f"Expected '{key}' to be a array, but got: {result[key]}")
+            if len(result[key]) != len(value):
+                raise AssertionError(f"Expected '{key}' to be a array with length {len(value)}, but got: {result[key]}")
+            for e, r in zip(value, result[key]):
+                check_result(e, r) # 递归检查数组元素
         elif isinstance(value, dict): # 递归检查字典
             if not isinstance(result[key], dict):
                 raise AssertionError(f"Expected '{key}' to be a dict, but got: {result[key]}")

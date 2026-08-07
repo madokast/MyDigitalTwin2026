@@ -34,8 +34,8 @@
             "objective_context": "Test Objective",
             "ai_analysis": "Test AI Analysis"
         },
-        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
-            "raw_content":"This is a test record.","objective_context":"Test Objective",
+        "expected": {"ok":true,"status":201,"record":{"id":"{integer}","created_at":"{time}",
+            "raw_content":"This is a test record for no tags.","objective_context":"Test Objective",
             "ai_analysis":"Test AI Analysis","tags":[]}}
     },
     "null_tags":{
@@ -48,8 +48,8 @@
             "ai_analysis": "Test AI Analysis",
             "tags": null
         },
-        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
-            "raw_content":"This is a test record.","objective_context":"Test Objective",
+        "expected": {"ok":true,"status":201,"record":{"id":"{integer}","created_at":"{time}",
+            "raw_content":"This is a test record for null tags.","objective_context":"Test Objective",
             "ai_analysis":"Test AI Analysis","tags":[]}}
     },
     "empty_tags":{
@@ -62,7 +62,7 @@
             "ai_analysis": "Test AI Analysis",
             "tags": []
         },
-        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
+        "expected": {"ok":true,"status":201,"record":{"id":"{integer}","created_at":"{time}",
             "raw_content":"This is a test record for empty tags.","objective_context":"Test Objective",
             "ai_analysis":"Test AI Analysis","tags":[]}}
     },
@@ -76,7 +76,7 @@
             "ai_analysis": "Test AI Analysis",
             "tags": ["apple"]
         },
-        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
+        "expected": {"ok":true,"status":201,"record":{"id":"{integer}","created_at":"{time}",
             "raw_content":"This is a test record for one tag.","objective_context":"Test Objective",
             "ai_analysis":"Test AI Analysis","tags":["apple"]}}
     },
@@ -90,7 +90,7 @@
             "ai_analysis": "Test AI Analysis",
             "tags": ["apple", "学习"]
         },
-        "expected": {"ok":true,"status":200,"record":{"id":"{integer}","created_at":"{time}",
+        "expected": {"ok":true,"status":201,"record":{"id":"{integer}","created_at":"{time}",
             "raw_content":"This is a test record for two tags.","objective_context":"Test Objective",
             "ai_analysis":"Test AI Analysis","tags":["apple", "学习"]}}
     },

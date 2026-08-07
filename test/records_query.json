@@ -1,0 +1,51 @@
+{
+    "w_page" :{
+        "api": "/api/records?page=w",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"query parameter page expected an integer, but got 'w'"}
+    },
+    "-1_page" :{
+        "api": "/api/records?page=-1",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"page must be greater than 0, but got -1"}
+    },
+    "0_page" :{
+        "api": "/api/records?page=0",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"page must be greater than 0, but got 0"}
+    },
+    "empty_page" :{
+        "api": "/api/records?page=",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"query parameter page expected an integer, but got ''"}
+    },
+    "only_page_key" :{
+        "api": "/api/records?page",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"query parameter page expected an integer, but got ''"}
+    },
+    "multi_page" :{
+        "api": "/api/records?page=1&page=2",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"query parameter page expected a single value, but got 2 values ('1', '2')"}
+    },
+    "page_size_2":{
+        "api": "/api/records?page_size=2",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":2,"records":"{array:2}"}
+    },
+    "page_size_1":{
+        "api": "/api/records?page_size=1",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{integer}","created_at":"{time}","raw_content":"{existed}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}]}
+    }
+}

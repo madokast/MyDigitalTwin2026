@@ -1,10 +1,10 @@
 package httpx
 
 import (
+	"dt2026/lib"
 	"fmt"
 	"net/url"
 	"strconv"
-	"strings"
 )
 
 type Query url.Values
@@ -18,7 +18,7 @@ func (q Query) GetOptionalSingleInt64(key string) (*int64, *Error) {
 		value, err := strconv.ParseInt(rawValues[0], 10, 64)
 		if err != nil {
 			return nil, NewBadRequestError(fmt.Sprintf(
-				"query parameter %s expected an integer, but got %s",
+				"query parameter %s expected an integer, but got '%s'",
 				key, rawValues[0],
 			))
 		}
@@ -26,7 +26,7 @@ func (q Query) GetOptionalSingleInt64(key string) (*int64, *Error) {
 	} else {
 		return nil, NewBadRequestError(fmt.Sprintf(
 			"query parameter %s expected a single value, but got %d values (%s)",
-			key, len(rawValues), strings.Join(rawValues, ", "),
+			key, len(rawValues), lib.SliceToString(rawValues),
 		))
 	}
 }
