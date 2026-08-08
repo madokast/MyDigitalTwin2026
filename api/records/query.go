@@ -6,6 +6,7 @@ import (
 	"dt2026/lib"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -14,7 +15,7 @@ import (
 type QueryCriteria struct {
 	Page     *int64
 	PageSize *int64
-	Querys   []string
+	Queries  []string
 }
 
 func NewQueryCriteria(q httpx.Query) (*QueryCriteria, *httpx.Error) {
@@ -29,7 +30,7 @@ func NewQueryCriteria(q httpx.Query) (*QueryCriteria, *httpx.Error) {
 	if err != nil {
 		return nil, err
 	}
-	criteria.Querys = q.GetOptionalStrings("q") // normalizeQueryCriteria 进一步检查
+	criteria.Queries = q.GetOptionalStrings("q") // normalizeQueryCriteria 进一步检查
 
 	return &criteria, nil
 }
@@ -110,14 +111,21 @@ func makeQuerySQL(criteria *QueryCriteria) (sql string, args []any) {
 	sql = queryRecordSQL
 
 	// querys
-	for _, query := range criteria.Querys {
+	for _, query := range criteria.Queries {
+		var predicates []string
 		queryWord := "%" + lib.EscapeSQLLike(query) + "%"
 		args = append(args, queryWord)
 		for _, column := range textColumns { // TEXT 字段模糊搜索
-			sql += fmt.Sprintf(" AND %s LIKE $%d", column, len(args))
+			predicates = append(predicates,
+				fmt.Sprintf("%s ILIKE $%d", column, len(args)))
 		}
 		// tags 字段模糊搜索
-		sql += fmt.Sprintf(" EXISTS ( SELECT 1 FROM unnest(tags) AS tag WHERE tag ILIKE $%d )", len(args))
+		predicates = append(predicates,
+			fmt.Sprintf("EXISTS (SELECT 1 FROM unnest(tags) AS tag WHERE tag ILIKE $%d)", len(args)))
+
+		// 组装 SQL
+		fragment := strings.Join(predicates, " OR ")
+		sql += fmt.Sprintf(" AND (%s)", fragment)
 	}
 
 	// ORDER BY id ASC
@@ -165,8 +173,16 @@ func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
 		))
 	}
 
+	// query 限制 10 个
+	if len(criteria.Queries) > 10 {
+		return httpx.NewBadRequestError(fmt.Sprintf(
+			"too many queries, max 10, but got %d",
+			len(criteria.Queries),
+		))
+	}
+
 	// query 不能为空串
-	for _, query := range criteria.Querys {
+	for _, query := range criteria.Queries {
 		if query == "" {
 			return httpx.NewBadRequestError("query cannot be empty")
 		}
