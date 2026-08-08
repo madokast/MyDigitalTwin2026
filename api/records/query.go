@@ -102,7 +102,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 
 	if len(records) == 0 { // 没有扫描到行，则 total 拿不到，单独用 COUNT 查询
 		var err *httpx.Error
-		total, err = queryToal(criteria, pool)
+		total, err = queryTotal(criteria, pool)
 		if err != nil {
 			return err
 		}
@@ -121,7 +121,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 
 }
 
-func queryToal(criteria *QueryCriteria, pool *pgxpool.Pool) (int64, *httpx.Error) {
+func queryTotal(criteria *QueryCriteria, pool *pgxpool.Pool) (int64, *httpx.Error) {
 	sqlTail, args := makeQuerySQLTail(criteria, false)
 	sql := countRecordSQL + sqlTail
 
