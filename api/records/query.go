@@ -54,7 +54,8 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 		return err
 	}
 
-	sql, args := makeQuerySQL(criteria)
+	sqlTail, args := makeQuerySQLTail(criteria, true)
+	sql := queryRecordSQL + sqlTail
 
 	rows, err := pool.Query(context.Background(), sql, args...)
 	if err != nil {
@@ -99,16 +100,12 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 		))
 	}
 
-	if len(records) == 0 { // 没有扫描到行，则 total 拿不到，额外查询一次
-		// 情况很少见，用最笨的方法
-		var queryFirstCriteria = *criteria
-		queryFirstCriteria.Page = new(int64(1))
-		queryFirstCriteria.PageSize = new(int64(1))
-		res := Query(&queryFirstCriteria, pool)
-		if res.GetStatus() != http.StatusOK {
-			return res
+	if len(records) == 0 { // 没有扫描到行，则 total 拿不到，单独用 COUNT 查询
+		var err *httpx.Error
+		total, err = queryToal(criteria, pool)
+		if err != nil {
+			return err
 		}
-		total = res.(*QueryRecordResponse).Total
 	}
 
 	totalPage := (total + *criteria.PageSize - 1) / *criteria.PageSize
@@ -124,11 +121,30 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 
 }
 
-func makeQuerySQL(criteria *QueryCriteria) (sql string, args []any) {
+func queryToal(criteria *QueryCriteria, pool *pgxpool.Pool) (int64, *httpx.Error) {
+	sqlTail, args := makeQuerySQLTail(criteria, false)
+	sql := countRecordSQL + sqlTail
 
-	// end with 'WHERE 1=1'
-	sql = queryRecordSQL
+	var total int64
+	err := pool.QueryRow(
+		context.Background(),
+		sql,
+		args...,
+	).Scan(&total)
 
+	if err != nil {
+		return 0, httpx.NewError(http.StatusInternalServerError, fmt.Sprintf(
+			"failed to query %s with %v: %s",
+			sql, args, err.Error(),
+		))
+	}
+
+	return total, nil
+}
+
+// makeQuerySQLTail 构造 SQL 语句
+// enablePage 带上 ORDER、LIMIT、OFFSET 信息
+func makeQuerySQLTail(criteria *QueryCriteria, enablePage bool) (sqlTail string, args []any) {
 	// querys
 	for _, query := range criteria.Queries {
 		var predicates []string
@@ -144,21 +160,23 @@ func makeQuerySQL(criteria *QueryCriteria) (sql string, args []any) {
 
 		// 组装 SQL
 		fragment := strings.Join(predicates, " OR ")
-		sql += fmt.Sprintf(" AND (%s)", fragment)
+		sqlTail += fmt.Sprintf(" AND (%s)", fragment)
 	}
 
-	// ORDER BY id ASC
-	sql += " ORDER BY id ASC"
+	if enablePage {
+		// ORDER BY id ASC
+		sqlTail += " ORDER BY id ASC"
 
-	// LIMIT
-	args = append(args, *criteria.PageSize)
-	sql += fmt.Sprintf(" LIMIT $%d", len(args))
+		// LIMIT
+		args = append(args, *criteria.PageSize)
+		sqlTail += fmt.Sprintf(" LIMIT $%d", len(args))
 
-	// OFFSET
-	args = append(args, (*criteria.Page-1)*(*criteria.PageSize))
-	sql += fmt.Sprintf(" OFFSET $%d", len(args))
+		// OFFSET
+		args = append(args, (*criteria.Page-1)*(*criteria.PageSize))
+		sqlTail += fmt.Sprintf(" OFFSET $%d", len(args))
+	}
 
-	return sql, args
+	return sqlTail, args
 }
 
 func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
