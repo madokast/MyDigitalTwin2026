@@ -1,0 +1,192 @@
+{
+    "full_query":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=1&q={unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "sub_query":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aaa{unique:1}bbb","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=1&q={unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"aaa{unique:1}bbb","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "chn_query":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "我是{unique:1}结束","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=1&q={unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"我是{unique:1}结束","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "chn_query2":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "我是{unique:1}结束","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=1&q=是{unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"我是{unique:1}结束","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "chn_query23":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "我是{unique:1}结束","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=1&q={unique:1}结",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"我是{unique:1}结束","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "2query":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "我是{unique:1}结束{unique:2}","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=1&q={unique:1}&q={unique:2}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"我是{unique:1}结束{unique:2}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "query_ctx":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "我是{unique:1}结束{unique:2}","objective_context": "aaa{unique:3}","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=1&q={unique:3}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"我是{unique:1}结束{unique:2}","objective_context":"aaa{unique:3}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "query_ai":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "我是{unique:1}结束{unique:2}","objective_context": "aaa{unique:3}","ai_analysis": "{unique:4}bbb"}
+            }
+        ],
+        "api": "/api/records?page_size=1&q={unique:4}b",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"我是{unique:1}结束{unique:2}","objective_context":"aaa{unique:3}","ai_analysis":"{unique:4}bbb","tags":"{array}"}
+        ]}
+    },
+    "query_tags":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "我是{unique:1}结束{unique:2}","objective_context": "aaa{unique:3}","ai_analysis": "{unique:4}bbb",
+                        "tags":["aa{unique:5}bb","cc{unique:6}dd","ff{unique:7}kk"]}
+            }
+        ],
+        "api": "/api/records?page_size=1&q=a{unique:5}b",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"我是{unique:1}结束{unique:2}","objective_context":"aaa{unique:3}","ai_analysis":"{unique:4}bbb","tags":["aa{unique:5}bb","cc{unique:6}dd","ff{unique:7}kk"]}
+        ]}
+    },
+    "query_tags2":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "我是{unique:1}结束{unique:2}","objective_context": "aaa{unique:3}","ai_analysis": "{unique:4}bbb",
+                        "tags":["aa{unique:5}bb","cc{unique:6}dd","ff{unique:7}kk"]}
+            }
+        ],
+        "api": "/api/records?page_size=1&q=c{unique:6}d",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"我是{unique:1}结束{unique:2}","objective_context":"aaa{unique:3}","ai_analysis":"{unique:4}bbb","tags":["aa{unique:5}bb","cc{unique:6}dd","ff{unique:7}kk"]}
+        ]}
+    },
+    "full_3_rows":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aa{unique:1}bb","objective_context": "bbb","ai_analysis": "ccc"}
+            },{
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aaa","objective_context": "cc{unique:1}dd","ai_analysis": "ccc"}
+            },{
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aaa","objective_context": "bbb","ai_analysis": "ff{unique:1}gg"}
+            }
+        ],
+        "api": "/api/records?page_size=10&q={unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"aa{unique:1}bb","objective_context":"bbb","ai_analysis":"ccc","tags":[]},
+            {"id":"{existed}","created_at":"{time}","raw_content":"aaa","objective_context":"cc{unique:1}dd","ai_analysis":"ccc","tags":[]},
+            {"id":"{existed}","created_at":"{time}","raw_content":"aaa","objective_context":"bbb","ai_analysis":"ff{unique:1}gg","tags":[]}
+        ]}
+    }
+}

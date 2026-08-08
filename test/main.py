@@ -2,16 +2,17 @@ import re
 import sys
 import json
 import time
+from unique import solve_unique
 from pathlib import Path
 import urllib.request
-import urllib.parse
+from urllib.parse import quote
 from datetime import datetime
 
 BASE_URL = "http://localhost:29301"
 TOKEN = "dt-20260807"
 
 def do_request(api: str, headers: dict | None, data: dict | None) -> dict:
-    url = f"{BASE_URL}{api}"
+    url = f"{BASE_URL}{quote(api, safe='/?:=&')}"
     req = urllib.request.Request(url)
     
     if headers is not None:
@@ -45,6 +46,7 @@ def request(r: dict):
     return do_request(r["api"], headers, r.get("data", None))
 
 def check(case: dict):
+    solve_unique(case)
     for r in case.get("before", []):
         res = request(r)
         assert res["status"]//100 == 2, f"before {r} failed: {res}"

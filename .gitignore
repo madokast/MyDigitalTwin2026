@@ -32,4 +32,11 @@ go.work.sum
 # .vscode/
 main
 
+# 生成部署
 prod/
+
+# python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
