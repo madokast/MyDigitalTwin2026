@@ -49,7 +49,7 @@ def check(case: dict):
     solve_unique(case)
     for r in case.get("before", []):
         res = request(r)
-        assert res["status"]//100 == 2, f"before {r} failed: {res}"
+        assert res.get("status", 0)//100 == 2, f"before {r} failed: {res}"
 
     expected = case["expected"]
     result = request(case)
