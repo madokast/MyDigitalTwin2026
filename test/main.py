@@ -1,4 +1,5 @@
 import re
+import sys
 import json
 import time
 from pathlib import Path
@@ -95,9 +96,12 @@ def check_result(expected: str | dict, result: str | dict):
             raise AssertionError(f"Expected '{key}': {value}, but got: {result[key]}")
 
 def main():
+    parent = Path(__file__).parent
+    json_files = [parent / f for f in sys.argv[1:]]
+    if not json_files:
+        json_files = list(parent.glob("*.json"))
+
     all_pass = True
-    # 获取同目录下所有 json
-    json_files = list(Path(__file__).parent.glob("*.json"))
     for json_file in json_files:
         with open(json_file, "r", encoding="utf-8") as f:
             cases = json.load(f)
