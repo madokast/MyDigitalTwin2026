@@ -3,6 +3,7 @@ package records
 import (
 	"context"
 	"dt2026/httpx"
+	"dt2026/lib"
 	"fmt"
 	"net/http"
 	"time"
@@ -139,6 +140,14 @@ func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
 		return httpx.NewBadRequestError(fmt.Sprintf(
 			"page_size must be between 1 and 1000, but got %d",
 			*criteria.PageSize,
+		))
+	}
+
+	// OFFSET 不能溢出
+	if lib.MulOverflow(*criteria.Page-1, *criteria.PageSize) {
+		return httpx.NewBadRequestError(fmt.Sprintf(
+			"page and page_size overflow, page=%d, page_size=%d",
+			*criteria.Page, *criteria.PageSize,
 		))
 	}
 
