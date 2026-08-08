@@ -1,0 +1,130 @@
+{
+    "escape_percent":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aa{unique:1}%bb","objective_context": "bbb","ai_analysis": "ccc"}
+            },{
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aa{unique:1}Xbb","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=10&q=aa{unique:1}%bb",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"aa{unique:1}%bb","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "escape_underscore":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aa{unique:1}_bb","objective_context": "bbb","ai_analysis": "ccc"}
+            },{
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aa{unique:1}xbb","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=10&q=aa{unique:1}_bb",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"aa{unique:1}_bb","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "escape_backslash":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aa{unique:1}\\bb","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=10&q=aa{unique:1}\\bb",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"aa{unique:1}\\bb","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "ilike_case_insensitive":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "zz{unique:1}Apple ok","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=10&q=zz{unique:1}apple",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"zz{unique:1}Apple ok","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "empty_query":{
+        "api": "/api/records?page_size=1&q=",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"query cannot be empty"}
+    },
+    "mixed_empty_query":{
+        "api": "/api/records?page_size=1&q=a&q=",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"query cannot be empty"}
+    },
+    "too_many_queries":{
+        "api": "/api/records?page_size=1&q=1&q=2&q=3&q=4&q=5&q=6&q=7&q=8&q=9&q=10&q=11",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"too many queries, max 10, but got 11"}
+    },
+    "max_10_queries_ok":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}{unique:2}{unique:3}{unique:4}{unique:5}{unique:6}{unique:7}{unique:8}{unique:9}{unique:10}","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=10&q={unique:1}&q={unique:2}&q={unique:3}&q={unique:4}&q={unique:5}&q={unique:6}&q={unique:7}&q={unique:8}&q={unique:9}&q={unique:10}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"{unique:1}{unique:2}{unique:3}{unique:4}{unique:5}{unique:6}{unique:7}{unique:8}{unique:9}{unique:10}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "lone_percent":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aa{unique:1}%bb","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
+        "api": "/api/records?page_size=100&q=%",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":100,"records":"{array}"}
+    },
+    "no_match":{
+        "api": "/api/records?page_size=10&q=zzz{unique:1}zzz",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"records":"{array:0}"}
+    }
+}
