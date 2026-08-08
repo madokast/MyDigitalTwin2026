@@ -56,5 +56,11 @@
             {"id":1,"created_at":"{time}","raw_content":"{existed}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"},
             {"id":2,"created_at":"{time}","raw_content":"{existed}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
             ]}
+    },
+    "offset_overflow" :{
+        "api": "/api/records?page_size=100&page=922337203685477580",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"page and page_size overflow, page=922337203685477580, page_size=100"}
     }
 }
