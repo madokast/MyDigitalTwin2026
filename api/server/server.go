@@ -74,7 +74,7 @@ func (s *Server) QQBot() (*qqbot.Sender, *httpx.Error) {
 func (s *Server) JsonUnmarshal(r *http.Request, v any) *httpx.Error {
 	err := json.UnmarshalRead(r.Body, v, json.RejectUnknownMembers(true))
 	if err != nil {
-		return httpx.NewInternalServerError(fmt.Sprintf("failed to unmarshal request body: %s", err.Error()))
+		return httpx.NewBadRequestError(fmt.Sprintf("failed to unmarshal request body: %s", err.Error()))
 	}
 	return nil
 }

@@ -18,7 +18,10 @@ def request(api: str, headers: dict | None, data: dict | None) -> dict:
             req.add_header(key, value)
     
     if data is not None:
-        req.data = json.dumps(data).encode()
+        if data == "{empty}":
+            req.data = b""
+        else:
+            req.data = json.dumps(data).encode()
     
     try:
         with urllib.request.urlopen(req) as response:

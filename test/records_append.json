@@ -6,6 +6,13 @@
         "data": {},
         "expected": {"ok":false,"status":400,"message":"raw content cannot be empty"}
     },
+    "bad_record" : {
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": "{empty}",
+        "expected": {"ok":false,"status":400,"message":"failed to unmarshal request body: jsontext: unexpected EOF"}
+    },
     "only_raw_content" : {
         "api": "/api/records",
         "method": "POST",
