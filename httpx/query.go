@@ -30,3 +30,7 @@ func (q Query) GetOptionalSingleInt64(key string) (*int64, *Error) {
 		))
 	}
 }
+
+func (q Query) GetOptionalStrings(key string) []string {
+	return q[key]
+}

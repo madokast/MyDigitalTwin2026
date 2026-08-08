@@ -25,6 +25,12 @@ SELECT id, created_at, raw_content, objective_context, ai_analysis, tags
 FROM records WHERE 1=1
 `
 
+var textColumns = []string{
+	"raw_content",
+	"objective_context",
+	"ai_analysis",
+}
+
 const insertRecordNotifyMessage = `New record created: %d
 Raw content: %s
 Objective context: %s

@@ -14,6 +14,7 @@ import (
 type QueryCriteria struct {
 	Page     *int64
 	PageSize *int64
+	Querys   []string
 }
 
 func NewQueryCriteria(q httpx.Query) (*QueryCriteria, *httpx.Error) {
@@ -28,6 +29,7 @@ func NewQueryCriteria(q httpx.Query) (*QueryCriteria, *httpx.Error) {
 	if err != nil {
 		return nil, err
 	}
+	criteria.Querys = q.GetOptionalStrings("q") // normalizeQueryCriteria 进一步检查
 
 	return &criteria, nil
 }
@@ -104,7 +106,19 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 
 func makeQuerySQL(criteria *QueryCriteria) (sql string, args []any) {
 
+	// end with 'WHERE 1=1'
 	sql = queryRecordSQL
+
+	// querys
+	for _, query := range criteria.Querys {
+		queryWord := "%" + lib.EscapeSQLLike(query) + "%"
+		args = append(args, queryWord)
+		for _, column := range textColumns { // TEXT 字段模糊搜索
+			sql += fmt.Sprintf(" AND %s LIKE $%d", column, len(args))
+		}
+		// tags 字段模糊搜索
+		sql += fmt.Sprintf(" EXISTS ( SELECT 1 FROM unnest(tags) AS tag WHERE tag ILIKE $%d )", len(args))
+	}
 
 	// ORDER BY id ASC
 	sql += " ORDER BY id ASC"
@@ -149,6 +163,13 @@ func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
 			"page and page_size overflow, page=%d, page_size=%d",
 			*criteria.Page, *criteria.PageSize,
 		))
+	}
+
+	// query 不能为空串
+	for _, query := range criteria.Querys {
+		if query == "" {
+			return httpx.NewBadRequestError("query cannot be empty")
+		}
 	}
 
 	return nil
