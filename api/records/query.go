@@ -36,11 +36,13 @@ func NewQueryCriteria(q httpx.Query) (*QueryCriteria, *httpx.Error) {
 }
 
 type QueryRecordResponse struct {
-	Ok       bool     `json:"ok"`
-	Status   int      `json:"status"`
-	Page     int64    `json:"page"`
-	PageSize int64    `json:"page_size"`
-	Records  []Record `json:"records"`
+	Ok        bool     `json:"ok"`
+	Status    int      `json:"status"`
+	Page      int64    `json:"page"`
+	PageSize  int64    `json:"page_size"`
+	Total     int64    `json:"total"`
+	TotalPage int64    `json:"total_page"`
+	Records   []Record `json:"records"`
 }
 
 func (r QueryRecordResponse) GetStatus() int {
@@ -64,6 +66,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 	defer rows.Close()
 
 	var records []Record
+	var total int64
 
 	for rows.Next() {
 		var record Record
@@ -76,6 +79,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 			&record.ObjectiveContext,
 			&record.AIAnalysis,
 			&record.Tags,
+			&total,
 		)
 		if err != nil {
 			return httpx.NewError(http.StatusInternalServerError, fmt.Sprintf(
@@ -95,12 +99,27 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 		))
 	}
 
+	if len(records) == 0 { // 没有扫描到行，则 total 拿不到，额外查询一次
+		// 情况很少见，用最笨的方法
+		var queryFirstCriteria = *criteria
+		queryFirstCriteria.Page = new(int64(1))
+		queryFirstCriteria.PageSize = new(int64(1))
+		res := Query(&queryFirstCriteria, pool)
+		if res.GetStatus() != http.StatusOK {
+			return res
+		}
+		total = res.(*QueryRecordResponse).Total
+	}
+
+	totalPage := (total + *criteria.PageSize - 1) / *criteria.PageSize
 	return &QueryRecordResponse{
-		Ok:       true,
-		Status:   http.StatusOK,
-		Page:     *criteria.Page,
-		PageSize: *criteria.PageSize,
-		Records:  records,
+		Ok:        true,
+		Status:    http.StatusOK,
+		Page:      *criteria.Page,
+		PageSize:  *criteria.PageSize,
+		Total:     total,
+		TotalPage: totalPage,
+		Records:   records,
 	}
 
 }

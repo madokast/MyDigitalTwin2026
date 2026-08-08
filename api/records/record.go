@@ -21,7 +21,9 @@ RETURNING id;
 `
 
 const queryRecordSQL = `
-SELECT id, created_at, raw_content, objective_context, ai_analysis, tags
+SELECT id, created_at, raw_content, 
+  objective_context, ai_analysis, 
+  tags, COUNT(*) OVER() AS total
 FROM records WHERE 1=1
 `
 
