@@ -1,0 +1,122 @@
+{
+    "total_first_page":{
+        "before": [
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row1{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row2{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row3{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row4{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row5{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}}
+        ],
+        "api": "/api/records?page_size=2&page=1&q={unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":2,"total":5,"total_page":3,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"row1{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"},
+            {"id":"{existed}","created_at":"{time}","raw_content":"row2{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "total_middle_page":{
+        "before": [
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row1{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row2{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row3{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row4{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row5{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}}
+        ],
+        "api": "/api/records?page_size=2&page=2&q={unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":2,"page_size":2,"total":5,"total_page":3,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"row3{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"},
+            {"id":"{existed}","created_at":"{time}","raw_content":"row4{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "total_last_page":{
+        "before": [
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row1{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row2{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row3{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row4{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row5{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}}
+        ],
+        "api": "/api/records?page_size=2&page=3&q={unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":3,"page_size":2,"total":5,"total_page":3,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"row5{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "total_beyond_last_page":{
+        "before": [
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row1{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row2{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row3{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row4{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "row5{unique:1}","objective_context": "bbb","ai_analysis": "ccc"}}
+        ],
+        "api": "/api/records?page_size=2&page=10&q={unique:1}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":10,"page_size":2,"total":5,"total_page":3,"records":"{array:0}"}
+    },
+    "total_zero":{
+        "api": "/api/records?page_size=2&q=zzz{unique:1}zzz",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":2,"total":0,"total_page":0,"records":"{array:0}"}
+    },
+    "total_escape_combo":{
+        "before": [
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "aa{unique:1}%bb","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "aa{unique:1}Xbb","objective_context": "bbb","ai_analysis": "ccc"}}
+        ],
+        "api": "/api/records?page_size=10&q=aa{unique:1}%bb",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":1,"total_page":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"aa{unique:1}%bb","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "total_multi_query":{
+        "before": [
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "xx{unique:1}xx{unique:2}","objective_context": "bbb","ai_analysis": "ccc"}},
+            {"api": "/api/records", "method": "POST", "headers": {"Authorization": "{token}"},
+             "data": {"raw_content": "xx{unique:1}xx{unique:3}","objective_context": "bbb","ai_analysis": "ccc"}}
+        ],
+        "api": "/api/records?page_size=10&q={unique:1}&q={unique:2}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":1,"total_page":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"xx{unique:1}xx{unique:2}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "total_no_q_smoke":{
+        "api": "/api/records?page_size=1",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"total":"{integer}","total_page":"{integer}","records":"{array:1}"}
+    }
+}
