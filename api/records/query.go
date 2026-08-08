@@ -105,6 +105,9 @@ func makeQuerySQL(criteria *QueryCriteria) (sql string, args []any) {
 
 	sql = queryRecordSQL
 
+	// ORDER BY id ASC
+	sql += " ORDER BY id ASC"
+
 	// LIMIT
 	args = append(args, *criteria.PageSize)
 	sql += fmt.Sprintf(" LIMIT $%d", len(args))
