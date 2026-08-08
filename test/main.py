@@ -9,7 +9,7 @@ from datetime import datetime
 BASE_URL = "http://localhost:29301"
 TOKEN = "dt-20260807"
 
-def request(api: str, headers: dict | None, data: dict | None) -> dict:
+def do_request(api: str, headers: dict | None, data: dict | None) -> dict:
     url = f"{BASE_URL}{api}"
     req = urllib.request.Request(url)
     
@@ -37,13 +37,19 @@ def request(api: str, headers: dict | None, data: dict | None) -> dict:
     except urllib.error.URLError as e:
         return {"error": "Connection error", "message": str(e)}
 
-def check(case: dict):
-    headers = case.get("headers", {})
+def request(r: dict):
+    headers = r.get("headers", {})
     if headers.get("Authorization") == "{token}":
         headers["Authorization"] = f"Bearer {TOKEN}"
+    return do_request(r["api"], headers, r.get("data", None))
+
+def check(case: dict):
+    for r in case.get("before", []):
+        res = request(r)
+        assert res["status"]//100 == 2, f"before {r} failed: {res}"
 
     expected = case["expected"]
-    result = request(case["api"], headers, case.get("data", None))
+    result = request(case)
     check_result(expected, result)
 
 def check_result(expected: str | dict, result: str | dict):

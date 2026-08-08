@@ -49,13 +49,26 @@
             {"id":"{integer}","created_at":"{time}","raw_content":"{existed}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}]}
     },
     "order_by_id_asc":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aaa","objective_context": "bbb","ai_analysis": "ccc"}
+            },{
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aaa","objective_context": "bbb","ai_analysis": "ccc"}
+            }
+        ],
         "api": "/api/records?page_size=2",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
         "expected": {"ok":true,"status":200,"page":1,"page_size":2,"records":[
             {"id":1,"created_at":"{time}","raw_content":"{existed}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"},
             {"id":2,"created_at":"{time}","raw_content":"{existed}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
-            ]}
+        ]}
     },
     "offset_overflow" :{
         "api": "/api/records?page_size=100&page=922337203685477580",
