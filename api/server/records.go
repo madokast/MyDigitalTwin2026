@@ -32,7 +32,7 @@ func (s *Server) RecordsPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) RecordsQuery(w http.ResponseWriter, r *http.Request) {
-	q := httpx.Query(r.URL.Query())
+	q := httpx.QueryParams(r.URL.Query())
 
 	criteria, err := records.NewQueryCriteria(q)
 	if err != nil {

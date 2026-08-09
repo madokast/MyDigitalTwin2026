@@ -7,9 +7,9 @@ import (
 	"strconv"
 )
 
-type Query url.Values
+type QueryParams url.Values
 
-func (q Query) GetOptionalSingleInt64(key string) (*int64, *Error) {
+func (q QueryParams) GetOptionalSingleInt64(key string) (*int64, *Error) {
 	rawValues := q[key]
 
 	if len(rawValues) == 0 {
@@ -31,6 +31,6 @@ func (q Query) GetOptionalSingleInt64(key string) (*int64, *Error) {
 	}
 }
 
-func (q Query) GetOptionalStrings(key string) []string {
+func (q QueryParams) GetOptionalStrings(key string) []string {
 	return q[key]
 }
