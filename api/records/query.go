@@ -176,7 +176,7 @@ func makeQuerySQLTail(criteria *QueryCriteria, enablePage bool) (sqlTail string,
 	}
 	if len(tagPlaceholders) > 0 {
 		sqlTail += fmt.Sprintf(
-			"tags @> ARRAY[]::TEXT[]",
+			" AND tags @> ARRAY[%s]::TEXT[]",
 			strings.Join(tagPlaceholders, ", "),
 		)
 	}
