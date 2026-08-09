@@ -2,7 +2,6 @@ package tags
 
 import (
 	"context"
-	"dt2026/api/records"
 	"dt2026/httpx"
 	"fmt"
 	"net/http"
@@ -30,7 +29,7 @@ func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
 
 	err := pool.QueryRow(
 		context.Background(),
-		records.GetRecordTagsSQL,
+		getRecordTagsSQL,
 		recordID,
 	).Scan(&response.Tags)
 
@@ -43,7 +42,7 @@ func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
 
 		return httpx.NewInternalServerError(fmt.Sprintf(
 			"failed to query %s with %v: %s",
-			records.GetRecordTagsSQL, recordID, err.Error(),
+			getRecordTagsSQL, recordID, err.Error(),
 		))
 	}
 

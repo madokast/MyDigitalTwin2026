@@ -22,6 +22,12 @@ func (r PostResponse) GetStatus() int {
 	return r.Status
 }
 
+const postRecordNotifyMessage = `New record created: %d
+Raw content: %s
+Objective context: %s
+Ai analysis: %s
+Tags: %s`
+
 func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Response {
 	if err := normalizeNewRecord(record); err != nil {
 		return err
@@ -52,7 +58,7 @@ func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Respon
 	}
 
 	go func() {
-		_ = bot.SendMessage(fmt.Sprintf(insertRecordNotifyMessage,
+		_ = bot.SendMessage(fmt.Sprintf(postRecordNotifyMessage,
 			response.Record.ID,
 			response.Record.RawContent,
 			response.Record.ObjectiveContext,
