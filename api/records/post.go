@@ -3,6 +3,7 @@ package records
 import (
 	"context"
 	"dt2026/api/notify/qqbot"
+	tags_utils "dt2026/api/records/tags"
 	"dt2026/httpx"
 	"fmt"
 	"net/http"
@@ -54,7 +55,18 @@ func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Respon
 	).Scan(&response.Record.ID)
 
 	if err != nil {
-		return httpx.NewInternalServerError("failed to insert record: " + err.Error())
+		return httpx.NewInternalServerError(fmt.Sprintf(
+			"failed to insert record while executing %s with %v: %s",
+			insertRecordSQL,
+			[]any{
+				response.Record.CreatedAt.Time(),
+				response.Record.RawContent,
+				response.Record.ObjectiveContext,
+				response.Record.AIAnalysis,
+				response.Record.Tags,
+			},
+			err.Error(),
+		))
 	}
 
 	go func() {
@@ -87,11 +99,12 @@ func normalizeNewRecord(record *NewRecord) *httpx.Error {
 	}
 
 	var tags []string
+	var err *httpx.Error
 	var seenTags = make(map[string]bool)
 	for _, tag := range record.Tags {
-		tag = strings.TrimSpace(tag)
-		if tag == "" {
-			return httpx.NewBadRequestError("tags cannot contain empty strings")
+		tag, err = tags_utils.NormalizeTag(tag)
+		if err != nil {
+			return err
 		}
 		if seenTags[tag] {
 			return httpx.NewBadRequestError("duplicate tags are not allowed")

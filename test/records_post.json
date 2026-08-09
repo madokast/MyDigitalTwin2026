@@ -111,7 +111,7 @@
             "ai_analysis": "Test AI Analysis",
             "tags": [" "]
         },
-        "expected": {"ok":false,"status":400,"message":"tags cannot contain empty strings"}
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
     },
     "duplicate_tags":{
         "api": "/api/records",
