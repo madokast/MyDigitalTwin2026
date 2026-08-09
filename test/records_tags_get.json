@@ -1,0 +1,69 @@
+{
+    "simple":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"tags":["{unique:4}", "{unique:5}"]}
+    },
+    "empty_tags":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": []},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"tags":[]}
+    },
+    "no_tags_field":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"tags":[]}
+    },
+    "chinese_tags":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["学习", "健身", "{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"tags":["学习", "健身", "{unique:4}"]}
+    },
+    "not_found": {
+        "api": "/api/records/-1/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":404,"message":"record -1 not found"}
+    },
+    "not_integer": {
+        "api": "/api/records/abc/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"parameter record_id in path GET /api/records/{record_id}/tags expected an integer, but got: 'abc'"}
+    }
+}
