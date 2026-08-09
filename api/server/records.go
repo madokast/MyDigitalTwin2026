@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (s *Server) RecordsAppend(w http.ResponseWriter, r *http.Request) {
+func (s *Server) RecordsPost(w http.ResponseWriter, r *http.Request) {
 	var record records.NewRecord
 	if err := s.JsonUnmarshal(r, &record); err != nil {
 		httpx.WriteJSON(w, err)
@@ -28,7 +28,7 @@ func (s *Server) RecordsAppend(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	httpx.WriteJSON(w, records.Append(&record, pool, bot))
+	httpx.WriteJSON(w, records.Post(&record, pool, bot))
 }
 
 func (s *Server) RecordsQuery(w http.ResponseWriter, r *http.Request) {

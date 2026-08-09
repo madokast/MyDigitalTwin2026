@@ -24,7 +24,7 @@ func main() {
 	mux.HandleFunc("GET /api/probe/bad-json", middleware.Auth(server.ProbeBadJson))
 	mux.HandleFunc("GET /api/probe/postgresql", middleware.Auth(server.ProbePostgreSQL))
 	mux.HandleFunc("GET /api/probe/qqbot", middleware.Auth(server.ProbeQQBot))
-	mux.HandleFunc("POST /api/records", middleware.Auth(server.RecordsAppend))
+	mux.HandleFunc("POST /api/records", middleware.Auth(server.RecordsPost))
 	mux.HandleFunc("GET /api/records", middleware.Auth(server.RecordsQuery))
 
 	httpServer := http.Server{
