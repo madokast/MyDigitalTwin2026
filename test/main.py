@@ -12,9 +12,9 @@ from datetime import datetime
 BASE_URL = "http://localhost:29301"
 TOKEN = "dt-20260807"
 
-def do_request(api: str, headers: dict | None, data: dict | None) -> dict:
+def do_request(api: str, method: str, headers: dict | None, data: dict | None) -> dict:
     url = f"{BASE_URL}{quote(api, safe='/?:=&')}"
-    req = urllib.request.Request(url)
+    req = urllib.request.Request(url, method=method)
     
     if headers is not None:
         for key, value in headers.items():
@@ -44,7 +44,7 @@ def request(r: dict):
     headers = r.get("headers", {})
     if headers.get("Authorization") == "{token}":
         headers["Authorization"] = f"Bearer {TOKEN}"
-    return do_request(r["api"], headers, r.get("data", None))
+    return do_request(r["api"], r['method'], headers, r.get("data", None))
 
 def check(case: dict):
     resolve_unique(case)
