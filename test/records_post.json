@@ -123,7 +123,7 @@
             "ai_analysis": "Test AI Analysis",
             "tags": ["a", "b", "a"]
         },
-        "expected": {"ok":false,"status":400,"message":"duplicate tags are not allowed"}
+        "expected": {"ok":false,"status":400,"message":"duplicate tags are not allowed: 'a'"}
     },
     "chinese":{
         "api": "/api/records",

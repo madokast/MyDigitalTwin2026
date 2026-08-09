@@ -1,0 +1,128 @@
+{
+    "tag_match_single":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}"]}
+        }],
+        "api": "/api/records?page_size=10&tag={unique:4}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":1,"total_page":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":["{unique:4}", "{unique:5}"]}
+        ]}
+    },
+    "tag_no_match":{
+        "api": "/api/records?page_size=10&tag=zzz{unique:1}zzz",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":0,"total_page":0,"records":"{array:0}"}
+    },
+    "tag_multiple_and":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                    "tags": ["{unique:4}", "{unique:5}"]}
+            },
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:6}","objective_context": "{unique:7}","ai_analysis": "{unique:8}",
+                    "tags": ["{unique:4}"]}
+            }
+        ],
+        "api": "/api/records?page_size=10&tag={unique:4}&tag={unique:5}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":1,"total_page":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":["{unique:4}", "{unique:5}"]}
+        ]}
+    },
+    "tag_with_q":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aaa{unique:1}bbb","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                    "tags": ["{unique:4}"]}
+            },
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "aaa{unique:1}bbb","objective_context": "{unique:5}","ai_analysis": "{unique:6}",
+                    "tags": ["{unique:7}"]}
+            }
+        ],
+        "api": "/api/records?page_size=10&q={unique:1}&tag={unique:4}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":1,"total_page":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"aaa{unique:1}bbb","objective_context":"{existed}","ai_analysis":"{existed}","tags":["{unique:4}"]}
+        ]}
+    },
+    "tag_total_pagination":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "row1{unique:1}","objective_context": "bbb","ai_analysis": "ccc",
+                    "tags": ["{unique:4}"]}
+            },
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "row2{unique:1}","objective_context": "bbb","ai_analysis": "ccc",
+                    "tags": ["{unique:4}"]}
+            }
+        ],
+        "api": "/api/records?page_size=1&tag={unique:4}",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":1,"total":2,"total_page":2,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"row1{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":["{unique:4}"]}
+        ]}
+    },
+    "tag_chinese":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["学习", "健身"]}
+        }],
+        "api": "/api/records?page_size=10&tag=健身",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":1,"total_page":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":["学习", "健身"]}
+        ]}
+    },
+    "tag_empty":{
+        "api": "/api/records?page_size=10&tag=",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
+    },
+    "tag_duplicate":{
+        "api": "/api/records?page_size=10&tag=a&tag=a",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"duplicate tags are not allowed: 'a'"}
+    },
+    "tag_too_many":{
+        "api": "/api/records?page_size=10&tag=1&tag=2&tag=3&tag=4&tag=5&tag=6&tag=7&tag=8&tag=9&tag=10&tag=11",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"too many tags, max 10, but got 11 tags: ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11')"}
+    }
+}
