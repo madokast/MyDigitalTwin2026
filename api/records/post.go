@@ -3,7 +3,7 @@ package records
 import (
 	"context"
 	"dt2026/api/notify/qqbot"
-	tags_utils "dt2026/api/records/tags"
+	"dt2026/api/records/tags"
 	"dt2026/httpx"
 	"fmt"
 	"net/http"
@@ -98,25 +98,17 @@ func normalizeNewRecord(record *NewRecord) *httpx.Error {
 		return httpx.NewBadRequestError("AI analysis cannot be empty")
 	}
 
-	var tags []string
 	var err *httpx.Error
-	var seenTags = make(map[string]bool)
-	for _, tag := range record.Tags {
-		tag, err = tags_utils.NormalizeTag(tag)
-		if err != nil {
-			return err
-		}
-		if seenTags[tag] {
-			return httpx.NewBadRequestError("duplicate tags are not allowed")
-		}
-		seenTags[tag] = true
-		tags = append(tags, tag)
+	record.Tags, err = tags.NormalizeTags(record.Tags)
+	if err != nil {
+		return err
 	}
+
+	// 空 tags 不能是 nil，必须 []
 	// null value in column \"tags\" of relation \"records\" violates not-null constraint (SQLSTATE 23502)
-	if len(tags) == 0 {
-		tags = []string{}
+	if len(record.Tags) == 0 {
+		record.Tags = []string{}
 	}
-	record.Tags = tags
 
 	return nil
 }

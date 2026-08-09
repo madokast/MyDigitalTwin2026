@@ -12,3 +12,20 @@ func NormalizeTag(tag string) (string, *httpx.Error) {
 	}
 	return tag, nil
 }
+
+func NormalizeTags(tags []string) ([]string, *httpx.Error) {
+	var normalizedTags []string
+	var seen = make(map[string]bool)
+	for _, tag := range tags {
+		normalizedTag, err := NormalizeTag(tag)
+		if err != nil {
+			return nil, err
+		}
+		if seen[normalizedTag] {
+			return nil, httpx.NewBadRequestError("duplicate tags are not allowed")
+		}
+		seen[normalizedTag] = true
+		normalizedTags = append(normalizedTags, normalizedTag)
+	}
+	return normalizedTags, nil
+}
