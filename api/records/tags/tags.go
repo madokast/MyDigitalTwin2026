@@ -2,6 +2,7 @@ package tags
 
 import (
 	"dt2026/httpx"
+	"fmt"
 	"strings"
 )
 
@@ -22,7 +23,10 @@ func NormalizeTags(tags []string) ([]string, *httpx.Error) {
 			return nil, err
 		}
 		if seen[normalizedTag] {
-			return nil, httpx.NewBadRequestError("duplicate tags are not allowed")
+			return nil, httpx.NewBadRequestError(fmt.Sprintf(
+				"duplicate tags are not allowed: '%s'",
+				normalizedTag,
+			))
 		}
 		seen[normalizedTag] = true
 		normalizedTags = append(normalizedTags, normalizedTag)
