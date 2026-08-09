@@ -2,7 +2,8 @@ import re
 import sys
 import json
 import time
-from unique import solve_unique
+from lib.unique import resolve_unique
+from lib.extraction import resolve_extracted, extract
 from pathlib import Path
 import urllib.request
 from urllib.parse import quote
@@ -46,14 +47,17 @@ def request(r: dict):
     return do_request(r["api"], headers, r.get("data", None))
 
 def check(case: dict):
-    solve_unique(case)
+    resolve_unique(case)
+
+    extracted = {}
     for r in case.get("before", []):
         res = request(r)
         assert res.get("status", 0)//100 == 2, f"before {r} failed: {res}"
+        extracted.update(extract(res, r.get("extractions")))
+    resolve_extracted(case, extracted)
 
-    expected = case["expected"]
     result = request(case)
-    check_result(expected, result)
+    check_result(case["expected"], result)
 
 def check_result(expected: str | dict, result: str | dict):
     if isinstance(expected, str):
