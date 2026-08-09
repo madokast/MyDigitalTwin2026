@@ -98,13 +98,13 @@
             "method": "POST",
             "headers": {"Authorization": "{token}"},
             "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
-                "tags": ["学习", "健身"]}
+                "tags": ["{unique:4}学习", "{unique:5}健身"]}
         }],
-        "api": "/api/records?page_size=10&tag=健身",
+        "api": "/api/records?page_size=10&tag={unique:5}健身",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
         "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":1,"total_page":1,"records":[
-            {"id":"{existed}","created_at":"{time}","raw_content":"{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":["学习", "健身"]}
+            {"id":"{existed}","created_at":"{time}","raw_content":"{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":["{unique:4}学习", "{unique:5}健身"]}
         ]}
     },
     "tag_empty":{
