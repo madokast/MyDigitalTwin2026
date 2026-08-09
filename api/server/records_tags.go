@@ -60,6 +60,7 @@ func (s *Server) RecordTagsDetach(w http.ResponseWriter, r *http.Request) {
 	tag, err := pv.String("tag")
 	if err != nil {
 		httpx.WriteJSON(w, err)
+		return
 	}
 
 	pool, err := s.pool()
