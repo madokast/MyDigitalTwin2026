@@ -1,0 +1,107 @@
+{
+    "attach_new":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":201,"attached":true,"changed":true,"tags":["{unique:4}"]}
+    },
+    "attach_again_idempotent":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"attached":true,"changed":false,"tags":["{unique:4}"]}
+    },
+    "attach_multiple":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":201,"attached":true,"changed":true,"tags":["{unique:4}"]}
+    },
+    "attach_after_existing_tags":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:5}",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":201,"attached":true,"changed":true,"tags":["{unique:4}", "{unique:5}"]}
+    },
+    "attach_chinese":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/学习",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":201,"attached":true,"changed":true,"tags":["学习"]}
+    },
+    "attach_slash_encoded":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/a%2Fb",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":201,"attached":true,"changed":true,"tags":["a%2Fb"]}
+    },
+    "attach_not_found":{
+        "api": "/api/records/-1/tags/{unique:1}",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":404,"message":"record -1 not found"}
+    },
+    "attach_not_integer":{
+        "api": "/api/records/abc/tags/{unique:1}",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"parameter record_id in path PUT /api/records/{record_id}/tags/{tag} expected an integer, but got: 'abc'"}
+    },
+    "attach_whitespace_tag":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/ ",
+        "method": "PUT",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
+    }
+}
