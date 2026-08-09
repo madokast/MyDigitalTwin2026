@@ -24,6 +24,10 @@ func NewBadRequestError(message string) *Error {
 	return NewError(http.StatusBadRequest, message)
 }
 
+func NewNotFoundError(message string) *Error {
+	return NewError(http.StatusNotFound, message)
+}
+
 func NewInternalServerError(message string) *Error {
 	return NewError(http.StatusInternalServerError, message)
 }

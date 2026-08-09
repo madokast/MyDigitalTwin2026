@@ -48,3 +48,21 @@ func (s *Server) RecordsQuery(w http.ResponseWriter, r *http.Request) {
 
 	httpx.WriteJSON(w, records.Query(criteria, pool))
 }
+
+func (s *Server) RecordsGet(w http.ResponseWriter, r *http.Request) {
+	pv := httpx.PathValue{Request: r}
+
+	recordID, err := pv.Int64("record_id")
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	pool, err := s.pool()
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	httpx.WriteJSON(w, records.Get(recordID, pool))
+}
