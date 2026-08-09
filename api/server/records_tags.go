@@ -47,3 +47,26 @@ func (s *Server) RecordTagsAttach(w http.ResponseWriter, r *http.Request) {
 
 	httpx.WriteJSON(w, tags.Attach(recordID, tag, pool))
 }
+
+func (s *Server) RecordTagsDetach(w http.ResponseWriter, r *http.Request) {
+	pv := httpx.PathParams{Request: r}
+
+	recordID, err := pv.Int64("record_id")
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	tag, err := pv.String("tag")
+	if err != nil {
+		httpx.WriteJSON(w, err)
+	}
+
+	pool, err := s.pool()
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	httpx.WriteJSON(w, tags.Detach(recordID, tag, pool))
+}
