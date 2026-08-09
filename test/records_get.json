@@ -15,5 +15,17 @@
             "created_at":"{extracted:record.created_at}","raw_content":"{unique:1}",
             "objective_context": "{unique:2}","ai_analysis": "{unique:3}",
             "tags":["{unique:4}", "{unique:5}"]}}
+    },
+    "not_integer": {
+        "api": "/api/records/abc",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"parameter record_id in path GET /api/records/{record_id} expected an integer, but got: 'abc'"}
+    },
+    "not_found": {
+        "api": "/api/records/-1",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":404,"message":"record -1 not found"}
     }
 }
