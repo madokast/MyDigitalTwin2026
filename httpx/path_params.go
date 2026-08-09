@@ -22,7 +22,7 @@ func (p PathParams) Int64(name string) (int64, *Error) {
 	val, err := strconv.ParseInt(valStr, 10, 64)
 	if err != nil {
 		return 0, NewBadRequestError(fmt.Sprintf(
-			"parameter %s in path %s expected an integer, but got %s",
+			"parameter %s in path %s expected an integer, but got: '%s'",
 			name, p.Pattern, valStr,
 		))
 	}

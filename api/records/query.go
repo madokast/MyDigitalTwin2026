@@ -18,7 +18,7 @@ type QueryCriteria struct {
 	Queries  []string
 }
 
-func NewQueryCriteria(q httpx.Query) (*QueryCriteria, *httpx.Error) {
+func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
 	var criteria QueryCriteria
 	var err *httpx.Error
 
@@ -186,7 +186,7 @@ func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
 	}
 	if *criteria.Page <= 0 {
 		return httpx.NewBadRequestError(fmt.Sprintf(
-			"page must be greater than 0, but got %d",
+			"page must be greater than 0, but got: '%d'",
 			*criteria.Page,
 		))
 	}
@@ -197,7 +197,7 @@ func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
 	}
 	if *criteria.PageSize <= 0 || *criteria.PageSize > 1000 {
 		return httpx.NewBadRequestError(fmt.Sprintf(
-			"page_size must be between 1 and 1000, but got %d",
+			"page_size must be between 1 and 1000, but got: '%d'",
 			*criteria.PageSize,
 		))
 	}
@@ -213,7 +213,7 @@ func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
 	// query 限制 10 个
 	if len(criteria.Queries) > 10 {
 		return httpx.NewBadRequestError(fmt.Sprintf(
-			"too many queries, max 10, but got %d",
+			"too many queries, max 10, but got: '%d'",
 			len(criteria.Queries),
 		))
 	}
