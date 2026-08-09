@@ -21,10 +21,6 @@ func (r GetRecordsResponse) GetStatus() int {
 	return r.Status
 }
 
-func (r GetRecordsResponse) GetTags() []string {
-	return r.Record.Tags
-}
-
 var getByIDSQL = queryRecordSQL + " AND id = $1;"
 
 func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
