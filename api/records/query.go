@@ -45,7 +45,7 @@ type QueryRecordResponse struct {
 	Records   []Record `json:"records"`
 }
 
-func (r QueryRecordResponse) GetStatus() int {
+func (r *QueryRecordResponse) GetStatus() int {
 	return r.Status
 }
 

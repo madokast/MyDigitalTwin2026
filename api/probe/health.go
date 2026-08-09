@@ -11,7 +11,7 @@ type HealthResponse struct {
 	Now    string `json:"now"`
 }
 
-func (r HealthResponse) GetStatus() int {
+func (r *HealthResponse) GetStatus() int {
 	return http.StatusOK
 }
 

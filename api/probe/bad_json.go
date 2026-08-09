@@ -10,7 +10,7 @@ type BadJSONResponse struct {
 	Chan   chan string `json:"chan"` // This field is intentionally invalid for JSON marshalling
 }
 
-func (r BadJSONResponse) GetStatus() int {
+func (r *BadJSONResponse) GetStatus() int {
 	return r.Status
 }
 

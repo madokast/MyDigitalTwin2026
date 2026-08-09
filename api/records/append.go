@@ -18,7 +18,7 @@ type AppendResponse struct {
 	Record Record `json:"record"`
 }
 
-func (r AppendResponse) GetStatus() int {
+func (r *AppendResponse) GetStatus() int {
 	return r.Status
 }
 
