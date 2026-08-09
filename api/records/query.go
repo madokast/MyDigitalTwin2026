@@ -2,6 +2,7 @@ package records
 
 import (
 	"context"
+	"dt2026/api/records/tags"
 	"dt2026/httpx"
 	"dt2026/lib"
 	"fmt"
@@ -16,6 +17,7 @@ type QueryCriteria struct {
 	Page     *int64
 	PageSize *int64
 	Queries  []string
+	Tags     []string
 }
 
 func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
@@ -30,7 +32,10 @@ func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
 	if err != nil {
 		return nil, err
 	}
+
 	criteria.Queries = q.GetOptionalStrings("q") // normalizeQueryCriteria 进一步检查
+
+	criteria.Tags = q.GetOptionalStrings("tag") // normalizeQueryCriteria 进一步检查
 
 	return &criteria, nil
 }
@@ -163,6 +168,19 @@ func makeQuerySQLTail(criteria *QueryCriteria, enablePage bool) (sqlTail string,
 		sqlTail += fmt.Sprintf(" AND (%s)", fragment)
 	}
 
+	// tags
+	var tagPlaceholders []string
+	for _, tag := range criteria.Tags {
+		args = append(args, tag)
+		tagPlaceholders = append(tagPlaceholders, fmt.Sprintf("$%d", len(args)))
+	}
+	if len(tagPlaceholders) > 0 {
+		sqlTail += fmt.Sprintf(
+			"tags @> ARRAY[]::TEXT[]",
+			strings.Join(tagPlaceholders, ", "),
+		)
+	}
+
 	if enablePage {
 		// ORDER BY id ASC
 		sqlTail += " ORDER BY id ASC"
@@ -210,11 +228,11 @@ func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
 		))
 	}
 
-	// query 限制 10 个
+	// queries 限制 10 个
 	if len(criteria.Queries) > 10 {
 		return httpx.NewBadRequestError(fmt.Sprintf(
-			"too many queries, max 10, but got: '%d'",
-			len(criteria.Queries),
+			"too many queries, max 10, but got %d queries: (%s)",
+			len(criteria.Queries), lib.SliceToString(criteria.Queries),
 		))
 	}
 
@@ -223,6 +241,21 @@ func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
 		if query == "" {
 			return httpx.NewBadRequestError("query cannot be empty")
 		}
+	}
+
+	// tags 限制 10 个
+	if len(criteria.Tags) > 10 {
+		return httpx.NewBadRequestError(fmt.Sprintf(
+			"too many tags, max 10, but got %d tags: (%s)",
+			len(criteria.Tags), lib.SliceToString(criteria.Tags),
+		))
+	}
+
+	// tag normalize
+	var err *httpx.Error
+	criteria.Tags, err = tags.NormalizeTags(criteria.Tags)
+	if err != nil {
+		return err
 	}
 
 	return nil
