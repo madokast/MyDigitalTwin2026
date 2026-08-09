@@ -45,7 +45,7 @@ type QueryRecordResponse struct {
 	Records   []Record `json:"records"`
 }
 
-func (r *QueryRecordResponse) GetStatus() int {
+func (r QueryRecordResponse) GetStatus() int {
 	return r.Status
 }
 
@@ -109,7 +109,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 	}
 
 	totalPage := (total + *criteria.PageSize - 1) / *criteria.PageSize
-	return &QueryRecordResponse{
+	return QueryRecordResponse{
 		Ok:        true,
 		Status:    http.StatusOK,
 		Page:      *criteria.Page,

@@ -28,6 +28,6 @@ func NewInternalServerError(message string) *Error {
 	return NewError(http.StatusInternalServerError, message)
 }
 
-func (e *Error) GetStatus() int {
+func (e Error) GetStatus() int {
 	return e.Status
 }

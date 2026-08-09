@@ -11,7 +11,7 @@ type ProbeQQBotResponse struct {
 	Status int  `json:"status"`
 }
 
-func (r *ProbeQQBotResponse) GetStatus() int {
+func (r ProbeQQBotResponse) GetStatus() int {
 	return r.Status
 }
 
@@ -21,7 +21,7 @@ func ProbeQQBot(sender *qqbot.Sender) httpx.Response {
 		return httpx.NewInternalServerError("failed to send message via QQ Bot: " + err.Error())
 	}
 
-	return &ProbeQQBotResponse{
+	return ProbeQQBotResponse{
 		Ok:     true,
 		Status: http.StatusOK,
 	}

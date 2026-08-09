@@ -18,7 +18,7 @@ type PostResponse struct {
 	Record Record `json:"record"`
 }
 
-func (r *PostResponse) GetStatus() int {
+func (r PostResponse) GetStatus() int {
 	return r.Status
 }
 

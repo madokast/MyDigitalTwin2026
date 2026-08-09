@@ -19,12 +19,12 @@ type ProbePostgreSQLResponse struct {
 	QueryNowTextResult string `json:"query_now_text_result"`
 }
 
-func (r *ProbePostgreSQLResponse) GetStatus() int {
+func (r ProbePostgreSQLResponse) GetStatus() int {
 	return r.Status
 }
 
 func ProbePostgreSQL(ctx context.Context) httpx.Response {
-	var response = &ProbePostgreSQLResponse{
+	var response = ProbePostgreSQLResponse{
 		Ok:     true,
 		Status: http.StatusOK,
 	}
