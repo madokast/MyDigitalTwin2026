@@ -51,6 +51,7 @@ def check(case: dict):
 
     extracted = {}
     for r in case.get("before", []):
+        resolve_extracted(r, extracted)
         res = request(r)
         assert res.get("status", 0)//100 == 2, f"before {r} failed: {res}"
         extracted.update(extract(res, r.get("extractions")))

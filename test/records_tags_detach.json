@@ -1,0 +1,124 @@
+{
+    "detach_new":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"detached":true,"changed":true,"tags":[]}
+    },
+    "detach_again_idempotent":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"detached":false,"changed":false,"tags":[]}
+    },
+    "detach_one_of_many":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}", "{unique:6}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:5}",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"detached":true,"changed":true,"tags":["{unique:4}", "{unique:6}"]}
+    },
+    "detach_all":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                    "tags": ["{unique:4}"]},
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+                "method": "DELETE",
+                "headers": {"Authorization": "{token}"}
+            }
+        ],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"detached":false,"changed":false,"tags":[]}
+    },
+    "detach_chinese":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["学习", "健身"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/健身",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"detached":true,"changed":true,"tags":["学习"]}
+    },
+    "detach_after_attach":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+                "method": "PUT",
+                "headers": {"Authorization": "{token}"}
+            }
+        ],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"detached":true,"changed":true,"tags":[]}
+    },
+    "detach_not_found":{
+        "api": "/api/records/-1/tags/{unique:1}",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":404,"message":"record -1 not found"}
+    },
+    "detach_not_integer":{
+        "api": "/api/records/abc/tags/{unique:1}",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"parameter record_id in path DELETE /api/records/{record_id}/tags/{tag} expected an integer, but got: 'abc'"}
+    },
+    "detach_whitespace_tag":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/ ",
+        "method": "DELETE",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
+    }
+}

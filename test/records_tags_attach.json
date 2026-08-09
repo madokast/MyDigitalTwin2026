@@ -13,14 +13,20 @@
         "expected": {"ok":true,"status":201,"attached":true,"changed":true,"tags":["{unique:4}"]}
     },
     "attach_again_idempotent":{
-        "before": [{
-            "api": "/api/records",
-            "method": "POST",
-            "headers": {"Authorization": "{token}"},
-            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
-                "tags": ["{unique:4}"]},
-            "extractions": ["record.id"]
-        }],
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+                "method": "PUT",
+                "headers": {"Authorization": "{token}"}
+            }
+        ],
         "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
         "method": "PUT",
         "headers": {"Authorization": "{token}"},
