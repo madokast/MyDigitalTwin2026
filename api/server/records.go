@@ -50,7 +50,7 @@ func (s *Server) RecordsQuery(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) RecordsGet(w http.ResponseWriter, r *http.Request) {
-	pv := httpx.PathValue{Request: r}
+	pv := httpx.PathParams{Request: r}
 
 	recordID, err := pv.Int64("record_id")
 	if err != nil {

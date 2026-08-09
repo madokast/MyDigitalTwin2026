@@ -6,15 +6,15 @@ import (
 	"strconv"
 )
 
-type PathValue struct {
+type PathParams struct {
 	*http.Request
 }
 
-func (p PathValue) Int64(name string) (int64, *Error) {
+func (p PathParams) Int64(name string) (int64, *Error) {
 	valStr := p.PathValue(name)
 	if valStr == "" {
 		return 0, NewBadRequestError(fmt.Sprintf(
-			"variable %s in path %s is not set",
+			"parameter %s in path %s is not set",
 			name, p.Pattern,
 		))
 	}
@@ -22,7 +22,7 @@ func (p PathValue) Int64(name string) (int64, *Error) {
 	val, err := strconv.ParseInt(valStr, 10, 64)
 	if err != nil {
 		return 0, NewBadRequestError(fmt.Sprintf(
-			"variable %s in path %s expected an integer, but got %s",
+			"parameter %s in path %s expected an integer, but got %s",
 			name, p.Pattern, valStr,
 		))
 	}
