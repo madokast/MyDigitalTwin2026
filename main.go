@@ -27,6 +27,7 @@ func main() {
 	mux.HandleFunc("POST /api/records", middleware.Auth(server.RecordsPost))
 	mux.HandleFunc("GET /api/records", middleware.Auth(server.RecordsQuery))
 	mux.HandleFunc("GET /api/records/{record_id}", middleware.Auth(server.RecordsGet))
+	mux.HandleFunc("GET /api/records/{record_id}/tags", middleware.Auth(server.RecordTagsGet))
 
 	httpServer := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),

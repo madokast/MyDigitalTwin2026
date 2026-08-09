@@ -1,8 +1,13 @@
 package tags
 
 import (
+	"context"
+	"dt2026/api/records"
 	"dt2026/httpx"
+	"fmt"
+	"net/http"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -17,6 +22,30 @@ func (r GetTagResponse) GetStatus() int {
 }
 
 func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
-	// TODO
-	return nil
+
+	var response = GetTagResponse{
+		Ok:     true,
+		Status: http.StatusOK,
+	}
+
+	err := pool.QueryRow(
+		context.Background(),
+		records.GetRecordTagsSQL,
+		recordID,
+	).Scan(&response.Tags)
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return httpx.NewNotFoundError(fmt.Sprintf(
+				"record %d not found", recordID,
+			))
+		}
+
+		return httpx.NewInternalServerError(fmt.Sprintf(
+			"failed to query %s with %v: %s",
+			records.GetRecordTagsSQL, recordID, err.Error(),
+		))
+	}
+
+	return response
 }

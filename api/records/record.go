@@ -27,6 +27,10 @@ SELECT id, created_at, raw_content,
 FROM records WHERE 1=1
 `
 
+const GetRecordTagsSQL = `
+SELECT tags FROM records WHERE id=$1;
+`
+
 const countRecordSQL = `
 SELECT COUNT(*) AS total
 FROM records WHERE 1=1
