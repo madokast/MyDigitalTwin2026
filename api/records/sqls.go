@@ -27,6 +27,16 @@ SELECT id, created_at, raw_content,
 FROM records WHERE 1=1
 `
 
+const exportRecordSQL = `
+COPY (
+    SELECT to_jsonb(records)
+    FROM records
+    WHERE 1=1%s
+    ORDER BY id ASC
+    LIMIT 10000
+) TO STDOUT;
+`
+
 const countRecordSQL = `
 SELECT COUNT(*) AS total
 FROM records WHERE 1=1

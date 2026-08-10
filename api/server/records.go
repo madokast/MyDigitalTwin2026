@@ -66,3 +66,27 @@ func (s *Server) RecordsGet(w http.ResponseWriter, r *http.Request) {
 
 	httpx.WriteJSON(w, records.Get(recordID, pool))
 }
+
+func (s *Server) RecordExport(w http.ResponseWriter, r *http.Request) {
+	q := httpx.QueryParams(r.URL.Query())
+
+	request, err := records.NewExportRequest(q)
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	pool, err := s.pool()
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	err = records.Export(request, w, pool)
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	// 无 err，则导出数据已流式输出
+}
