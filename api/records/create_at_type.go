@@ -2,6 +2,7 @@ package records
 
 import (
 	"dt2026/httpx"
+	"dt2026/lib/optional"
 	"fmt"
 	"time"
 )
@@ -23,6 +24,20 @@ func ParseJSONTime(s string) (JSONTime, *httpx.Error) {
 	}
 
 	return JSONTime(parsed), nil
+}
+
+func ParseOptionalJSONTime(opt optional.Optional[string]) (optional.Optional[JSONTime], *httpx.Error) {
+	s, ok := opt.Get()
+	if !ok {
+		return optional.None[JSONTime](), nil
+	}
+
+	parsed, err := ParseJSONTime(s)
+	if err != nil {
+		return optional.None[JSONTime](), err
+	}
+
+	return optional.Some(parsed), nil
 }
 
 func (t *JSONTime) GoTime() time.Time {

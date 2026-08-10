@@ -41,7 +41,7 @@ func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	criteria.From, httpErr = from.Map2(ParseJSONTime)
+	criteria.From, httpErr = ParseOptionalJSONTime(from)
 	if httpErr != nil {
 		return nil, httpErr
 	}
@@ -50,7 +50,7 @@ func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	criteria.To, httpErr = to.Map2(ParseJSONTime)
+	criteria.To, httpErr = ParseOptionalJSONTime(to)
 	if httpErr != nil {
 		return nil, httpErr
 	}

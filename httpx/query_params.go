@@ -11,28 +11,6 @@ import (
 
 type QueryParams url.Values
 
-func (q QueryParams) GetOptionalSingleInt64(key string) (optional.Optional[int64], *Error) {
-	rawValues := q[key]
-
-	if len(rawValues) == 0 {
-		return optional.Optional[int64]{}, nil
-	} else if len(rawValues) == 1 {
-		value, err := strconv.ParseInt(rawValues[0], 10, 64)
-		if err != nil {
-			return optional.Optional[int64]{}, NewBadRequestError(fmt.Sprintf(
-				"query parameter %s expected an integer, but got: '%s'",
-				key, rawValues[0],
-			))
-		}
-		return optional.Some(value), nil
-	} else {
-		return optional.Optional[int64]{}, NewBadRequestError(fmt.Sprintf(
-			"query parameter %s expected a single value, but got %d values: (%s)",
-			key, len(rawValues), lib.SliceToString(rawValues),
-		))
-	}
-}
-
 func (q QueryParams) GetOptionalSingleString(key string) (optional.Optional[string], *Error) {
 	rawValues := q[key]
 
@@ -46,6 +24,27 @@ func (q QueryParams) GetOptionalSingleString(key string) (optional.Optional[stri
 			key, len(rawValues), lib.SliceToString(rawValues),
 		))
 	}
+}
+
+func (q QueryParams) GetOptionalSingleInt64(key string) (optional.Optional[int64], *Error) {
+	opt, httpErr := q.GetOptionalSingleString(key)
+	if httpErr != nil {
+		return optional.Optional[int64]{}, httpErr
+	}
+
+	s, ok := opt.Get()
+	if !ok {
+		return optional.None[int64](), nil
+	}
+
+	value, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return optional.Optional[int64]{}, NewBadRequestError(fmt.Sprintf(
+			"query parameter %s expected an integer, but got: '%s'",
+			key, s,
+		))
+	}
+	return optional.Some(value), nil
 }
 
 func (q QueryParams) GetOptionalStrings(key string) []string {
