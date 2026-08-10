@@ -1,6 +1,7 @@
 package records
 
 import (
+	"dt2026/httpx"
 	"fmt"
 	"time"
 )
@@ -8,7 +9,23 @@ import (
 // JSONTime 序列化为 JSON 后总是 +08:00 时区
 type JSONTime time.Time
 
-func (t *JSONTime) Time() time.Time {
+func ParseJSONTime(s string) (JSONTime, *httpx.Error) {
+	parsed, err := time.Parse(
+		time.RFC3339,
+		s,
+	)
+	if err != nil {
+		return JSONTime{}, httpx.NewBadRequestError(fmt.Sprintf(
+			"invalid time value %s: %s",
+			s,
+			err.Error(),
+		))
+	}
+
+	return JSONTime(parsed), nil
+}
+
+func (t *JSONTime) GoTime() time.Time {
 	return time.Time(*t)
 }
 

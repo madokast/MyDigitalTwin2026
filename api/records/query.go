@@ -16,10 +16,12 @@ import (
 )
 
 type QueryCriteria struct {
-	Page     optional.Optional[int64]
-	PageSize optional.Optional[int64]
 	Queries  []string
 	Tags     []string
+	From     optional.Optional[JSONTime]
+	To       optional.Optional[JSONTime]
+	Page     optional.Optional[int64]
+	PageSize optional.Optional[int64]
 }
 
 const (
@@ -29,20 +31,38 @@ const (
 
 func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
 	var criteria QueryCriteria
-	var err *httpx.Error
-
-	criteria.Page, err = q.GetOptionalSingleInt64("page")
-	if err != nil {
-		return nil, err
-	}
-	criteria.PageSize, err = q.GetOptionalSingleInt64("page_size")
-	if err != nil {
-		return nil, err
-	}
+	var httpErr *httpx.Error
 
 	criteria.Queries = q.GetOptionalStrings("q") // normalizeQueryCriteria 进一步检查
 
 	criteria.Tags = q.GetOptionalStrings("tag") // normalizeQueryCriteria 进一步检查
+
+	from, httpErr := q.GetOptionalSingleString("from")
+	if httpErr != nil {
+		return nil, httpErr
+	}
+	criteria.From, httpErr = from.Map2(ParseJSONTime)
+	if httpErr != nil {
+		return nil, httpErr
+	}
+
+	to, httpErr := q.GetOptionalSingleString("to")
+	if httpErr != nil {
+		return nil, httpErr
+	}
+	criteria.To, httpErr = to.Map2(ParseJSONTime)
+	if httpErr != nil {
+		return nil, httpErr
+	}
+
+	criteria.Page, httpErr = q.GetOptionalSingleInt64("page")
+	if httpErr != nil {
+		return nil, httpErr
+	}
+	criteria.PageSize, httpErr = q.GetOptionalSingleInt64("page_size")
+	if httpErr != nil {
+		return nil, httpErr
+	}
 
 	return &criteria, nil
 }
@@ -160,6 +180,16 @@ func queryTotal(criteria *QueryCriteria, pool *pgxpool.Pool) (int64, *httpx.Erro
 // makeQuerySQLTail 构造 SQL 语句
 // enablePage 带上 ORDER、LIMIT、OFFSET 信息
 func makeQuerySQLTail(criteria *QueryCriteria, enablePage bool) (sqlTail string, args []any) {
+	// from, to
+	if from, ok := criteria.From.Get(); ok {
+		args = append(args, from.GoTime())
+		sqlTail += fmt.Sprintf(" AND created_at >= $%d", len(args))
+	}
+	if to, ok := criteria.To.Get(); ok {
+		args = append(args, to.GoTime())
+		sqlTail += fmt.Sprintf(" AND created_at < $%d", len(args))
+	}
+
 	// querys
 	for _, query := range criteria.Queries {
 		var predicates []string

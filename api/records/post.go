@@ -47,7 +47,7 @@ func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Respon
 	}
 
 	err := pool.QueryRow(context.Background(), insertRecordSQL,
-		response.Record.CreatedAt.Time(),
+		response.Record.CreatedAt.GoTime(),
 		response.Record.RawContent,
 		response.Record.ObjectiveContext,
 		response.Record.AIAnalysis,
@@ -59,7 +59,7 @@ func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Respon
 			"failed to insert record while executing %s with %v: %s",
 			insertRecordSQL,
 			[]any{
-				response.Record.CreatedAt.Time(),
+				response.Record.CreatedAt.GoTime(),
 				response.Record.RawContent,
 				response.Record.ObjectiveContext,
 				response.Record.AIAnalysis,

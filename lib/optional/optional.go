@@ -23,6 +23,22 @@ func (o Optional[T]) Get() (T, bool) {
 	return o.value, o.has
 }
 
+func (o Optional[T]) Map[U any](f func(T) U) Optional[U] {
+	if !o.has {
+		return None[U]()
+	}
+	return Some(f(o.value))
+}
+
+func (o Optional[T]) Map2[U any, V any](f func(T) (U, V)) (Optional[U], V) {
+	if !o.has {
+		var v V
+		return None[U](), v
+	}
+	var u, v = f(o.value)
+	return Some(u), v
+}
+
 func (o Optional[T]) Or(other T) T {
 	if o.has {
 		return o.value

@@ -33,6 +33,20 @@ func (q QueryParams) GetOptionalSingleInt64(key string) (optional.Optional[int64
 	}
 }
 
+func (q QueryParams) GetOptionalSingleString(key string) (optional.Optional[string], *Error) {
+	rawValues := q[key]
+
+	if len(rawValues) == 0 {
+		return optional.None[string](), nil
+	} else if len(rawValues) == 1 {
+		return optional.Some(rawValues[0]), nil
+	} else {
+		return optional.Optional[string]{}, NewBadRequestError(fmt.Sprintf(
+			"query parameter %s expected a single value, but got %d values: (%s)",
+		))
+	}
+}
+
 func (q QueryParams) GetOptionalStrings(key string) []string {
 	return q[key]
 }

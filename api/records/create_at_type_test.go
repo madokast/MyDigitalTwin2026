@@ -28,7 +28,7 @@ func TestUnmarshalJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if createAt.Time().IsZero() {
+	if createAt.GoTime().IsZero() {
 		t.Fatal("time not set")
 	}
 }
