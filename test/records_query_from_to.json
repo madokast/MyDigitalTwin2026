@@ -82,19 +82,39 @@
         "api": "/api/records?page_size=10&from=notatime",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":false,"status":400,"message":"invalid time value notatime: parsing time \"notatime\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"notatime\" as \"2006\""}
+        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got notatime"}
     },
-    "from_date_only":{
-        "api": "/api/records?page_size=10&from=2026-08-08",
+    "from_date_only_hits":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"}
+        }],
+        "api": "/api/records?page_size=10&q={unique:1}&from=2026-08-08",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":false,"status":400,"message":"invalid time value 2026-08-08: parsing time \"2026-08-08\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"\" as \"T\""}
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":1,"total_page":1,"records":[
+            {"id":"{existed}","created_at":"{time}","raw_content":"{unique:1}","objective_context":"{existed}","ai_analysis":"{existed}","tags":"{array}"}
+        ]}
+    },
+    "to_date_only_excludes":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"}
+        }],
+        "api": "/api/records?page_size=10&q={unique:1}&to=2026-08-08",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"page":1,"page_size":10,"total":0,"total_page":0,"records":"{array:0}"}
     },
     "to_invalid":{
         "api": "/api/records?page_size=10&to=abc",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":false,"status":400,"message":"invalid time value abc: parsing time \"abc\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"abc\" as \"2006\""}
+        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got abc"}
     },
     "from_multi":{
         "api": "/api/records?page_size=10&from=a&from=b",
