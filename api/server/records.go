@@ -85,6 +85,7 @@ func (s *Server) RecordsExport(w http.ResponseWriter, r *http.Request) {
 
 	var maxExportSize optional.Optional[int64]
 	if s.testMode {
+		// 测试大数据量错误
 		maxExportSize = optional.Some[int64](10)
 	}
 
