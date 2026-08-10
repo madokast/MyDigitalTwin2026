@@ -10,15 +10,22 @@ import (
 	"strings"
 	"time"
 
+	"dt2026/lib/optional"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type QueryCriteria struct {
-	Page     *int64
-	PageSize *int64
+	Page     optional.Optional[int64]
+	PageSize optional.Optional[int64]
 	Queries  []string
 	Tags     []string
 }
+
+const (
+	defaultPage     int64 = 1
+	defaultPageSize int64 = 100
+)
 
 func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
 	var criteria QueryCriteria
@@ -113,12 +120,15 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 		}
 	}
 
-	totalPage := (total + *criteria.PageSize - 1) / *criteria.PageSize
+	page := criteria.Page.Or(defaultPage)
+	pageSize := criteria.PageSize.Or(defaultPageSize)
+
+	totalPage := (total + pageSize - 1) / pageSize
 	return QueryRecordResponse{
 		Ok:        true,
 		Status:    http.StatusOK,
-		Page:      *criteria.Page,
-		PageSize:  *criteria.PageSize,
+		Page:      page,
+		PageSize:  pageSize,
 		Total:     total,
 		TotalPage: totalPage,
 		Records:   records,
@@ -185,12 +195,15 @@ func makeQuerySQLTail(criteria *QueryCriteria, enablePage bool) (sqlTail string,
 		// ORDER BY id ASC
 		sqlTail += " ORDER BY id ASC"
 
+		page := criteria.Page.Or(defaultPage)
+		pageSize := criteria.PageSize.Or(defaultPageSize)
+
 		// LIMIT
-		args = append(args, *criteria.PageSize)
+		args = append(args, pageSize)
 		sqlTail += fmt.Sprintf(" LIMIT $%d", len(args))
 
 		// OFFSET
-		args = append(args, (*criteria.Page-1)*(*criteria.PageSize))
+		args = append(args, (page-1)*pageSize)
 		sqlTail += fmt.Sprintf(" OFFSET $%d", len(args))
 	}
 
@@ -198,33 +211,28 @@ func makeQuerySQLTail(criteria *QueryCriteria, enablePage bool) (sqlTail string,
 }
 
 func normalizeQueryCriteria(criteria *QueryCriteria) *httpx.Error {
-	if criteria.Page == nil {
-		criteria.Page = new(int64)
-		*criteria.Page = 1
-	}
-	if *criteria.Page <= 0 {
+	page := criteria.Page.Or(defaultPage)
+	pageSize := criteria.PageSize.Or(defaultPageSize)
+
+	if page <= 0 {
 		return httpx.NewBadRequestError(fmt.Sprintf(
 			"page must be greater than 0, but got: '%d'",
-			*criteria.Page,
+			page,
 		))
 	}
 
-	if criteria.PageSize == nil {
-		criteria.PageSize = new(int64)
-		*criteria.PageSize = 100
-	}
-	if *criteria.PageSize <= 0 || *criteria.PageSize > 1000 {
+	if pageSize <= 0 || pageSize > 1000 {
 		return httpx.NewBadRequestError(fmt.Sprintf(
 			"page_size must be between 1 and 1000, but got: '%d'",
-			*criteria.PageSize,
+			pageSize,
 		))
 	}
 
 	// OFFSET 不能溢出
-	if lib.MulOverflow(*criteria.Page-1, *criteria.PageSize) {
+	if lib.MulOverflow(page-1, pageSize) {
 		return httpx.NewBadRequestError(fmt.Sprintf(
 			"page and page_size overflow, page=%d, page_size=%d",
-			*criteria.Page, *criteria.PageSize,
+			page, pageSize,
 		))
 	}
 
