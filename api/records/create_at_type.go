@@ -23,7 +23,7 @@ func ParseJSONTime(s string) (JSONTime, *httpx.Error) {
 
 		if err != nil {
 			return JSONTime{}, httpx.NewBadRequestError(fmt.Sprintf(
-				"time value expected in RFC3339 or DateOnly, but gor %s",
+				"time value expected in RFC3339 or DateOnly, but got %s",
 				s,
 			))
 		}
