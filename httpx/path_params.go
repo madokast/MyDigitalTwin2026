@@ -10,6 +10,10 @@ type PathParams struct {
 	*http.Request
 }
 
+func (p PathParams) NullableString(name string) string {
+	return p.PathValue(name)
+}
+
 func (p PathParams) String(name string) (string, *Error) {
 	val := p.PathValue(name)
 	if val == "" {

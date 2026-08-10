@@ -12,7 +12,7 @@ from datetime import datetime
 BASE_URL = "http://localhost:29301"
 TOKEN = "dt-20260807"
 
-def do_request(api: str, method: str, headers: dict | None, data: dict | None) -> dict:
+def do_request(api: str, method: str, headers: dict | None, data: dict | None) -> dict | list:
     url = f"{BASE_URL}{quote(api, safe='/?:=&')}"
     req = urllib.request.Request(url, method=method)
     
@@ -29,6 +29,8 @@ def do_request(api: str, method: str, headers: dict | None, data: dict | None) -
     try:
         with urllib.request.urlopen(req) as response:
             response_data = response.read()
+            if response.getheader("Content-Type") == "application/x-ndjson":
+                return [json.loads(line) for line in response_data.decode().split("\n") if line]
             return json.loads(response_data)
     except urllib.error.HTTPError as e:
         # 读取错误响应体
@@ -40,7 +42,7 @@ def do_request(api: str, method: str, headers: dict | None, data: dict | None) -
     except urllib.error.URLError as e:
         return {"error": "Connection error", "message": str(e)}
 
-def request(r: dict):
+def request(r: dict) -> dict | list:
     headers = r.get("headers", {})
     if headers.get("Authorization") == "{token}":
         headers["Authorization"] = f"Bearer {TOKEN}"
@@ -60,10 +62,15 @@ def check(case: dict):
     result = request(case)
     check_result(case["expected"], result)
 
-def check_result(expected: str | dict, result: str | dict):
+def check_result(expected: str | dict | list, result: str | dict | list):
     if isinstance(expected, str):
         if expected != result:
             raise AssertionError(f"Expected: {expected}, but got: {result}")
+    elif isinstance(expected, list):
+        if not isinstance(result, list) or len(expected) != len(result):
+            raise AssertionError(f"Expected: {expected}, but got: {result}")
+        for e, r in zip(expected, result):
+            check_result(e, r)
         return
 
     for key, value in expected.items():

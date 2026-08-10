@@ -49,7 +49,7 @@ func (s *Server) RecordsQuery(w http.ResponseWriter, r *http.Request) {
 	httpx.WriteJSON(w, records.Query(criteria, pool))
 }
 
-func (s *Server) RecordsGet(w http.ResponseWriter, r *http.Request) {
+func (s *Server) RecordGet(w http.ResponseWriter, r *http.Request) {
 	pv := httpx.PathParams{Request: r}
 
 	recordID, err := pv.Int64("record_id")
@@ -67,7 +67,7 @@ func (s *Server) RecordsGet(w http.ResponseWriter, r *http.Request) {
 	httpx.WriteJSON(w, records.Get(recordID, pool))
 }
 
-func (s *Server) RecordExport(w http.ResponseWriter, r *http.Request) {
+func (s *Server) RecordsExport(w http.ResponseWriter, r *http.Request) {
 	q := httpx.QueryParams(r.URL.Query())
 
 	request, err := records.NewExportRequest(q)

@@ -1,0 +1,19 @@
+{
+    "simple":{
+    "before": [{
+        "api": "/api/records",
+        "method": "POST",
+        "headers": {"Authorization": "{token}"},
+        "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}", 
+            "tags": ["{unique:4}", "{unique:5}"]},
+        "extractions": ["record.id", "record.created_at"]
+    }],
+    "api": "/api/records/export?from={extracted:record.created_at}",
+    "method": "GET",
+    "headers": {"Authorization": "{token}"},
+    "expected": [{"id":"{extracted:record.id}",
+        "created_at":"{existed}","raw_content":"{unique:1}",
+        "objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+        "tags":["{unique:4}", "{unique:5}"]}]
+    }
+}
