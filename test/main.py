@@ -66,6 +66,7 @@ def check_result(expected: str | dict | list, result: str | dict | list):
     if isinstance(expected, str):
         if expected != result:
             raise AssertionError(f"Expected: {expected}, but got: {result}")
+        return
     elif isinstance(expected, list):
         if not isinstance(result, list) or len(expected) != len(result):
             raise AssertionError(f"Expected: {expected}, but got: {result}")
