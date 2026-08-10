@@ -16,6 +16,8 @@ type ExportRequest struct {
 	To   optional.Optional[JSONTime]
 }
 
+const defaultMaxExportSize = 10000
+
 func NewExportRequest(q httpx.QueryParams) (*ExportRequest, *httpx.Error) {
 	var request ExportRequest
 
@@ -55,7 +57,37 @@ func (w *checkableWriter) Write(p []byte) (int, error) {
 }
 
 func Export(r *ExportRequest, w http.ResponseWriter,
-	pool *pgxpool.Pool) *httpx.Error {
+	pool *pgxpool.Pool, maxExportSize optional.Optional[int64]) *httpx.Error {
+
+	total, httpErr := queryTotal(&QueryCriteria{
+		From: r.From,
+		To:   r.To,
+	}, pool)
+	if httpErr != nil {
+		return httpErr
+	}
+
+	maxSize := maxExportSize.Or(defaultMaxExportSize)
+
+	if total > maxSize {
+		message := fmt.Sprintf(
+			"too many records to export: total=%d, limit=%d",
+			total, maxSize,
+		)
+		if r.From.Absent() || r.To.Absent() {
+			message += ". Provide a specific from/to time range."
+		} else {
+			message += ". Try a shorter from/to time range."
+		}
+
+		return httpx.NewBadRequestError(message)
+	} else if total == 0 {
+		// OK. 保存进一个空文件
+		w.Header().Set("Content-Type", "application/x-ndjson")
+		w.WriteHeader(http.StatusOK)
+		w.Write(nil)
+		return nil
+	}
 
 	var predicates string
 
@@ -83,7 +115,7 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 	}
 	defer conn.Release()
 
-	sql := fmt.Sprintf(exportRecordSQL, predicates)
+	sql := fmt.Sprintf(exportRecordSQL, predicates, maxSize)
 
 	cw := checkableWriter{w: w}
 	_, err = conn.Conn().PgConn().CopyTo(

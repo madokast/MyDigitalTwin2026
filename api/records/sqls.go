@@ -33,7 +33,7 @@ COPY (
     FROM records
     WHERE 1=1%s
     ORDER BY id ASC
-    LIMIT 10000
+    LIMIT %d
 ) TO STDOUT;
 `
 

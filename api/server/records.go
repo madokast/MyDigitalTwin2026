@@ -4,6 +4,7 @@ import (
 	"dt2026/api/notify/qqbot"
 	"dt2026/api/records"
 	"dt2026/httpx"
+	"dt2026/lib/optional"
 	"net/http"
 )
 
@@ -82,7 +83,12 @@ func (s *Server) RecordsExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = records.Export(request, w, pool)
+	var maxExportSize optional.Optional[int64]
+	if s.testMode {
+		maxExportSize = optional.Some[int64](10)
+	}
+
+	err = records.Export(request, w, pool, maxExportSize)
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return

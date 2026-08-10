@@ -34,6 +34,10 @@ func (o Optional[T]) Exists() bool {
 	return o.has
 }
 
+func (o Optional[T]) Absent() bool {
+	return !o.has
+}
+
 func (o *Optional[T]) SetIfAbsent(value T) bool {
 	if o.has {
 		return false

@@ -10,17 +10,23 @@ import (
 // JSONTime 序列化为 JSON 后总是 +08:00 时区
 type JSONTime time.Time
 
+var loc = time.FixedZone("CST", 8*3600)
+
 func ParseJSONTime(s string) (JSONTime, *httpx.Error) {
 	parsed, err := time.Parse(
-		time.RFC3339,
-		s,
+		time.RFC3339, s,
 	)
 	if err != nil {
-		return JSONTime{}, httpx.NewBadRequestError(fmt.Sprintf(
-			"invalid time value %s: %s",
-			s,
-			err.Error(),
-		))
+		parsed, err = time.ParseInLocation(
+			time.DateOnly, s, loc,
+		)
+
+		if err != nil {
+			return JSONTime{}, httpx.NewBadRequestError(fmt.Sprintf(
+				"time value expected in RFC3339 or DateOnly, but gor %s",
+				s,
+			))
+		}
 	}
 
 	return JSONTime(parsed), nil
@@ -43,8 +49,6 @@ func ParseOptionalJSONTime(opt optional.Optional[string]) (optional.Optional[JSO
 func (t *JSONTime) GoTime() time.Time {
 	return time.Time(*t)
 }
-
-var loc = time.FixedZone("CST", 8*3600)
 
 func (t JSONTime) MarshalJSON() ([]byte, error) {
 	return []byte(
