@@ -43,6 +43,7 @@ func (q QueryParams) GetOptionalSingleString(key string) (optional.Optional[stri
 	} else {
 		return optional.Optional[string]{}, NewBadRequestError(fmt.Sprintf(
 			"query parameter %s expected a single value, but got %d values: (%s)",
+			key, len(rawValues), lib.SliceToString(rawValues),
 		))
 	}
 }
