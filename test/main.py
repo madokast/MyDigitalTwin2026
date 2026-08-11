@@ -31,6 +31,8 @@ def do_request(api: str, method: str, headers: dict | None, data: dict | None) -
             response_data = response.read()
             if response.getheader("Content-Type") == "application/x-ndjson":
                 return [json.loads(line) for line in response_data.decode().split("\n") if line]
+            if not response_data:
+                return []
             return json.loads(response_data)
     except urllib.error.HTTPError as e:
         # 读取错误响应体

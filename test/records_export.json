@@ -1,19 +1,83 @@
 {
     "simple":{
-    "before": [{
-        "api": "/api/records",
-        "method": "POST",
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}"]},
+            "extractions": ["record.id", "record.created_at"]
+        }],
+        "api": "/api/records/export?from={extracted:record.created_at}",
+        "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}", 
-            "tags": ["{unique:4}", "{unique:5}"]},
-        "extractions": ["record.id", "record.created_at"]
-    }],
-    "api": "/api/records/export?from={extracted:record.created_at}",
-    "method": "GET",
-    "headers": {"Authorization": "{token}"},
-    "expected": [{"id":"{extracted:record.id}",
-        "created_at":"{existed}","raw_content":"{unique:1}",
-        "objective_context": "{unique:2}","ai_analysis": "{unique:3}",
-        "tags":["{unique:4}", "{unique:5}"]}]
+        "expected": [{"id":"{extracted:record.id}",
+            "created_at":"{time}","raw_content":"{unique:1}",
+            "objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+            "tags":["{unique:4}", "{unique:5}"]}]
+    },
+    "two_records_range":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "first{unique:1}","objective_context": "bbb","ai_analysis": "ccc",
+                    "tags": ["{unique:2}"]},
+                "extractions": ["record.created_at"]
+            },
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "second{unique:3}","objective_context": "ddd","ai_analysis": "eee",
+                    "tags": ["{unique:4}"]}
+            }
+        ],
+        "api": "/api/records/export?from={extracted:record.created_at}&to=2030-01-01T00:00:00Z",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": [
+            {"id":"{existed}","created_at":"{time}","raw_content":"first{unique:1}",
+                "objective_context":"bbb","ai_analysis":"ccc","tags":["{unique:2}"]},
+            {"id":"{existed}","created_at":"{time}","raw_content":"second{unique:3}",
+                "objective_context":"ddd","ai_analysis":"eee","tags":["{unique:4}"]}
+        ]
+    },
+    "empty_export":{
+        "api": "/api/records/export?to=2020-01-01T00:00:00Z",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": []
+    },
+    "from_after_all":{
+        "api": "/api/records/export?from=2030-01-01T00:00:00Z",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": []
+    },
+    "date_only_export":{
+        "api": "/api/records/export?from=2030-01-01",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": []
+    },
+    "too_many_records":{
+        "api": "/api/records/export",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400}
+    },
+    "invalid_time":{
+        "api": "/api/records/export?from=notatime",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got notatime"}
+    },
+    "multi_from":{
+        "api": "/api/records/export?from=a&from=b",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400,"message":"query parameter from expected a single value, but got 2 values: ('a', 'b')"}
     }
 }
