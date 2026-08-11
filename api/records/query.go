@@ -91,7 +91,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 
 	rows, err := pool.Query(context.Background(), sql, args...)
 	if err != nil {
-		return httpx.NewError(http.StatusInternalServerError, fmt.Sprintf(
+		return httpx.NewInternalServerError(fmt.Sprintf(
 			"failed to query %s with %v: %s",
 			sql, args, err.Error(),
 		))
@@ -115,7 +115,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 			&total,
 		)
 		if err != nil {
-			return httpx.NewError(http.StatusInternalServerError, fmt.Sprintf(
+			return httpx.NewInternalServerError(fmt.Sprintf(
 				"failed to scan row in querying %s with %v: %s",
 				sql, args, err.Error(),
 			))
@@ -126,7 +126,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 	}
 
 	if err := rows.Err(); err != nil {
-		return httpx.NewError(http.StatusInternalServerError, fmt.Sprintf(
+		return httpx.NewInternalServerError(fmt.Sprintf(
 			"failed to iterate rows in querying %s with %v: %s",
 			sql, args, err.Error(),
 		))

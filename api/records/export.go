@@ -59,35 +59,11 @@ func (w *checkableWriter) Write(p []byte) (int, error) {
 func Export(r *ExportRequest, w http.ResponseWriter,
 	pool *pgxpool.Pool, maxExportSize optional.Optional[int64]) *httpx.Error {
 
-	total, httpErr := queryTotal(&QueryCriteria{
-		From: r.From,
-		To:   r.To,
-	}, pool)
+	httpErr := validateExportSize(r, pool, maxExportSize)
 	if httpErr != nil {
 		return httpErr
 	}
-
-	maxSize := maxExportSize.Or(defaultMaxExportSize)
-
-	if total > maxSize {
-		message := fmt.Sprintf(
-			"too many records to export: total=%d, limit=%d",
-			total, maxSize,
-		)
-		if r.From.Absent() || r.To.Absent() {
-			message += ". Provide a specific from/to time range."
-		} else {
-			message += ". Try a shorter from/to time range."
-		}
-
-		return httpx.NewBadRequestError(message)
-	} else if total == 0 {
-		// OK. 保存进一个空文件
-		w.Header().Set("Content-Type", "application/x-ndjson")
-		w.WriteHeader(http.StatusOK)
-		w.Write(nil)
-		return nil
-	}
+	// validate 和后续导出不开启事务，允许中途存在新增，可能导致数目稍微超过限制
 
 	var predicates string
 
@@ -115,7 +91,10 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 	}
 	defer conn.Release()
 
-	sql := fmt.Sprintf(exportRecordSQL, predicates, maxSize)
+	sql := fmt.Sprintf(
+		exportRecordSQL,
+		predicates,
+	)
 
 	cw := checkableWriter{w: w}
 	_, err = conn.Conn().PgConn().CopyTo(
@@ -138,6 +117,36 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 			// 输出到到一半时 PostgreSQL 出错，无法改写响应头
 			// 符合 HTTP streaming 的正常语义
 		}
+	}
+
+	return nil
+}
+
+func validateExportSize(r *ExportRequest, pool *pgxpool.Pool,
+	maxExportSize optional.Optional[int64]) *httpx.Error {
+
+	total, httpErr := queryTotal(&QueryCriteria{
+		From: r.From,
+		To:   r.To,
+	}, pool)
+	if httpErr != nil {
+		return httpErr
+	}
+
+	maxSize := maxExportSize.Or(defaultMaxExportSize)
+
+	if total > maxSize {
+		message := fmt.Sprintf(
+			"too many records to export: total=%d, limit=%d",
+			total, maxSize,
+		)
+		if r.From.Absent() || r.To.Absent() {
+			message += ". Provide a specific [from, to) time range."
+		} else {
+			message += ". Try a shorter [from, to) time range."
+		}
+
+		return httpx.NewBadRequestError(message)
 	}
 
 	return nil
