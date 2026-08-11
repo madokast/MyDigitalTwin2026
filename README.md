@@ -4,6 +4,8 @@ mdk 个人的数字孪生项目
 
 ## API
 
+请从 mkd 处获取目前的 base_url 和 token，用户后续 API 使用。
+
 ### 1. 记录 mdk 发言
 
 POST /api/records
