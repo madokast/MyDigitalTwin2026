@@ -3,6 +3,7 @@ package records
 import (
 	"context"
 	"dt2026/httpx"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -43,7 +44,7 @@ func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
 	_ = total // unused
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return httpx.NewNotFoundError(fmt.Sprintf(
 				"record %d not found", recordID,
 			))
