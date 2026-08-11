@@ -20,7 +20,7 @@ curl -X POST http://$base_url/api/records \
   }'
 ```
 
-- `raw_content`：mdk 当前对话说的原始内容，请原封不同记录，必填，不能为空
+- `raw_content`：mdk 当前对话说的原始内容，请原封不动记录，必填，不能为空
 - `objective_context`：客观描述的对话上下文信息，必填，不能为空
 - `ai_analysis`：AI 分析，必填，不能为空
 - `tags`：标签数组，选填，元素不能为空白串、不能重复，缺省为 `[]`
