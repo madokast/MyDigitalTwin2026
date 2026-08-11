@@ -34,7 +34,7 @@ curl -X POST $base_url/api/records \
   "ok": true,
   "status": 201,
   "record": {
-    "id": 123,
+    "id": 2504,
     "created_at": "2026-08-11T10:30:00+08:00",
     "raw_content": "再稍等一下，我先去洗个澡",
     "objective_context": "mdk 准备去洗澡（收工节奏，洗完后应可休息）。",
@@ -74,7 +74,7 @@ curl -X GET "$base_url/api/records?page=1&page_size=10&q=洗澡&q=休息&tag=生
   "total_page": 1,
   "records": [
     {
-      "id": 123,
+      "id": 2504,
       "created_at": "2026-08-11T10:30:00+08:00",
       "raw_content": "再稍等一下，我先去洗个澡",
       "objective_context": "mdk 准备去洗澡（收工节奏，洗完后应可休息）。",
@@ -86,4 +86,69 @@ curl -X GET "$base_url/api/records?page=1&page_size=10&q=洗澡&q=休息&tag=生
 ```
 
 说明：`records` 按 `id` 升序排列；`total` 为满足条件的总记录数，`total_page` 为总页数。
+
+### 3. 标签 CRUD
+
+Path 主体均为 /api/records/{record_id}/tags
+
+**获取标签**
+
+```bash
+curl -X GET $base_url/api/records/{record_id:2504}/tags \
+  -H "Authorization: Bearer $token"
+```
+
+成功响应（`200 OK`）：
+
+```json
+{
+  "ok": true,
+  "status": 200,
+  "tags": ["生活", "休息", "闲聊"]
+}
+```
+
+**附加标签**
+
+```bash
+curl -X PUT $base_url/api/records/{record_id:2504}/tags/健身 \
+  -H "Authorization: Bearer $token"
+```
+
+- `tag`：要附加的标签，必填，不能为空白；标签含特殊字符时需 URL 编码（如 `/` 编码为 `%2F`）
+
+成功响应（`201 Created`，标签已存在时为 `200 OK`）：
+
+```json
+{
+  "ok": true,
+  "status": 201,
+  "attached": true,
+  "changed": true,
+  "tags": ["生活", "休息", "闲聊", "健身"]
+}
+```
+
+说明：重复附加同一标签返回 `200` 且 `changed` 为 `false`（幂等）。
+
+**删除标签**
+
+```bash
+curl -X DELETE $base_url/api/records/{record_id:2504}/tags/健身 \
+  -H "Authorization: Bearer $token"
+```
+
+成功响应（`200 OK`）：
+
+```json
+{
+  "ok": true,
+  "status": 200,
+  "detached": true,
+  "changed": true,
+  "tags": ["生活", "休息", "闲聊"]
+}
+```
+
+说明：删除不存在的标签返回 `200` 且 `detached`/`changed` 均为 `false`（幂等）。
 
