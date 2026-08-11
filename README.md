@@ -9,7 +9,7 @@ mdk 个人的数字孪生项目
 POST /api/records
 
 ```bash
-curl -X POST http://$base_url/api/records \
+curl -X POST $base_url/api/records \
   -H "Authorization: Bearer $token" \
   -H "Content-Type: application/json" \
   -d '{
