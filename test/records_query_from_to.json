@@ -82,7 +82,7 @@
         "api": "/api/records?page_size=10&from=notatime",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got notatime"}
+        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got 'notatime'"}
     },
     "from_date_only_hits":{
         "before": [{
@@ -114,7 +114,7 @@
         "api": "/api/records?page_size=10&to=abc",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got abc"}
+        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got 'abc'"}
     },
     "from_multi":{
         "api": "/api/records?page_size=10&from=a&from=b",

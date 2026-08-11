@@ -72,7 +72,7 @@
         "api": "/api/records/export?from=notatime",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got notatime"}
+        "expected": {"ok":false,"status":400,"message":"time value expected in RFC3339 or DateOnly, but got 'notatime'"}
     },
     "multi_from":{
         "api": "/api/records/export?from=a&from=b",
