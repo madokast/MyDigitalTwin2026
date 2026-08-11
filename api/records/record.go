@@ -5,13 +5,13 @@ type Record struct {
 	CreatedAt        JSONTime `json:"created_at"`
 	RawContent       string   `json:"raw_content"`
 	ObjectiveContext string   `json:"objective_context"`
-	AIAnalysis       string   `json:"ai_analysis,omitempty"`
+	AIAnalysis       string   `json:"ai_analysis"`
 	Tags             []string `json:"tags"`
 }
 
 type NewRecord struct {
 	RawContent       string   `json:"raw_content"`
 	ObjectiveContext string   `json:"objective_context"`
-	AIAnalysis       string   `json:"ai_analysis,omitempty"`
+	AIAnalysis       string   `json:"ai_analysis"`
 	Tags             []string `json:"tags"`
 }
