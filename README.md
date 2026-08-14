@@ -10,7 +10,7 @@ mdk 个人的数字孪生项目
 
 GET /api/time
 
-```
+```bash
 curl -X GET "$base_url/api/time" \
   -H "Authorization: Bearer $token"
 ```
