@@ -20,6 +20,7 @@ func main() {
 	server := server.NewServer()
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /api/time", middleware.Auth(server.Time))
 	mux.HandleFunc("GET /api/probe/health", middleware.Auth(server.ProbeHealth))
 	mux.HandleFunc("GET /api/probe/bad-json", middleware.Auth(server.ProbeBadJson))
 	mux.HandleFunc("GET /api/probe/postgresql", middleware.Auth(server.ProbePostgreSQL))

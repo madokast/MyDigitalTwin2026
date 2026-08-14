@@ -2,6 +2,7 @@ package records
 
 import (
 	"dt2026/httpx"
+	"dt2026/lib"
 	"dt2026/lib/optional"
 	"fmt"
 	"time"
@@ -10,15 +11,13 @@ import (
 // JSONTime 序列化为 JSON 后总是 +08:00 时区
 type JSONTime time.Time
 
-var loc = time.FixedZone("CST", 8*3600)
-
 func ParseJSONTime(s string) (JSONTime, *httpx.Error) {
 	parsed, err := time.Parse(
 		time.RFC3339, s,
 	)
 	if err != nil {
 		parsed, err = time.ParseInLocation(
-			time.DateOnly, s, loc,
+			time.DateOnly, s, lib.UTC8,
 		)
 
 		if err != nil {
@@ -52,7 +51,7 @@ func (t *JSONTime) GoTime() time.Time {
 
 func (t JSONTime) MarshalJSON() ([]byte, error) {
 	return []byte(
-		`"` + time.Time(t).In(loc).Format(time.RFC3339) + `"`,
+		`"` + time.Time(t).In(lib.UTC8).Format(time.RFC3339) + `"`,
 	), nil
 }
 
