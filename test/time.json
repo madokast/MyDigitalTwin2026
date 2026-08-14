@@ -1,0 +1,20 @@
+{
+    "miss_token": {
+        "api": "/api/time",
+        "method": "GET",
+        "headers": {},
+        "expected": {"ok":false,"status":401,"message":"missing authorization header"}
+    },
+    "invalid_token": {
+        "api": "/api/time",
+        "method": "GET",
+        "headers": {"Authorization": "Bearer YOUR_TOKEN_HERE"},
+        "expected": {"ok":false,"status":401,"message":"invalid token YOUR_TOKEN_HERE"}
+    },
+    "valid_token": {
+        "api": "/api/time",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"datetime":"{time}","timezone":"Asia/Shanghai","local":{"date":"{existed}","time":"{existed}","weekday":"{existed}"}}
+    }
+}
