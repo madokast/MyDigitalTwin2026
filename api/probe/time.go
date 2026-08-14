@@ -51,7 +51,7 @@ func Time() TimeResponse {
 				now.Day(),
 			),
 			Time: fmt.Sprintf(
-				"%d点%d分%d秒",
+				"%d点%02d分%02d秒",
 				now.Hour(),
 				now.Minute(),
 				now.Second(),
