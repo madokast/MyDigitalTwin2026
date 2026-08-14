@@ -6,6 +6,31 @@ mdk 个人的数字孪生项目
 
 请从 mdk 处获取目前的 base_url 和 token，每个 API 均需要 token 权限。
 
+### 0. 获取当前时间
+
+GET /api/time
+
+```
+curl -X GET "$base_url/api/time" \
+  -H "Authorization: Bearer $token"
+```
+
+**成功响应**（`200 OK`）：
+
+```json
+{
+  "ok": true,
+  "status": 200,
+  "datetime": "2026-08-11T10:30:00+08:00",
+  "timezone": "Asia/Shanghai",
+  "local": {
+    "date": "2026年8月11日",
+    "time": "10点30分00秒",
+    "weekday": "星期二"
+  }
+}
+```
+
 ### 1. 记录 mdk 发言
 
 POST /api/records
