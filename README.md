@@ -183,7 +183,7 @@ curl -X DELETE $base_url/api/records/{record_id:2504}/tags/健身 \
 
 每次创建新的聊天会话时，AI 应首先向 mdk 获取当前 MyDigitalTwin2026 的：
 
-* `base_api`
+* `base_url`
 * `token`
 
 mdk 提供后，按照以下顺序初始化上下文。
@@ -399,7 +399,7 @@ mdk 近期状态
 ```text
 新建聊天
    │
-   ├── 向 mdk 获取 base_api + token
+   ├── 向 mdk 获取 base_url + token
    │
    ├── GET /api/records?page=1&page_size=100
    │       ↓
