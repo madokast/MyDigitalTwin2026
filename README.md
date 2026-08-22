@@ -215,6 +215,10 @@ GET /api/records?page=1&page_size=200
 
 如果第一步中发现记录总数不足 600 条，请直接获取全部记录进行分析。
 
+```http
+GET /api/records?page=1&page_size={total}
+```
+
 否则按照如下方法分两步获取 mdk 最新的记录。
 
 ```http
