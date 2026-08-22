@@ -69,15 +69,13 @@ func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Respon
 		))
 	}
 
-	go func() {
-		_ = bot.SendMessage(fmt.Sprintf(postRecordNotifyMessage,
-			response.Record.ID,
-			response.Record.RawContent,
-			response.Record.ObjectiveContext,
-			response.Record.AIAnalysis,
-			"["+strings.Join(response.Record.Tags, ", ")+"]",
-		))
-	}()
+	bot.SendMessage(fmt.Sprintf(postRecordNotifyMessage,
+		response.Record.ID,
+		response.Record.RawContent,
+		response.Record.ObjectiveContext,
+		response.Record.AIAnalysis,
+		"["+strings.Join(response.Record.Tags, ", ")+"]",
+	))
 
 	return response
 }

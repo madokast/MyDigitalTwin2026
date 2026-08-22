@@ -23,6 +23,7 @@ type Server struct {
 
 func NewServer() *Server {
 	tm, _ := env.Get(envkeys.TestMode)
+	testMode := tm == "true"
 
 	return &Server{
 		pool: sync.OnceValues(func() (*pgxpool.Pool, *httpx.Error) {
@@ -60,7 +61,7 @@ func NewServer() *Server {
 			sender := qqbot.NewSender(appID, appSecret, userOpenID)
 			return sender, nil
 		}),
-		testMode: tm == "true",
+		testMode: testMode,
 	}
 }
 

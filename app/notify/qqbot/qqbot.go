@@ -5,6 +5,7 @@ import (
 	"encoding/json/v2"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -12,50 +13,114 @@ import (
 	"time"
 )
 
-const TokenURL = "https://bots.qq.com/app/getAppAccessToken"
+const tokenURL = "https://bots.qq.com/app/getAppAccessToken"
 
-var defaultAPIBases = []string{
+var botAPIBases = []string{
 	"https://api.sgroup.qq.com",
 	"https://api.bot.qq.com",
 }
 
 type Sender struct {
-	appID       string
-	appSecret   string
-	userOpenID  string
-	token       string
-	tokenExpiry time.Time
-	apiBases    []string
-	mu          sync.RWMutex
-	client      *http.Client
+	appID        string
+	appSecret    string
+	userOpenID   string
+	token        string
+	tokenExpiry  time.Time
+	client       *http.Client
+	messageQueue chan Message
+	disabled     bool
+	err          error
+}
+
+type MessageType int
+
+const (
+	normal  MessageType = 1
+	disable MessageType = 2
+	enable  MessageType = 3
+	flush   MessageType = 4
+)
+
+type Message struct {
+	Content   string
+	WaitGroup *sync.WaitGroup
+	Type      MessageType
 }
 
 func NewSender(appID, appSecret, userOpenID string) *Sender {
-	return &Sender{
+	s := &Sender{
 		appID:      appID,
 		appSecret:  appSecret,
 		userOpenID: userOpenID,
-		apiBases:   defaultAPIBases,
 		client: &http.Client{
 			Timeout: 15 * time.Second,
 		},
+		messageQueue: make(chan Message, 4),
 	}
+	go func() {
+		for message := range s.messageQueue {
+			switch message.Type {
+			case normal:
+				if !s.disabled {
+					err := s.sendMessage(message.Content)
+					if err != nil {
+						s.err = err
+					}
+				}
+			case disable:
+				s.disabled = true
+			case enable:
+				s.disabled = false
+			case flush:
+				message.WaitGroup.Done()
+			default:
+				slog.Error("unknown message type", "type", message.Type)
+			}
+		}
+	}()
+
+	return s
+}
+
+func (s *Sender) Disable() {
+	s.messageQueue <- Message{
+		Type: disable,
+	}
+}
+
+func (s *Sender) Enable() {
+	s.messageQueue <- Message{
+		Type: enable,
+	}
+}
+
+func (s *Sender) SendMessage(text string) {
+	s.messageQueue <- Message{
+		Content: text,
+		Type:    normal,
+	}
+}
+
+func (s *Sender) Flush() {
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	s.messageQueue <- Message{
+		WaitGroup: wg,
+		Type:      flush,
+	}
+	wg.Wait()
+}
+
+func (s *Sender) Close() {
+	close(s.messageQueue)
+}
+
+func (s *Sender) Error() error {
+	return s.err
 }
 
 func (s *Sender) getToken(forceRefresh bool) (string, error) {
 	// 非强制刷新时，先检查缓存的 Token 是否有效
-	s.mu.RLock()
-	if !forceRefresh && s.token != "" && time.Now().Before(s.tokenExpiry) {
-		token := s.token
-		s.mu.RUnlock()
-		return token, nil
-	}
-	s.mu.RUnlock()
-
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	// 双重检查（防止并发时重复刷新）
 	if !forceRefresh && s.token != "" && time.Now().Before(s.tokenExpiry) {
 		return s.token, nil
 	}
@@ -78,7 +143,7 @@ func (s *Sender) getToken(forceRefresh bool) (string, error) {
 		return "", fmt.Errorf("failed to marshal token request: %w", err)
 	}
 
-	resp, err := s.client.Post(TokenURL, "application/json", bytes.NewReader(data))
+	resp, err := s.client.Post(tokenURL, "application/json", bytes.NewReader(data))
 	if err != nil {
 		if oldToken != "" && time.Now().Before(oldExpiry) {
 			return oldToken, nil
@@ -136,11 +201,7 @@ func (s *Sender) getToken(forceRefresh bool) (string, error) {
 	return s.token, nil
 }
 
-func (s *Sender) SendMessage(text string) error {
-	if s == nil {
-		return nil
-	}
-
+func (s *Sender) sendMessage(text string) error {
 	path := "/v2/users/" + url.PathEscape(s.userOpenID) + "/messages"
 	payload := map[string]any{
 		"content":  text,
@@ -168,7 +229,7 @@ func (s *Sender) SendMessage(text string) error {
 
 		// 重置 unauthorized 标志，用于判断本次尝试是否因 401 失败
 		var isUnauthorized bool
-		for _, base := range s.apiBases {
+		for _, base := range botAPIBases {
 			req, err := http.NewRequest("POST", base+path, bytes.NewReader(data))
 			if err != nil {
 				lastErr = fmt.Errorf("request creation failed: %w", err)
