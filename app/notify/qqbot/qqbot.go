@@ -33,7 +33,7 @@ type Sender struct {
 	client       *http.Client
 	messageQueue chan Message
 	disabled     bool
-	lastErr      error
+	latchedErr   error
 }
 
 type MessageType int
@@ -69,8 +69,8 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 			case normal:
 				if !s.disabled {
 					err := s.sendMessage(message.Content)
-					if err != nil {
-						s.lastErr = err
+					if err != nil && s.latchedErr == nil {
+						s.latchedErr = err
 					}
 				}
 			case disable:
@@ -80,8 +80,8 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 			case flush:
 				// pass
 			case takeLastError:
-				*message.TakedLastError = s.lastErr
-				s.lastErr = nil
+				*message.TakedLastError = s.latchedErr
+				s.latchedErr = nil
 			default:
 				slog.Error("unknown message type", "type", message.Type)
 			}
