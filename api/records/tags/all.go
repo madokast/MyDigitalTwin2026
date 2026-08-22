@@ -1,0 +1,73 @@
+package tags
+
+import (
+	"context"
+	"dt2026/httpx"
+	"fmt"
+	"net/http"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+type TagCount struct {
+	Tag   string `json:"tag"`
+	Count int    `json:"count"`
+}
+
+type GetAllTagsResponse struct {
+	Ok     bool       `json:"ok"`
+	Status int        `json:"status"`
+	Tags   []TagCount `json:"tags"`
+}
+
+func (r GetAllTagsResponse) GetStatus() int {
+	return r.Status
+}
+
+func GetAll(pool *pgxpool.Pool) httpx.Response {
+
+	var response = GetAllTagsResponse{
+		Ok:     true,
+		Status: http.StatusOK,
+	}
+
+	const sql = getAllTagCountSQL
+	rows, err := pool.Query(
+		context.Background(),
+		sql,
+	)
+	if err != nil {
+		return httpx.NewInternalServerError(fmt.Sprintf(
+			"failed to query %s: %s",
+			sql, err.Error(),
+		))
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var tc TagCount
+
+		err := rows.Scan(
+			&tc.Tag,
+			&tc.Count,
+		)
+
+		if err != nil {
+			return httpx.NewInternalServerError(fmt.Sprintf(
+				"failed to scan row in querying %s: %s",
+				sql, err.Error(),
+			))
+		}
+
+		response.Tags = append(response.Tags, tc)
+	}
+
+	if err := rows.Err(); err != nil {
+		return httpx.NewInternalServerError(fmt.Sprintf(
+			"failed to iterate rows in querying %s: %s",
+			sql, err.Error(),
+		))
+	}
+
+	return response
+}

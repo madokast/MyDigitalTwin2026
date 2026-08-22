@@ -31,6 +31,7 @@ func main() {
 	mux.HandleFunc("POST /api/records", middleware.Auth(server.RecordsPost))
 	mux.HandleFunc("GET /api/records", middleware.Auth(server.RecordsQuery))
 	mux.HandleFunc("GET /api/records/export", middleware.Auth(server.RecordsExport))
+	mux.HandleFunc("GET /api/records/tags", middleware.Auth(server.RecordTagsGetAll))
 	mux.HandleFunc("GET /api/records/{record_id}", middleware.Auth(server.RecordGet))
 	mux.HandleFunc("GET /api/records/{record_id}/tags", middleware.Auth(server.RecordTagsGet))
 	mux.HandleFunc("PUT /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagsAttach))

@@ -4,6 +4,16 @@ const getRecordTagsSQL = `
 SELECT tags FROM records WHERE id=$1;
 `
 
+const getAllTagCountSQL = `
+SELECT
+    tag,
+    COUNT(*) AS cnt
+FROM records
+CROSS JOIN LATERAL unnest(tags) AS tag
+GROUP BY tag
+ORDER BY cnt DESC, tag;
+`
+
 const (
 	attachResultTagAttached      = 1
 	attachResultRecordNotFound   = 2

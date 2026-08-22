@@ -6,6 +6,16 @@ import (
 	"net/http"
 )
 
+func (s *Server) RecordTagsGetAll(w http.ResponseWriter, r *http.Request) {
+	pool, err := s.DB()
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	httpx.WriteJSON(w, tags.GetAll(pool))
+}
+
 func (s *Server) RecordTagsGet(w http.ResponseWriter, r *http.Request) {
 	pv := httpx.PathParams{Request: r}
 
