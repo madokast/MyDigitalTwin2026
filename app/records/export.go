@@ -52,14 +52,18 @@ type checkableWriter struct {
 func (w *checkableWriter) Write(p []byte) (int, error) {
 	if !w.started {
 		w.started = true
-		w.w.Header().Set("Content-Type", "application/x-ndjson")
-		w.w.WriteHeader(http.StatusOK)
+		w.writeHeader()
 	}
 	n, err := w.w.Write(p)
 	if err != nil {
 		slog.Error("failed to write response", "err", err)
 	}
 	return n, err
+}
+
+func (w *checkableWriter) writeHeader() {
+	w.w.Header().Set("Content-Type", "application/x-ndjson")
+	w.w.WriteHeader(http.StatusOK)
 }
 
 func (w *checkableWriter) sendError(err *httpx.Error) *httpx.Error {
@@ -97,6 +101,7 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 	defer rows.Close()
 
 	cw := checkableWriter{w: w}
+	exportCount := 0
 	for rows.Next() {
 		var record Record
 		var createdAt time.Time
@@ -128,6 +133,7 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 		}
 		_, _ = cw.Write(data)
 		_, _ = cw.Write([]byte{'\n'})
+		exportCount++
 	}
 
 	if err := rows.Err(); err != nil {
@@ -135,6 +141,10 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 			"failed to export records while iterating rows in querying %s with %v: %s",
 			sql, args, err.Error(),
 		)))
+	}
+
+	if exportCount == 0 {
+		cw.writeHeader()
 	}
 
 	return nil
