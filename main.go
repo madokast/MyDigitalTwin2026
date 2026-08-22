@@ -3,8 +3,8 @@ package main
 import (
 	"dt2026/app/envkeys"
 	"dt2026/app/middleware"
-	"dt2026/app/server"
 	"dt2026/env"
+	http_server "dt2026/server/http"
 	"log/slog"
 	"net/http"
 	"os"
@@ -17,7 +17,7 @@ func main() {
 		slog.Error("failed to load env", "err", err)
 		os.Exit(1)
 	}
-	server := server.NewServer()
+	server := http_server.NewServer()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/time", middleware.Auth(server.Time))
