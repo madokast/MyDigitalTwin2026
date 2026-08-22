@@ -31,7 +31,8 @@ const exportRecordSQL = `
 SELECT id, created_at, raw_content, 
   objective_context, ai_analysis, 
   tags
-FROM records WHERE 1=1
+FROM records WHERE 1=1%s
+ORDER BY id ASC;
 `
 
 const countRecordSQL = `

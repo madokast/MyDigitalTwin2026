@@ -75,7 +75,7 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 		From: r.From,
 		To:   r.To,
 	}, DisablePage)
-	sql := exportRecordSQL + sqlTail
+	sql := fmt.Sprintf(exportRecordSQL, sqlTail)
 
 	rows, err := pool.Query(context.Background(), sql, args...)
 	if err != nil {
