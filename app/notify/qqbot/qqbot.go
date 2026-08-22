@@ -29,24 +29,24 @@ type Sender struct {
 	client       *http.Client
 	messageQueue chan Message
 	disabled     bool
-	err          error
+	lastErr      error
 }
 
 type MessageType int
 
 const (
-	normal    MessageType = 1
-	disable   MessageType = 2
-	enable    MessageType = 3
-	flush     MessageType = 4
-	takeError MessageType = 5
+	normal        MessageType = 1
+	disable       MessageType = 2
+	enable        MessageType = 3
+	flush         MessageType = 4
+	takeLastError MessageType = 5
 )
 
 type Message struct {
-	Type       MessageType
-	Content    string
-	TakedError error
-	WaitGroup  *sync.WaitGroup
+	Type           MessageType
+	Content        string
+	TakedLastError **error
+	WaitGroup      *sync.WaitGroup
 }
 
 func NewSender(appID, appSecret, userOpenID string) *Sender {
@@ -66,7 +66,7 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 				if !s.disabled {
 					err := s.sendMessage(message.Content)
 					if err != nil {
-						s.err = err
+						s.lastErr = err
 					}
 				}
 			case disable:
@@ -75,9 +75,9 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 				s.disabled = false
 			case flush:
 				// pass
-			case takeError:
-				message.TakedError = s.err
-				s.err = nil
+			case takeLastError:
+				*message.TakedLastError = &s.lastErr
+				s.lastErr = nil
 			default:
 				slog.Error("unknown message type", "type", message.Type)
 			}
@@ -125,13 +125,14 @@ func (s *Sender) Close() {
 
 func (s *Sender) TakeError() error {
 	m := Message{
-		Type:      takeError,
-		WaitGroup: &sync.WaitGroup{},
+		Type:           takeLastError,
+		TakedLastError: new(*error),
+		WaitGroup:      &sync.WaitGroup{},
 	}
 	m.WaitGroup.Add(1)
 	s.messageQueue <- m
 	m.WaitGroup.Wait()
-	return m.TakedError
+	return **m.TakedLastError
 }
 
 func (s *Sender) getToken(forceRefresh bool) (string, error) {
