@@ -1,7 +1,7 @@
 package probe
 
 import (
-	"dt2026/api/notify/qqbot"
+	"dt2026/app/notify/qqbot"
 	"dt2026/httpx"
 	"net/http"
 )

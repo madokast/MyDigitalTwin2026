@@ -1,7 +1,7 @@
 package server
 
 import (
-	"dt2026/api/probe"
+	"dt2026/app/probe"
 	"dt2026/httpx"
 	"net/http"
 )

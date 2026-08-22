@@ -1,7 +1,7 @@
 package server
 
 import (
-	"dt2026/api/records/tags"
+	"dt2026/app/records/tags"
 	"dt2026/httpx"
 	"net/http"
 )
