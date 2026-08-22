@@ -188,15 +188,15 @@ curl -X DELETE $base_url/api/records/{record_id:2504}/tags/健身 \
 
 mdk 提供后，按照以下顺序初始化上下文。
 
-#### 第一步：获取 mdk 历史记录
+#### 第一步：获取 mdk 最早的 200 条记录
 
 调用：
 
 ```http
-GET /api/records?page=1&page_size=100
+GET /api/records?page=1&page_size=200
 ```
 
-读取最早的 100 条记录，综合其中的 `raw_content`、`objective_context`、`ai_analysis` 和 `tags`，建立对 mdk 长期情况的初步认识。
+读取最早的 200 条记录，综合其中的 `raw_content`、`objective_context`、`ai_analysis` 和 `tags`，建立对 mdk 长期情况的初步认识。
 
 重点了解：
 
@@ -211,14 +211,14 @@ GET /api/records?page=1&page_size=100
 
 不要求将 mdk 画像再次写入 MyDigitalTwin2026，除非 mdk 明确要求记录。
 
-#### 第二步：获取最近的 100 条记录
+#### 第二步：获取最近的记录
 
-继续查询记录，获取 mdk 最新的 100 条记录。
+继续查询记录，获取 mdk 最新的记录。
 
-由于 `/api/records` 默认按照 `id` 升序返回，因此应根据响应中的 `total` 和 `total_page` 计算最后一页，例如：
+由于 `/api/records` 默认按照 `id` 升序返回，因此应根据上一步响应中的 `total` 和 `total_page` 获取最新的记录，例如：
 
 ```http
-GET /api/records?page=25&page_size=100
+GET /api/records?page={total_page-1}&page_size=400
 ```
 
 综合分析这些记录，重点了解 mdk **近期生活状态**：
@@ -233,7 +233,7 @@ GET /api/records?page=25&page_size=100
 
 形成一份“mdk 最新生活情况”的临时上下文。
 
-> 如果记录总数不足 100 条，则直接获取最后一页即可。
+> 如果记录总数不足 500 条，请直接获取全部记录。
 
 #### 第三步：获取当前时间
 
