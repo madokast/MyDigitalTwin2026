@@ -24,10 +24,6 @@ func (s *Server) RecordsPost(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSON(w, err)
 		return
 	}
-	if s.testMode {
-		bot.Disable()
-		defer bot.Enable()
-	}
 
 	httpx.WriteJSON(w, records.Post(&record, pool, bot))
 }

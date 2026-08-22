@@ -59,6 +59,9 @@ func NewServer() *Server {
 			}
 
 			sender := qqbot.NewSender(appID, appSecret, userOpenID)
+			if testMode {
+				sender.Disable()
+			}
 			return sender, nil
 		}),
 		testMode: testMode,
