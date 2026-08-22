@@ -1,29 +1,144 @@
 {
-  "initialize": {
-    "api": "/mcp",
-    "method": "POST",
-    "headers": {
-      "Authorization": "{token}",
-      "Content-Type": "application/json",
-      "Accept": "application/json, text/event-stream"
+    "miss_token": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {},
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2025-06-18",
+                "capabilities": {},
+                "clientInfo": {"name": "test-client", "version": "1.0.0"}
+            }
+        },
+        "expected": {"ok": false, "status": 401, "message": "missing authorization header"}
     },
-    "data": {
-      "jsonrpc": "2.0",
-      "id": 1,
-      "method": "initialize",
-      "params": {
-        "protocolVersion": "2025-06-18",
-        "capabilities": {},
-        "clientInfo": {
-          "name": "test-client",
-          "version": "1.0.0"
+    "invalid_token": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {"Authorization": "Bearer YOUR_TOKEN_HERE"},
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2025-06-18",
+                "capabilities": {},
+                "clientInfo": {"name": "test-client", "version": "1.0.0"}
+            }
+        },
+        "expected": {"ok": false, "status": 401, "message": "invalid token YOUR_TOKEN_HERE"}
+    },
+    "initialize": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2025-06-18",
+                "capabilities": {},
+                "clientInfo": {"name": "test-client", "version": "1.0.0"}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+                "protocolVersion": "2025-06-18",
+                "capabilities": {
+                    "tools": {"listChanged": true}
+                },
+                "serverInfo": {
+                    "name": "MyDigitalTwin2026",
+                    "title": "mdk 个人的数字孪生项目",
+                    "description": "{existed}",
+                    "version": "0.0.1"
+                }
+            }
         }
-      }
     },
-    "expected": {
-      "jsonrpc": "2.0",
-      "id": 1,
-      "result": "{existed}"
+    "ping": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "ping",
+            "params": {}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {}
+        }
+    },
+    "tools_list": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/list",
+            "params": {}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "tools": [
+                    {
+                        "name": "probe_health",
+                        "description": "探测服务器运行监控情况",
+                        "inputSchema": {
+                            "type": "object",
+                            "additionalProperties": false
+                        },
+                        "outputSchema": "{existed}"
+                    }
+                ]
+            }
+        }
+    },
+    "unknown_tool": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {"name": "no_such_tool", "arguments": {}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "error": {
+                "code": -32602,
+                "message": "unknown tool \"no_such_tool\""
+            }
+        }
     }
-  }
 }

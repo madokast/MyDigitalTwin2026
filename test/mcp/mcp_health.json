@@ -1,0 +1,83 @@
+{
+    "call_ok": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {"name": "probe_health", "arguments": {}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "now": "{time}"
+                }
+            }
+        }
+    },
+    "call_ok_omit_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {"name": "probe_health"}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "now": "{time}"
+                }
+            }
+        }
+    },
+    "extra_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {"name": "probe_health", "arguments": {"foo": 1}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    }
+}
