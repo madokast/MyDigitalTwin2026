@@ -28,12 +28,10 @@ FROM records WHERE 1=1
 `
 
 const exportRecordSQL = `
-COPY (
-    SELECT to_jsonb(records)
-    FROM records
-    WHERE 1=1%s
-    ORDER BY id ASC
-) TO STDOUT;
+SELECT id, created_at, raw_content, 
+  objective_context, ai_analysis, 
+  tags
+FROM records WHERE 1=1
 `
 
 const countRecordSQL = `

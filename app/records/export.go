@@ -4,9 +4,11 @@ import (
 	"context"
 	"dt2026/httpx"
 	"dt2026/lib/optional"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -53,7 +55,11 @@ func (w *checkableWriter) Write(p []byte) (int, error) {
 		w.w.Header().Set("Content-Type", "application/x-ndjson")
 		w.w.WriteHeader(http.StatusOK)
 	}
-	return w.w.Write(p)
+	n, err := w.w.Write(p)
+	if err != nil {
+		slog.Error("failed to write response", "err", err)
+	}
+	return n, err
 }
 
 func Export(r *ExportRequest, w http.ResponseWriter,
@@ -65,57 +71,83 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 	}
 	// validate 和后续导出不开启事务，允许中途存在新增，可能导致数目稍微超过限制
 
-	var predicates string
+	sqlTail, args := makeQuerySQLTail(&QueryCriteria{
+		From: r.From,
+		To:   r.To,
+	}, DisablePage)
+	sql := exportRecordSQL + sqlTail
 
-	// PostgreSQL timestamptz 精度到微秒
-	const RFC3339Micro = "2006-01-02T15:04:05.999999Z07:00"
-	if from, ok := r.From.Get(); ok {
-		predicates += fmt.Sprintf(
-			" AND created_at >= '%s'::timestamptz",
-			from.GoTime().UTC().Format(RFC3339Micro),
-		)
-	}
-	if to, ok := r.To.Get(); ok {
-		predicates += fmt.Sprintf(
-			" AND created_at < '%s'::timestamptz",
-			to.GoTime().UTC().Format(RFC3339Micro),
-		)
-	}
-
-	conn, err := pool.Acquire(context.Background())
+	rows, err := pool.Query(context.Background(), sql, args...)
 	if err != nil {
 		return httpx.NewInternalServerError(fmt.Sprintf(
-			"failed to acquire pgx connection from pool: %s",
-			err.Error(),
+			"failed to query %s with %v: %s",
+			sql, args, err.Error(),
 		))
 	}
-	defer conn.Release()
-
-	sql := fmt.Sprintf(
-		exportRecordSQL,
-		predicates,
-	)
+	defer rows.Close()
 
 	cw := checkableWriter{w: w}
-	_, err = conn.Conn().PgConn().CopyTo(
-		context.Background(),
-		&cw,
-		sql,
-	)
+	for rows.Next() {
+		var record Record
+		var createdAt time.Time
 
-	if err != nil {
-		slog.Error(
-			"failed to export records while executing copy-to",
-			"sql", sql, "err", err,
+		err := rows.Scan(
+			&record.ID,
+			&createdAt,
+			&record.RawContent,
+			&record.ObjectiveContext,
+			&record.AIAnalysis,
+			&record.Tags,
 		)
-		if !cw.started {
-			return httpx.NewInternalServerError(fmt.Sprintf(
-				"failed to export records while executing %s: %s",
-				sql, err.Error(),
-			))
+
+		if err != nil {
+			msg := fmt.Sprintf(
+				"failed to scan row in querying %s with %v: %s",
+				sql, args, err.Error(),
+			)
+			if cw.started {
+				// 传输到一半，无法改写响应头
+				_, _ = cw.Write([]byte("export failed!\n"))
+				_, _ = cw.Write([]byte(msg))
+				return nil
+			} else {
+				return httpx.NewInternalServerError(msg)
+			}
+		}
+
+		record.CreatedAt = JSONTime(createdAt)
+
+		data, err := json.Marshal(record)
+		if err != nil {
+			msg := fmt.Sprintf(
+				"failed to json marshal record %v: %s",
+				record, err.Error(),
+			)
+			if cw.started {
+				// 传输到一半，无法改写响应头
+				_, _ = cw.Write([]byte("export failed!\n"))
+				_, _ = cw.Write([]byte(msg))
+				return nil
+			} else {
+				return httpx.NewInternalServerError(msg)
+			}
+		}
+		_, _ = cw.Write(data)
+		_, _ = cw.Write([]byte{'\n'})
+	}
+
+	if err := rows.Err(); err != nil {
+		msg := fmt.Sprintf(
+			"failed to iterate rows in querying %s with %v: %s",
+			sql, args, err.Error(),
+		)
+		if cw.started {
+			// 传输到一半，无法改写响应头
+			_, _ = cw.Write([]byte("export failed!\n"))
+			_, _ = cw.Write([]byte(msg))
+			return nil
 		} else {
-			// 输出到到一半时 PostgreSQL 出错，无法改写响应头
-			// 符合 HTTP streaming 的正常语义
+			return httpx.NewInternalServerError(msg)
 		}
 	}
 

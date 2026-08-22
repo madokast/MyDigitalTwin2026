@@ -86,7 +86,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 		return err
 	}
 
-	sqlTail, args := makeQuerySQLTail(criteria, true)
+	sqlTail, args := makeQuerySQLTail(criteria, EnablePage)
 	sql := queryRecordSQL + sqlTail
 
 	rows, err := pool.Query(context.Background(), sql, args...)
@@ -157,7 +157,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 }
 
 func queryTotal(criteria *QueryCriteria, pool *pgxpool.Pool) (int64, *httpx.Error) {
-	sqlTail, args := makeQuerySQLTail(criteria, false)
+	sqlTail, args := makeQuerySQLTail(criteria, DisablePage)
 	sql := countRecordSQL + sqlTail
 
 	var total int64
@@ -177,9 +177,16 @@ func queryTotal(criteria *QueryCriteria, pool *pgxpool.Pool) (int64, *httpx.Erro
 	return total, nil
 }
 
+type EnablePageType bool
+
+const (
+	EnablePage  EnablePageType = true
+	DisablePage EnablePageType = false
+)
+
 // makeQuerySQLTail 构造 SQL 语句
 // enablePage 带上 ORDER、LIMIT、OFFSET 信息
-func makeQuerySQLTail(criteria *QueryCriteria, enablePage bool) (sqlTail string, args []any) {
+func makeQuerySQLTail(criteria *QueryCriteria, enablePage EnablePageType) (sqlTail string, args []any) {
 	// from, to
 	if from, ok := criteria.From.Get(); ok {
 		args = append(args, from.GoTime())
