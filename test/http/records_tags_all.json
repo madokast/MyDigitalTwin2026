@@ -1,0 +1,75 @@
+{
+    "miss_token": {
+        "api": "/api/records/tags",
+        "method": "GET",
+        "headers": {},
+        "expected": {"ok":false,"status":401,"message":"missing authorization header"}
+    },
+    "invalid_token": {
+        "api": "/api/records/tags",
+        "method": "GET",
+        "headers": {"Authorization": "Bearer YOUR_TOKEN_HERE"},
+        "expected": {"ok":false,"status":401,"message":"invalid token YOUR_TOKEN_HERE"}
+    },
+    "shape": {
+        "api": "/api/records/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"tags":"{array}"}
+    },
+    "after_write": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}"]}
+        }],
+        "api": "/api/records/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"tags":"{array}"}
+    },
+    "after_attach": {
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                    "tags": []},
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+                "method": "PUT",
+                "headers": {"Authorization": "{token}"}
+            }
+        ],
+        "api": "/api/records/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"tags":"{array}"}
+    },
+    "after_detach": {
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                    "tags": ["{unique:4}"]},
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+                "method": "DELETE",
+                "headers": {"Authorization": "{token}"}
+            }
+        ],
+        "api": "/api/records/tags",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":true,"status":200,"tags":"{array}"}
+    }
+}
