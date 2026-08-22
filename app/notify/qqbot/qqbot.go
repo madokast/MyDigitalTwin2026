@@ -42,9 +42,9 @@ const (
 )
 
 type Message struct {
-	Content   string
-	WaitGroup *sync.WaitGroup
-	Type      MessageType
+	Content        string
+	FlushWaitGroup *sync.WaitGroup
+	Type           MessageType
 }
 
 func NewSender(appID, appSecret, userOpenID string) *Sender {
@@ -72,7 +72,7 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 			case enable:
 				s.disabled = false
 			case flush:
-				message.WaitGroup.Done()
+				message.FlushWaitGroup.Done()
 			default:
 				slog.Error("unknown message type", "type", message.Type)
 			}
@@ -105,8 +105,8 @@ func (s *Sender) Flush() {
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	s.messageQueue <- Message{
-		WaitGroup: wg,
-		Type:      flush,
+		FlushWaitGroup: wg,
+		Type:           flush,
 	}
 	wg.Wait()
 }
