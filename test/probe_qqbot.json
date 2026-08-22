@@ -4,5 +4,11 @@
         "method": "GET",
         "headers": {"Authorization": "{token}"},
         "expected": {"ok":true,"status":200}
+    },
+    "empty_message" :{
+        "api": "/api/probe/qqbot?message=",
+        "method": "GET",
+        "headers": {"Authorization": "{token}"},
+        "expected": {"ok":false,"status":400, "message": "failed to send message via QQ Bot: message is empty"}
     }
 }

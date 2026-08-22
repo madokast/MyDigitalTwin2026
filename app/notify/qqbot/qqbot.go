@@ -3,12 +3,14 @@ package qqbot
 import (
 	"bytes"
 	"encoding/json/v2"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -19,6 +21,8 @@ var botAPIBases = []string{
 	"https://api.sgroup.qq.com",
 	"https://api.bot.qq.com",
 }
+
+var EmptyMessageErr = errors.New("message is empty")
 
 type Sender struct {
 	appID        string
@@ -45,7 +49,7 @@ const (
 type Message struct {
 	Type           MessageType
 	Content        string
-	TakedLastError **error
+	TakedLastError *error
 	WaitGroup      *sync.WaitGroup
 }
 
@@ -76,7 +80,7 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 			case flush:
 				// pass
 			case takeLastError:
-				*message.TakedLastError = &s.lastErr
+				*message.TakedLastError = s.lastErr
 				s.lastErr = nil
 			default:
 				slog.Error("unknown message type", "type", message.Type)
@@ -126,13 +130,13 @@ func (s *Sender) Close() {
 func (s *Sender) TakeError() error {
 	m := Message{
 		Type:           takeLastError,
-		TakedLastError: new(*error),
+		TakedLastError: new(error),
 		WaitGroup:      &sync.WaitGroup{},
 	}
 	m.WaitGroup.Add(1)
 	s.messageQueue <- m
 	m.WaitGroup.Wait()
-	return **m.TakedLastError
+	return *m.TakedLastError
 }
 
 func (s *Sender) getToken(forceRefresh bool) (string, error) {
@@ -218,6 +222,11 @@ func (s *Sender) getToken(forceRefresh bool) (string, error) {
 }
 
 func (s *Sender) sendMessage(text string) error {
+	text = strings.TrimSpace(text)
+	if len(text) == 0 {
+		return EmptyMessageErr
+	}
+
 	path := "/v2/users/" + url.PathEscape(s.userOpenID) + "/messages"
 	payload := map[string]any{
 		"content":  text,

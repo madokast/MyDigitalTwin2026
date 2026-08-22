@@ -19,10 +19,18 @@ func (s *Server) ProbePostgreSQL(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) ProbeQQBot(w http.ResponseWriter, r *http.Request) {
+	q := httpx.QueryParams(r.URL.Query())
+
+	message, err := q.GetOptionalSingleString("message")
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
 	bot, err := s.qqbot()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
 	}
-	httpx.WriteJSON(w, probe.ProbeQQBot(bot))
+	httpx.WriteJSON(w, probe.ProbeQQBot(message, bot))
 }
