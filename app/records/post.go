@@ -69,7 +69,7 @@ func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Respon
 		))
 	}
 
-	bot.SendMessage(fmt.Sprintf(postRecordNotifyMessage,
+	bot.SendMessageAsync(fmt.Sprintf(postRecordNotifyMessage,
 		response.Record.ID,
 		response.Record.RawContent,
 		response.Record.ObjectiveContext,

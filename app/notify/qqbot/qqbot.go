@@ -33,24 +33,21 @@ type Sender struct {
 	client       *http.Client
 	messageQueue chan Message
 	disabled     bool
-	latchedErr   error
 }
 
 type MessageType int
 
 const (
-	normal        MessageType = 1
-	disable       MessageType = 2
-	enable        MessageType = 3
-	flush         MessageType = 4
-	takeLastError MessageType = 5
+	normal  MessageType = 1
+	disable MessageType = 2
+	enable  MessageType = 3
 )
 
 type Message struct {
-	Type           MessageType
-	Content        string
-	TakedLastError *error
-	WaitGroup      *sync.WaitGroup
+	Type      MessageType
+	Content   string
+	Error     *error
+	WaitGroup *sync.WaitGroup
 }
 
 func NewSender(appID, appSecret, userOpenID string) *Sender {
@@ -69,19 +66,14 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 			case normal:
 				if !s.disabled {
 					err := s.sendMessage(message.Content)
-					if err != nil && s.latchedErr == nil {
-						s.latchedErr = err
+					if err != nil && message.Error == nil {
+						*message.Error = err
 					}
 				}
 			case disable:
 				s.disabled = true
 			case enable:
 				s.disabled = false
-			case flush:
-				// pass
-			case takeLastError:
-				*message.TakedLastError = s.latchedErr
-				s.latchedErr = nil
 			default:
 				slog.Error("unknown message type", "type", message.Type)
 			}
@@ -106,37 +98,28 @@ func (s *Sender) Enable() {
 	}
 }
 
-func (s *Sender) SendMessage(text string) {
+func (s *Sender) SendMessageAsync(text string) {
 	s.messageQueue <- Message{
 		Type:    normal,
 		Content: text,
 	}
 }
 
-func (s *Sender) Flush() {
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	s.messageQueue <- Message{
-		Type:      flush,
-		WaitGroup: wg,
-	}
-	wg.Wait()
-}
-
-func (s *Sender) Close() {
-	close(s.messageQueue)
-}
-
-func (s *Sender) TakeError() error {
+func (s *Sender) SendMessage(text string) error {
 	m := Message{
-		Type:           takeLastError,
-		TakedLastError: new(error),
-		WaitGroup:      &sync.WaitGroup{},
+		Type:      normal,
+		Content:   text,
+		Error:     new(error),
+		WaitGroup: &sync.WaitGroup{},
 	}
 	m.WaitGroup.Add(1)
 	s.messageQueue <- m
 	m.WaitGroup.Wait()
-	return *m.TakedLastError
+	return *m.Error
+}
+
+func (s *Sender) Close() {
+	close(s.messageQueue)
 }
 
 func (s *Sender) getToken(forceRefresh bool) (string, error) {

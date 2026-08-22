@@ -18,9 +18,7 @@ func (r ProbeQQBotResponse) GetStatus() int {
 }
 
 func ProbeQQBot(message optional.Optional[string], sender *qqbot.Sender) httpx.Response {
-	sender.SendMessage(message.Or("Probe test message"))
-	// sender.Flush()
-	err := sender.TakeError()
+	err := sender.SendMessage(message.Or("Probe test message"))
 	if err != nil {
 		if errors.Is(err, qqbot.EmptyMessageErr) {
 			return httpx.NewBadRequestError("failed to send message via QQ Bot: " + err.Error())
