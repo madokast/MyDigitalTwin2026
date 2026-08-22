@@ -218,7 +218,8 @@ GET /api/records?page=1&page_size=200
 由于 `/api/records` 默认按照 `id` 升序返回，因此应根据上一步响应中的 `total` 和 `total_page` 获取最新的记录，例如：
 
 ```http
-GET /api/records?page={total_page-1}&page_size=400
+GET /api/records?page={total_page-1}&page_size=200
+GET /api/records?page={total_page}&page_size=200
 ```
 
 综合分析这些记录，重点了解 mdk **近期生活状态**：
