@@ -6,14 +6,20 @@ import (
 	"dt2026/lib/optional"
 	"errors"
 	"fmt"
+	"regexp"
 	"time"
 )
 
 // JSONTime 序列化为 JSON 后总是 +08:00 时区
 type JSONTime time.Time
 
+var tzSpace = regexp.MustCompile(`^(\S+) (\d{2}:\d{2})$`)
+
 // ParseJSONTime 优先为 RFC3339Nano 格式，也支持本地日期
 func ParseJSONTime(s string) (JSONTime, *httpx.Error) {
+	// 时区的 X+08:00 在 URL query 中会被解析为 X 08:00
+	s = tzSpace.ReplaceAllString(s, `$1+$2`)
+
 	parsed, err := time.Parse(
 		lib.RFC3339Nano, s,
 	)

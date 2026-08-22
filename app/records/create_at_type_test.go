@@ -48,3 +48,32 @@ func TestJsonMarshalJSONAndUnmarshalJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestParseJSONTime(t *testing.T) {
+	_, err := ParseJSONTime("2026-08-22T15:00:00+08:00")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestParseJSONTime2(t *testing.T) {
+	_, err := ParseJSONTime("2026-08-22T15:00:00-08:00")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestParseJSONTime3(t *testing.T) {
+	t1, err := ParseJSONTime("2026-08-22T15:00:00 08:00")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t2, err := ParseJSONTime("2026-08-22T15:00:00+08:00")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if t1 != t2 {
+		t.Fatalf("%v != %v", t1, t2)
+	}
+}
