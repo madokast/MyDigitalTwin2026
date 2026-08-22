@@ -57,6 +57,7 @@
                 "capabilities": {
                     "tools": {"listChanged": true}
                 },
+                "instructions": "{existed}",
                 "serverInfo": {
                     "name": "MyDigitalTwin2026",
                     "title": "mdk 个人的数字孪生项目",
@@ -107,7 +108,7 @@
                 "tools": [
                     {
                         "name": "probe_health",
-                        "description": "探测服务器运行监控情况",
+                        "description": "探测服务是否可用，返回 ok、HTTP 状态和服务器当前时间（毫秒，+08:00）。不要用它查询历史或写入记录。",
                         "inputSchema": {
                             "type": "object",
                             "additionalProperties": false

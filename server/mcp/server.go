@@ -27,7 +27,9 @@ func NewServer(httpServer *http.Server) *Server {
 				Description: ServerDescription,
 				Version:     "0.0.1",
 			},
-			nil,
+			&mcp_sdk.ServerOptions{
+				Instructions: ServerInstructions,
+			},
 		),
 		httpServer: httpServer,
 	}

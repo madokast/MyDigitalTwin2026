@@ -7,7 +7,7 @@ import (
 
 const Name = "probe_health"
 
-const Description = "探测服务器运行监控情况"
+const Description = "探测服务是否可用，返回 ok、HTTP 状态和服务器当前时间（毫秒，+08:00）。不要用它查询历史或写入记录。"
 
 type Input struct {
 }

@@ -6,12 +6,10 @@ import (
 	"time"
 )
 
-const HealthDescription = "Probe health status of the MyDigitalTwin2026 server"
-
 type HealthResponse struct {
-	Ok     bool   `json:"ok" jsonschema:"请求相应结果"`
-	Status int    `json:"status" jsonschema:"HTTP status code"`
-	Now    string `json:"now" jsonschema:"当前服务器时间，采用 RFC3339Milli 格式字符串返回"`
+	Ok     bool   `json:"ok" jsonschema:"是否成功"`
+	Status int    `json:"status" jsonschema:"HTTP 状态码"`
+	Now    string `json:"now" jsonschema:"服务器当前时间，毫秒精度，时区 +08:00"`
 }
 
 func (r HealthResponse) GetStatus() int {
