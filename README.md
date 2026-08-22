@@ -213,9 +213,9 @@ GET /api/records?page=1&page_size=200
 
 #### 第二步：获取最近的记录
 
-继续查询记录，获取 mdk 最新的记录。
+如果第一步中发现记录总数不足 500 条，请直接获取全部记录进行分析。
 
-由于 `/api/records` 默认按照 `id` 升序返回，因此应根据上一步响应中的 `total` 和 `total_page` 获取最新的记录，例如：
+否则按照如下方法分两步获取 mdk 最新的记录。
 
 ```http
 GET /api/records?page={total_page-1}&page_size=200
@@ -233,8 +233,6 @@ GET /api/records?page={total_page}&page_size=200
 * 最近的情绪、行为和生活节奏变化
 
 形成一份“mdk 最新生活情况”的临时上下文。
-
-> 如果记录总数不足 500 条，请直接获取全部记录。
 
 #### 第三步：获取当前时间
 
