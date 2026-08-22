@@ -116,7 +116,9 @@ func (s *Sender) Close() {
 }
 
 func (s *Sender) Error() error {
-	return s.err
+	err := s.err
+	s.err = nil
+	return err
 }
 
 func (s *Sender) getToken(forceRefresh bool) (string, error) {
