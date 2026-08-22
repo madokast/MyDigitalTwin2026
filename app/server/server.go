@@ -36,6 +36,7 @@ func NewServer() *Server {
 			}
 			_, err = pool.Exec(context.Background(), records.CreateRecordSQL)
 			if err != nil {
+				pool.Close()
 				return nil, httpx.NewInternalServerError("failed to create records table: " + err.Error())
 			}
 			return pool, nil
