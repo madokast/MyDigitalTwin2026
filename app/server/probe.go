@@ -27,7 +27,7 @@ func (s *Server) ProbeQQBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bot, err := s.qqbot()
+	bot, err := s.QQBot()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return

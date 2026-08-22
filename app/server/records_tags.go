@@ -15,7 +15,7 @@ func (s *Server) RecordTagsGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pool, err := s.pool()
+	pool, err := s.DB()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
@@ -39,7 +39,7 @@ func (s *Server) RecordTagsAttach(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pool, err := s.pool()
+	pool, err := s.DB()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
@@ -63,7 +63,7 @@ func (s *Server) RecordTagsDetach(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pool, err := s.pool()
+	pool, err := s.DB()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return

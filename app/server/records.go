@@ -13,13 +13,13 @@ func (s *Server) RecordsPost(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSON(w, err)
 		return
 	}
-	pool, err := s.pool()
+	pool, err := s.DB()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
 	}
 
-	bot, err := s.qqbot()
+	bot, err := s.QQBot()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
@@ -37,7 +37,7 @@ func (s *Server) RecordsQuery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pool, err := s.pool()
+	pool, err := s.DB()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
@@ -55,7 +55,7 @@ func (s *Server) RecordGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pool, err := s.pool()
+	pool, err := s.DB()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
@@ -73,7 +73,7 @@ func (s *Server) RecordsExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pool, err := s.pool()
+	pool, err := s.DB()
 	if err != nil {
 		httpx.WriteJSON(w, err)
 		return
