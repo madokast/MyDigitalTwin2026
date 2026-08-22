@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dt2026/app/envkeys"
-	"dt2026/app/middleware"
+	"dt2026/api/envkeys"
+	"dt2026/api/middleware"
 	"dt2026/env"
 	http_server "dt2026/server/http"
 	"log/slog"

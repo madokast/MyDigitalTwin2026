@@ -2,8 +2,8 @@ package records
 
 import (
 	"context"
-	"dt2026/app/notify/qqbot"
-	"dt2026/app/records/tags"
+	"dt2026/api/notify/qqbot"
+	"dt2026/api/records/tags"
 	"dt2026/httpx"
 	"fmt"
 	"net/http"

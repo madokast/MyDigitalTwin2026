@@ -2,9 +2,9 @@ package server
 
 import (
 	"context"
-	"dt2026/app/envkeys"
-	"dt2026/app/notify/qqbot"
-	"dt2026/app/records"
+	"dt2026/api/envkeys"
+	"dt2026/api/notify/qqbot"
+	"dt2026/api/records"
 	"dt2026/env"
 	"dt2026/httpx"
 	"encoding/json/v2"

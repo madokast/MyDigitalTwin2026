@@ -2,7 +2,7 @@ package records
 
 import (
 	"context"
-	"dt2026/app/records/tags"
+	"dt2026/api/records/tags"
 	"dt2026/httpx"
 	"dt2026/lib"
 	"fmt"
