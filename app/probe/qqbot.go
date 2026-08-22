@@ -17,8 +17,8 @@ func (r ProbeQQBotResponse) GetStatus() int {
 
 func ProbeQQBot(sender *qqbot.Sender) httpx.Response {
 	sender.SendMessage("Probe test message")
-	sender.Flush()
-	err := sender.Error()
+	// sender.Flush()
+	err := sender.TakeError()
 	if err != nil {
 		return httpx.NewInternalServerError("failed to send message via QQ Bot: " + err.Error())
 	}
