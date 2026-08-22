@@ -1,0 +1,40 @@
+package mcp
+
+import (
+	"context"
+	"dt2026/server/http"
+	"dt2026/server/mcp/api/probe/health"
+
+	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+type McpTool[In McpInput, Out McpOutput] struct {
+	Name        string
+	Description string
+	HandleFunc  func(*http.Server, In) Out
+}
+
+func (s *Server) addAllTools() {
+	s.addTool(McpTool[health.Input, health.Output]{
+		Name:        health.Name,
+		Description: health.Description,
+		HandleFunc:  health.ProbeHealth,
+	})
+}
+
+func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
+	mcp_sdk.AddTool(
+		s.mcpServer,
+		&mcp_sdk.Tool{
+			Name:        tool.Name,
+			Description: tool.Description,
+		},
+		func(
+			ctx context.Context,
+			req *mcp_sdk.CallToolRequest,
+			input In,
+		) (*mcp_sdk.CallToolResult, Out, error) {
+			return nil, tool.HandleFunc(s.httpServer, input), nil
+		},
+	)
+}

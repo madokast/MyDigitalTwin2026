@@ -10,6 +10,8 @@ const QQBotUserOpenID = "DT_QQBOT_USER_OPENID"
 
 const TestMode = "DT_TEST_MODE" // 测试模式
 
+const MCP = "DT_MCP" // mcp 服务
+
 var MustHave = []string{
 	ServerPort,
 	Token,

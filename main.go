@@ -5,12 +5,15 @@ import (
 	"dt2026/api/middleware"
 	"dt2026/env"
 	http_server "dt2026/server/http"
+	mcp_serever "dt2026/server/mcp"
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
+	start := time.Now()
 	slog.Info("Starting")
 
 	if err := env.LoadEnv(".env"); err != nil {
@@ -33,12 +36,17 @@ func main() {
 	mux.HandleFunc("PUT /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagsAttach))
 	mux.HandleFunc("DELETE /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagsDetach))
 
+	if mcp, ok := env.Get(envkeys.MCP); ok && mcp == "true" {
+		mcpServer := mcp_serever.NewServer()
+		mux.HandleFunc("/mcp", middleware.Auth(mcpServer.HttpHandler().ServeHTTP))
+	}
+
 	httpServer := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),
 		Handler: mux,
 	}
 
-	slog.Info("Server starting", "addr", httpServer.Addr)
+	slog.Info("Server starting", "addr", httpServer.Addr, "init_time_ms", time.Since(start).Milliseconds())
 	if err := httpServer.ListenAndServe(); err != nil {
 		slog.Error("server error", "err", err)
 		os.Exit(1)

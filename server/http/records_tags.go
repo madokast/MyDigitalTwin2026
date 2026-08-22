@@ -1,4 +1,4 @@
-package server
+package http
 
 import (
 	"dt2026/api/records/tags"
