@@ -18,7 +18,7 @@ type Server struct {
 	httpServer *http.Server
 }
 
-func NewServer() *Server {
+func NewServer(httpServer *http.Server) *Server {
 	s := &Server{
 		mcpServer: mcp_sdk.NewServer(
 			&mcp_sdk.Implementation{
@@ -29,7 +29,7 @@ func NewServer() *Server {
 			},
 			nil,
 		),
-		httpServer: http.NewServer(),
+		httpServer: httpServer,
 	}
 	s.addAllTools()
 	return s

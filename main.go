@@ -36,10 +36,8 @@ func main() {
 	mux.HandleFunc("PUT /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagsAttach))
 	mux.HandleFunc("DELETE /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagsDetach))
 
-	if mcp, ok := env.Get(envkeys.MCP); ok && mcp == "true" {
-		mcpServer := mcp_serever.NewServer()
-		mux.HandleFunc("/mcp", middleware.Auth(mcpServer.HttpHandler().ServeHTTP))
-	}
+	mcpServer := mcp_serever.NewServer(server)
+	mux.HandleFunc("/mcp", middleware.Auth(mcpServer.HttpHandler().ServeHTTP))
 
 	httpServer := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),
