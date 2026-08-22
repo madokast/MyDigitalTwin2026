@@ -118,11 +118,38 @@ curl -X GET "$base_url/api/records?page=1&page_size=10&q=洗澡&q=休息&tag=生
 
 说明：`records` 按 `id` 升序排列；`total` 为满足条件的总记录数，`total_page` 为总页数。
 
-### 3. 标签 CRUD
+### 3. 标签
 
-Path 主体均为 /api/records/{record_id}/tags
+**获取全部标签**
 
-**获取标签**
+```bash
+curl -X GET $base_url/api/records/tags \
+  -H "Authorization: Bearer $token"
+```
+
+成功响应（`200 OK`）：
+
+```json
+{
+  "ok": true,
+  "status": 200,
+  "tags": [
+    {"tag": "生活", "count": 12},
+    {"tag": "闲聊", "count": 5},
+    {"tag": "休息", "count": 5}
+  ]
+}
+```
+
+- 返回全库出现过的标签，不含从未使用的标签
+- `count`：包含该标签的记录数（同一条记录同一标签只计 1）
+- 按 `count` 降序；次数相同则按 `tag` 升序
+- 没有标签时 `tags` 为 `[]`
+- 这里的 `tags` 是 `{tag, count}` 对象数组，和单条记录上的字符串数组不同
+
+单条记录的标签 Path 为 /api/records/{record_id}/tags
+
+**获取一条记录的标签**
 
 ```bash
 curl -X GET $base_url/api/records/{record_id:2504}/tags \
