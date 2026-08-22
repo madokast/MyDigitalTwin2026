@@ -29,6 +29,7 @@ func NewServer() *Server {
 			},
 			nil,
 		),
+		httpServer: http.NewServer(),
 	}
 	s.addAllTools()
 	return s
