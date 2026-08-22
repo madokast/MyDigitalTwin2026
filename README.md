@@ -404,13 +404,17 @@ mdk 近期状态
    │
    ├── 向 mdk 获取 base_url + token
    │
-   ├── GET /api/records?page=1&page_size=100
+   ├── GET /api/records?page=1&page_size=200
    │       ↓
-   │   建立长期mdk 画像
+   │   建立长期 mdk 画像
    │
-   ├── GET /api/records?page=<最后一页>&page_size=100
+   ├── 若 total < 600
+   │       GET /api/records?page=1&page_size={total}
+   │   否则
+   │       GET /api/records?page={total_page-1}&page_size=200
+   │       GET /api/records?page={total_page}&page_size=200
    │       ↓
-   │   分析mdk 近期生活情况
+   │   分析 mdk 近期生活情况
    │
    ├── GET /api/time
    │       ↓
