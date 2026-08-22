@@ -4,6 +4,7 @@ import (
 	"dt2026/httpx"
 	"dt2026/lib"
 	"dt2026/lib/optional"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -11,9 +12,10 @@ import (
 // JSONTime 序列化为 JSON 后总是 +08:00 时区
 type JSONTime time.Time
 
+// ParseJSONTime 优先为 RFC3339Nano 格式，也支持本地日期
 func ParseJSONTime(s string) (JSONTime, *httpx.Error) {
 	parsed, err := time.Parse(
-		lib.RFC3339Milli, s,
+		lib.RFC3339Nano, s,
 	)
 	if err != nil {
 		parsed, err = time.ParseInLocation(
@@ -49,6 +51,7 @@ func (t *JSONTime) GoTime() time.Time {
 	return time.Time(*t)
 }
 
+// MarshalJSON 返回毫秒
 func (t JSONTime) MarshalJSON() ([]byte, error) {
 	return []byte(
 		`"` + time.Time(t).In(lib.UTC8).Format(lib.RFC3339Milli) + `"`,
@@ -62,12 +65,10 @@ func (t *JSONTime) UnmarshalJSON(data []byte) error {
 
 	data = data[1 : len(data)-1]
 
-	parsed, err := time.Parse(
-		lib.RFC3339Milli,
-		string(data),
-	)
+	parsed, err := ParseJSONTime(string(data))
+
 	if err != nil {
-		return err
+		return errors.New(err.Message)
 	}
 
 	*t = JSONTime(parsed)
