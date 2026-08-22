@@ -133,7 +133,7 @@ curl -X GET $base_url/api/records/tags \
 {
   "ok": true,
   "status": 200,
-  "tags": [
+  "tag_counts": [
     {"tag": "生活", "count": 12},
     {"tag": "闲聊", "count": 5},
     {"tag": "休息", "count": 5}
@@ -144,8 +144,7 @@ curl -X GET $base_url/api/records/tags \
 - 返回全库出现过的标签，不含从未使用的标签
 - `count`：包含该标签的记录数（同一条记录同一标签只计 1）
 - 按 `count` 降序；次数相同则按 `tag` 升序
-- 没有标签时 `tags` 为 `[]`
-- 这里的 `tags` 是 `{tag, count}` 对象数组，和单条记录上的字符串数组不同
+- 没有标签时 `tag_counts` 为 `[]`
 
 单条记录的标签 Path 为 /api/records/{record_id}/tags
 

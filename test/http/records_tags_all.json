@@ -15,7 +15,7 @@
         "api": "/api/records/tags",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":true,"status":200,"tags":"{array}"}
+        "expected": {"ok":true,"status":200,"tag_counts":"{array}"}
     },
     "after_write": {
         "before": [{
@@ -28,7 +28,7 @@
         "api": "/api/records/tags",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":true,"status":200,"tags":"{array}"}
+        "expected": {"ok":true,"status":200,"tag_counts":"{array}"}
     },
     "after_attach": {
         "before": [
@@ -49,7 +49,7 @@
         "api": "/api/records/tags",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":true,"status":200,"tags":"{array}"}
+        "expected": {"ok":true,"status":200,"tag_counts":"{array}"}
     },
     "after_detach": {
         "before": [
@@ -70,6 +70,6 @@
         "api": "/api/records/tags",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":true,"status":200,"tags":"{array}"}
+        "expected": {"ok":true,"status":200,"tag_counts":"{array}"}
     }
 }
