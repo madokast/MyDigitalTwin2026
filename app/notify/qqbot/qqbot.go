@@ -35,16 +35,18 @@ type Sender struct {
 type MessageType int
 
 const (
-	normal  MessageType = 1
-	disable MessageType = 2
-	enable  MessageType = 3
-	flush   MessageType = 4
+	normal    MessageType = 1
+	disable   MessageType = 2
+	enable    MessageType = 3
+	flush     MessageType = 4
+	takeError MessageType = 5
 )
 
 type Message struct {
-	Content        string
-	FlushWaitGroup *sync.WaitGroup
-	Type           MessageType
+	Type       MessageType
+	Content    string
+	TakedError error
+	WaitGroup  *sync.WaitGroup
 }
 
 func NewSender(appID, appSecret, userOpenID string) *Sender {
@@ -72,9 +74,15 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 			case enable:
 				s.disabled = false
 			case flush:
-				message.FlushWaitGroup.Done()
+				// pass
+			case takeError:
+				message.TakedError = s.err
+				s.err = nil
 			default:
 				slog.Error("unknown message type", "type", message.Type)
+			}
+			if message.WaitGroup != nil {
+				message.WaitGroup.Done()
 			}
 		}
 	}()
@@ -96,8 +104,8 @@ func (s *Sender) Enable() {
 
 func (s *Sender) SendMessage(text string) {
 	s.messageQueue <- Message{
-		Content: text,
 		Type:    normal,
+		Content: text,
 	}
 }
 
@@ -105,8 +113,8 @@ func (s *Sender) Flush() {
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	s.messageQueue <- Message{
-		FlushWaitGroup: wg,
-		Type:           flush,
+		Type:      flush,
+		WaitGroup: wg,
 	}
 	wg.Wait()
 }
@@ -115,10 +123,15 @@ func (s *Sender) Close() {
 	close(s.messageQueue)
 }
 
-func (s *Sender) Error() error {
-	err := s.err
-	s.err = nil
-	return err
+func (s *Sender) TakeError() error {
+	m := Message{
+		Type:      takeError,
+		WaitGroup: &sync.WaitGroup{},
+	}
+	m.WaitGroup.Add(1)
+	s.messageQueue <- m
+	m.WaitGroup.Wait()
+	return m.TakedError
 }
 
 func (s *Sender) getToken(forceRefresh bool) (string, error) {
