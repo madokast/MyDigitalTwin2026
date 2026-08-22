@@ -66,7 +66,7 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 			case normal:
 				if !s.disabled {
 					err := s.sendMessage(message.Content)
-					if err != nil && message.Error == nil {
+					if message.Error != nil {
 						*message.Error = err
 					}
 				}
