@@ -116,7 +116,7 @@ def main():
     parent = Path(__file__).parent
     json_files = [parent / f for f in sys.argv[1:]]
     if not json_files:
-        json_files = list(parent.glob("*.json"))
+        json_files = list(parent.rglob("*.json"))
 
     all_pass = True
     for json_file in json_files:
