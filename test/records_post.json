@@ -4,7 +4,7 @@
         "method": "POST",
         "headers": {"Authorization": "{token}"},
         "data": {},
-        "expected": {"ok":false,"status":400,"message":"raw content cannot be empty"}
+        "expected": {"ok":false,"status":400,"message":"raw content cannot be empty or contain only whitespace"}
     },
     "bad_record" : {
         "api": "/api/records",
@@ -20,7 +20,7 @@
         "data": {
             "raw_content": "This is a test record."
         },
-        "expected": {"ok":false,"status":400,"message":"objective context cannot be empty"}
+        "expected": {"ok":false,"status":400,"message":"objective context cannot be empty or contain only whitespace"}
     },
     "only_raw_content_and_objective_context" : {
         "api": "/api/records",
@@ -30,7 +30,7 @@
             "raw_content": "This is a test record.",
             "objective_context": "Test Objective"
         },
-        "expected": {"ok":false,"status":400,"message":"AI analysis cannot be empty"}
+        "expected": {"ok":false,"status":400,"message":"AI analysis cannot be empty or contain only whitespace"}
     },
     "no_tags":{
         "api": "/api/records",

@@ -81,19 +81,16 @@ func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Respon
 }
 
 func normalizeNewRecord(record *NewRecord) *httpx.Error {
-	record.RawContent = strings.TrimSpace(record.RawContent)
-	if record.RawContent == "" {
-		return httpx.NewBadRequestError("raw content cannot be empty")
+	if strings.TrimSpace(record.RawContent) == "" {
+		return httpx.NewBadRequestError("raw content cannot be empty or contain only whitespace")
 	}
 
-	record.ObjectiveContext = strings.TrimSpace(record.ObjectiveContext)
-	if record.ObjectiveContext == "" {
-		return httpx.NewBadRequestError("objective context cannot be empty")
+	if strings.TrimSpace(record.ObjectiveContext) == "" {
+		return httpx.NewBadRequestError("objective context cannot be empty or contain only whitespace")
 	}
 
-	record.AIAnalysis = strings.TrimSpace(record.AIAnalysis)
-	if record.AIAnalysis == "" {
-		return httpx.NewBadRequestError("AI analysis cannot be empty")
+	if strings.TrimSpace(record.AIAnalysis) == "" {
+		return httpx.NewBadRequestError("AI analysis cannot be empty or contain only whitespace")
 	}
 
 	var err *httpx.Error
