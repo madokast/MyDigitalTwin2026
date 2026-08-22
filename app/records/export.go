@@ -4,7 +4,7 @@ import (
 	"context"
 	"dt2026/httpx"
 	"dt2026/lib/optional"
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"log/slog"
 	"net/http"
