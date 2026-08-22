@@ -143,6 +143,7 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 		)))
 	}
 
+	// 空数据导出，需要自己补上头
 	if exportCount == 0 {
 		cw.writeHeader()
 	}
