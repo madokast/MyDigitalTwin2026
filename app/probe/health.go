@@ -18,7 +18,7 @@ func (r HealthResponse) GetStatus() int {
 
 func Health() HealthResponse {
 	// 2026-08-06T22:39:47+08:00
-	now := time.Now().In(lib.UTC8).Format(time.RFC3339)
+	now := time.Now().In(lib.UTC8).Format(lib.RFC3339Milli)
 	return HealthResponse{
 		Ok:     true,
 		Status: http.StatusOK,

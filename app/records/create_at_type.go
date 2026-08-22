@@ -13,7 +13,7 @@ type JSONTime time.Time
 
 func ParseJSONTime(s string) (JSONTime, *httpx.Error) {
 	parsed, err := time.Parse(
-		time.RFC3339, s,
+		lib.RFC3339Milli, s,
 	)
 	if err != nil {
 		parsed, err = time.ParseInLocation(
@@ -51,7 +51,7 @@ func (t *JSONTime) GoTime() time.Time {
 
 func (t JSONTime) MarshalJSON() ([]byte, error) {
 	return []byte(
-		`"` + time.Time(t).In(lib.UTC8).Format(time.RFC3339) + `"`,
+		`"` + time.Time(t).In(lib.UTC8).Format(lib.RFC3339Milli) + `"`,
 	), nil
 }
 
@@ -63,7 +63,7 @@ func (t *JSONTime) UnmarshalJSON(data []byte) error {
 	data = data[1 : len(data)-1]
 
 	parsed, err := time.Parse(
-		time.RFC3339,
+		lib.RFC3339Milli,
 		string(data),
 	)
 	if err != nil {

@@ -41,7 +41,7 @@ func Time() TimeResponse {
 	return TimeResponse{
 		Ok:       true,
 		Status:   http.StatusOK,
-		Datetime: now.Format(time.RFC3339),
+		Datetime: now.Format(lib.RFC3339Milli),
 		Timezone: "Asia/Shanghai",
 		Local: Local{
 			Date: fmt.Sprintf(
