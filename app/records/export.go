@@ -62,6 +62,16 @@ func (w *checkableWriter) Write(p []byte) (int, error) {
 	return n, err
 }
 
+func (w *checkableWriter) sendError(err *httpx.Error) *httpx.Error {
+	if w.started {
+		// 传输到一半，无法改写响应头，错误输出到 data 中
+		httpx.WriteJSON(w.w, err)
+		return nil
+	}
+	// 传输未开始，外部负责写错误
+	return err
+}
+
 func Export(r *ExportRequest, w http.ResponseWriter,
 	pool *pgxpool.Pool, maxExportSize optional.Optional[int64]) *httpx.Error {
 
@@ -101,54 +111,30 @@ func Export(r *ExportRequest, w http.ResponseWriter,
 		)
 
 		if err != nil {
-			msg := fmt.Sprintf(
-				"failed to scan row in querying %s with %v: %s",
+			return cw.sendError(httpx.NewInternalServerError(fmt.Sprintf(
+				"failed to export records while scanning row in querying %s with %v: %s",
 				sql, args, err.Error(),
-			)
-			if cw.started {
-				// 传输到一半，无法改写响应头
-				_, _ = cw.Write([]byte("export failed!\n"))
-				_, _ = cw.Write([]byte(msg))
-				return nil
-			} else {
-				return httpx.NewInternalServerError(msg)
-			}
+			)))
 		}
 
 		record.CreatedAt = JSONTime(createdAt)
 
 		data, err := json.Marshal(record)
 		if err != nil {
-			msg := fmt.Sprintf(
-				"failed to json marshal record %v: %s",
+			return cw.sendError(httpx.NewInternalServerError(fmt.Sprintf(
+				"failed to export records while json marshaling record %v: %s",
 				record, err.Error(),
-			)
-			if cw.started {
-				// 传输到一半，无法改写响应头
-				_, _ = cw.Write([]byte("export failed!\n"))
-				_, _ = cw.Write([]byte(msg))
-				return nil
-			} else {
-				return httpx.NewInternalServerError(msg)
-			}
+			)))
 		}
 		_, _ = cw.Write(data)
 		_, _ = cw.Write([]byte{'\n'})
 	}
 
 	if err := rows.Err(); err != nil {
-		msg := fmt.Sprintf(
-			"failed to iterate rows in querying %s with %v: %s",
+		return cw.sendError(httpx.NewInternalServerError(fmt.Sprintf(
+			"failed to export records while iterating rows in querying %s with %v: %s",
 			sql, args, err.Error(),
-		)
-		if cw.started {
-			// 传输到一半，无法改写响应头
-			_, _ = cw.Write([]byte("export failed!\n"))
-			_, _ = cw.Write([]byte(msg))
-			return nil
-		} else {
-			return httpx.NewInternalServerError(msg)
-		}
+		)))
 	}
 
 	return nil
