@@ -50,7 +50,9 @@ type checkableWriter struct {
 }
 
 func (w *checkableWriter) Write(p []byte) (int, error) {
-	w.writeHeader()
+	if !w.started {
+		w.writeHeader()
+	}
 	n, err := w.w.Write(p)
 	if err != nil {
 		slog.Error("failed to write response", "err", err)
@@ -63,7 +65,6 @@ func (w *checkableWriter) writeHeader() {
 		slog.Warn("response writer has started")
 		return
 	}
-
 	w.started = true
 	w.w.Header().Set("Content-Type", "application/x-ndjson")
 	w.w.WriteHeader(http.StatusOK)
@@ -76,7 +77,7 @@ func (w *checkableWriter) sendError(httpErr *httpx.Error) *httpx.Error {
 		if err != nil {
 			slog.Error("failed to json marshal http err", "httpErr", httpErr, "err", err)
 			// 很严重，Marshal 报错，那就违反规定写普通字符串
-			data = []byte(fmt.Sprintf("v", err))
+			data = []byte(fmt.Sprintf("%v", err))
 		}
 
 		_, err = w.w.Write(data)
