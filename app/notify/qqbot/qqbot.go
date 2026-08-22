@@ -46,6 +46,7 @@ const (
 type Message struct {
 	Type      MessageType
 	Content   string
+	MustSend  bool
 	Error     *error
 	WaitGroup *sync.WaitGroup
 }
@@ -64,7 +65,7 @@ func NewSender(appID, appSecret, userOpenID string) *Sender {
 		for message := range s.messageQueue {
 			switch message.Type {
 			case normal:
-				if !s.disabled {
+				if !s.disabled || message.MustSend {
 					err := s.sendMessage(message.Content)
 					if message.Error != nil {
 						*message.Error = err
@@ -99,9 +100,14 @@ func (s *Sender) Enable() {
 }
 
 func (s *Sender) SendMessageAsync(text string) {
-	s.messageQueue <- Message{
+	m := Message{
 		Type:    normal,
 		Content: text,
+	}
+	select {
+	case s.messageQueue <- m:
+	default:
+		slog.Warn("qqbot message queue is full")
 	}
 }
 
@@ -109,6 +115,7 @@ func (s *Sender) SendMessage(text string) error {
 	m := Message{
 		Type:      normal,
 		Content:   text,
+		MustSend:  true,
 		Error:     new(error),
 		WaitGroup: &sync.WaitGroup{},
 	}
