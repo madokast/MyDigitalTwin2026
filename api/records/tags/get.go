@@ -12,9 +12,9 @@ import (
 )
 
 type GetTagResponse struct {
-	Ok     httpx.TrueType `json:"ok"`
-	Status int      `json:"status"`
-	Tags   []string `json:"tags"`
+	Ok     httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status int            `json:"status" jsonschema:"HTTP status code"`
+	Tags   []string       `json:"tags" jsonschema:"Tags on this record as a string array; empty if none"`
 }
 
 func (r GetTagResponse) GetStatus() int {
@@ -26,6 +26,7 @@ func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
 	var response = GetTagResponse{
 		Ok:     httpx.True,
 		Status: http.StatusOK,
+		Tags:   []string{},
 	}
 
 	err := pool.QueryRow(
@@ -45,6 +46,10 @@ func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
 			"failed to query %s with %v: %s",
 			getRecordTagsSQL, recordID, err.Error(),
 		))
+	}
+
+	if response.Tags == nil {
+		response.Tags = []string{}
 	}
 
 	return response

@@ -220,6 +220,22 @@
                         "outputSchema": "{existed}"
                     },
                     {
+                        "name": "records_tags_get",
+                        "description": "Fetch the tags on one of mdk's records by id. Returns tags as a string array; empty if the record has none. record_id is required. Do not use this to list every tag in the library, search records, or as a health check.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "record_id": {
+                                    "type": "integer",
+                                    "description": "Record ID assigned by the server when the record was created"
+                                }
+                            },
+                            "required": ["record_id"],
+                            "additionalProperties": false
+                        },
+                        "outputSchema": "{existed}"
+                    },
+                    {
                         "name": "records_tags_get_all",
                         "description": "List every tag that appears in mdk's records, with how many records carry each tag. Returns tag_counts sorted by count descending then tag ascending. No arguments. Unused tags are omitted; if none exist, tag_counts is []. Do not use this to search records, fetch a record by id, or as a health check.",
                         "inputSchema": {

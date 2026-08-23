@@ -9,6 +9,7 @@ import (
 	"dt2026/server/mcp/api/posts/get"
 	"dt2026/server/mcp/api/posts/post"
 	"dt2026/server/mcp/api/posts/query"
+	tagsget "dt2026/server/mcp/api/posts/tags/get"
 	"dt2026/server/mcp/api/posts/tags/get_all"
 	"dt2026/server/mcp/api/probe/health"
 	"dt2026/server/mcp/api/probe/postgresql"
@@ -60,6 +61,11 @@ func (s *Server) addAllTools() {
 		Name:        query.Name,
 		Description: query.Description,
 		HandleFunc:  query.RecordsQuery,
+	})
+	s.addTool(McpTool[tagsget.Input, tagsget.Output]{
+		Name:        tagsget.Name,
+		Description: tagsget.Description,
+		HandleFunc:  tagsget.RecordsTagsGet,
 	})
 	s.addTool(McpTool[get_all.Input, get_all.Output]{
 		Name:        get_all.Name,
