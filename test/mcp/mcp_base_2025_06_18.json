@@ -222,6 +222,26 @@
                         "outputSchema": "{existed}"
                     },
                     {
+                        "name": "records_tags_attach",
+                        "description": "Attach one tag to one of mdk's records. record_id and tag are required; tag is trimmed and must not be blank. Returns the record's tags after the attach. A new tag is status 201 and changed true; repeating the same tag is 200 and changed false. Do not use this to create a record, fetch a record by id, or list every tag in the library.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "record_id": {
+                                    "type": "integer",
+                                    "description": "Record ID assigned by the server when the record was created"
+                                },
+                                "tag": {
+                                    "type": "string",
+                                    "description": "Tag to attach; trimmed, must not be blank"
+                                }
+                            },
+                            "required": ["record_id", "tag"],
+                            "additionalProperties": false
+                        },
+                        "outputSchema": "{existed}"
+                    },
+                    {
                         "name": "records_tags_get",
                         "description": "Fetch the tags on one of mdk's records by id. Returns tags as a string array; empty if the record has none. record_id is required. Do not use this to list every tag in the library, search records, or as a health check.",
                         "inputSchema": {

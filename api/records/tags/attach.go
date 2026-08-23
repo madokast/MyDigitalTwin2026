@@ -10,11 +10,11 @@ import (
 )
 
 type AttachTagResponse struct {
-	Ok       httpx.TrueType `json:"ok"`
-	Status   int      `json:"status"`
-	Attached bool     `json:"attached"`
-	Changed  bool     `json:"changed"`
-	Tags     []string `json:"tags"`
+	Ok       httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status   int            `json:"status" jsonschema:"HTTP status code"`
+	Attached bool           `json:"attached" jsonschema:"Whether the tag is present on the record after this call"`
+	Changed  bool           `json:"changed" jsonschema:"Whether this call added the tag; false if it was already present"`
+	Tags     []string       `json:"tags" jsonschema:"Tags on this record after the attach"`
 }
 
 func (r AttachTagResponse) GetStatus() int {
@@ -31,6 +31,7 @@ func Attach(recordID int64, tag string, pool *pgxpool.Pool) httpx.Response {
 	var response = AttachTagResponse{
 		Ok:       httpx.True,
 		Attached: true,
+		Tags:     []string{},
 	}
 
 	var attachResult int
@@ -64,6 +65,10 @@ func Attach(recordID int64, tag string, pool *pgxpool.Pool) httpx.Response {
 			"unknown attach result %d while executing %s with %v",
 			attachResult, attachTagSQL, []any{recordID, tag},
 		))
+	}
+
+	if response.Tags == nil {
+		response.Tags = []string{}
 	}
 
 	return response

@@ -12,5 +12,6 @@ Currently available:
 - records_get: fetch one record by id. Do not use this to create records, list history, or as a health check.
 - records_post: create a record of mdk's utterance, objective context, AI analysis, and optional tags. Do not use this as a health check or to query history.
 - records_query: search records by text (q), tags, and created_at range. Do not use this to create a record or fetch a single id.
+- records_tags_attach: attach one tag to a record by id. Do not use this to create a record or list every tag.
 - records_tags_get: fetch the tags on one record by id. Do not use this to list every tag in the library.
 - records_tags_get_all: list every tag that appears in records, with counts. Do not use this to fetch one record's tags.`
