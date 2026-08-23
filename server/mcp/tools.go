@@ -4,6 +4,7 @@ import (
 	"context"
 	"dt2026/api/records"
 	"dt2026/httpx"
+	"dt2026/lib"
 	"dt2026/server/http"
 	"dt2026/server/mcp/api/posts/post"
 	"dt2026/server/mcp/api/probe/health"
@@ -51,7 +52,9 @@ func (s *Server) addAllTools() {
 
 func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
 	successSchema, err := jsonschema.For[Out](&jsonschema.ForOptions{
-		TypeSchemas: records.JSONSchemaTypes,
+		TypeSchemas: lib.MapsMerge(
+			records.JSONSchemaTypes,
+		),
 	})
 	if err != nil {
 		panic(err)
