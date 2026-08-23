@@ -2,6 +2,7 @@ package time
 
 import (
 	"dt2026/api/probe"
+	"dt2026/httpx"
 	"dt2026/server/http"
 )
 
@@ -14,6 +15,6 @@ type Input struct {
 
 type Output = probe.TimeResponse
 
-func Time(_ *http.Server, _ Input) Output {
-	return probe.Time()
+func Time(_ *http.Server, _ Input) (Output, *httpx.Error) {
+	return probe.Time(), nil
 }

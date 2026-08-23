@@ -1,6 +1,9 @@
 package httpx
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type Error struct {
 	Ok      bool   `json:"ok"`
@@ -34,4 +37,8 @@ func NewInternalServerError(message string) *Error {
 
 func (e Error) GetStatus() int {
 	return e.Status
+}
+
+func (e Error) Error() string {
+	return fmt.Sprintf("%d %s", e.Status, e.Message)
 }

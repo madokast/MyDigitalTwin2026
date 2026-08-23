@@ -2,6 +2,7 @@ package health
 
 import (
 	"dt2026/api/probe"
+	"dt2026/httpx"
 	"dt2026/server/http"
 )
 
@@ -14,6 +15,6 @@ type Input struct {
 
 type Output = probe.HealthResponse
 
-func ProbeHealth(_ *http.Server, ph Input) Output {
-	return probe.Health()
+func ProbeHealth(_ *http.Server, _ Input) (Output, *httpx.Error) {
+	return probe.Health(), nil
 }

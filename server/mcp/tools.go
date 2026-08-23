@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"context"
+	"dt2026/httpx"
 	"dt2026/server/http"
 	"dt2026/server/mcp/api/probe/health"
 	mcptime "dt2026/server/mcp/api/time"
@@ -12,7 +13,7 @@ import (
 type McpTool[In McpInput, Out McpOutput] struct {
 	Name        string
 	Description string
-	HandleFunc  func(*http.Server, In) Out
+	HandleFunc  func(*http.Server, In) (Out, *httpx.Error)
 }
 
 func (s *Server) addAllTools() {
@@ -39,8 +40,14 @@ func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
 			ctx context.Context,
 			req *mcp_sdk.CallToolRequest,
 			input In,
-		) (*mcp_sdk.CallToolResult, Out, error) {
-			return nil, tool.HandleFunc(s.httpServer, input), nil
+		) (res *mcp_sdk.CallToolResult, out Out, err error) {
+
+			out, err = tool.HandleFunc(s.httpServer, input)
+			if err != nil {
+				var zero Out
+				return nil, zero, err
+			}
+			return nil, out, nil
 		},
 	)
 }
