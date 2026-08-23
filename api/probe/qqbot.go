@@ -6,11 +6,13 @@ import (
 	"dt2026/lib/optional"
 	"errors"
 	"net/http"
+	"strings"
 )
 
 type ProbeQQBotResponse struct {
-	Ok     bool `json:"ok" jsonschema:"Whether the request succeeded"`
-	Status int  `json:"status" jsonschema:"HTTP status code"`
+	Ok      bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status  int    `json:"status" jsonschema:"HTTP status code"`
+	Message string `json:"message" jsonschema:"The message that was actually sent"`
 }
 
 func (r ProbeQQBotResponse) GetStatus() int {
@@ -18,7 +20,8 @@ func (r ProbeQQBotResponse) GetStatus() int {
 }
 
 func ProbeQQBot(message optional.Optional[string], sender *qqbot.Sender) httpx.Response {
-	err := sender.SendMessage(message.Or("Probe test message"))
+	sent := strings.TrimSpace(message.Or("Probe test message"))
+	err := sender.SendMessage(sent)
 	if err != nil {
 		if errors.Is(err, qqbot.EmptyMessageErr) {
 			return httpx.NewBadRequestError("failed to send message via QQ Bot: " + err.Error())
@@ -28,7 +31,8 @@ func ProbeQQBot(message optional.Optional[string], sender *qqbot.Sender) httpx.R
 	}
 
 	return ProbeQQBotResponse{
-		Ok:     true,
-		Status: http.StatusOK,
+		Ok:      true,
+		Status:  http.StatusOK,
+		Message: sent,
 	}
 }

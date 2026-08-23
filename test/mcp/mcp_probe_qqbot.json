@@ -22,7 +22,8 @@
                 ],
                 "structuredContent": {
                     "ok": true,
-                    "status": 200
+                    "status": 200,
+                    "message": "Probe test message"
                 }
             }
         }
@@ -50,7 +51,8 @@
                 ],
                 "structuredContent": {
                     "ok": true,
-                    "status": 200
+                    "status": 200,
+                    "message": "Probe test message"
                 }
             }
         }
@@ -78,7 +80,8 @@
                 ],
                 "structuredContent": {
                     "ok": true,
-                    "status": 200
+                    "status": 200,
+                    "message": "mcp probe {unique:1}"
                 }
             }
         }

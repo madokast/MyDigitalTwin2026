@@ -3,7 +3,7 @@
         "api": "/api/probe/qqbot",
         "method": "GET",
         "headers": {"Authorization": "{token}"},
-        "expected": {"ok":true,"status":200}
+        "expected": {"ok":true,"status":200,"message":"Probe test message"}
     },
     "empty_message" :{
         "api": "/api/probe/qqbot?message=",
