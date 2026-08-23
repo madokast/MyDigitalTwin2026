@@ -10,14 +10,14 @@ import (
 )
 
 type TagCount struct {
-	Tag   string `json:"tag"`
-	Count int    `json:"count"`
+	Tag   string `json:"tag" jsonschema:"Tag string as stored on records"`
+	Count int    `json:"count" jsonschema:"Number of records that carry this tag"`
 }
 
 type GetAllTagsResponse struct {
-	Ok        httpx.TrueType `json:"ok"`
-	Status    int        `json:"status"`
-	TagCounts []TagCount `json:"tag_counts"`
+	Ok        httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status    int            `json:"status" jsonschema:"HTTP status code"`
+	TagCounts []TagCount     `json:"tag_counts" jsonschema:"All tags that appear in records, with counts; unused tags are omitted. Sorted by count descending, then tag ascending. Empty if none."`
 }
 
 func (r GetAllTagsResponse) GetStatus() int {
@@ -27,8 +27,9 @@ func (r GetAllTagsResponse) GetStatus() int {
 func GetAll(pool *pgxpool.Pool) httpx.Response {
 
 	var response = GetAllTagsResponse{
-		Ok:     httpx.True,
-		Status: http.StatusOK,
+		Ok:        httpx.True,
+		Status:    http.StatusOK,
+		TagCounts: []TagCount{},
 	}
 
 	const sql = getAllTagCountSQL

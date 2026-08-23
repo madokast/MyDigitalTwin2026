@@ -1,0 +1,126 @@
+{
+    "call_ok": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {"name": "records_tags_get_all", "arguments": {}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "tag_counts": "{array}"
+                }
+            }
+        }
+    },
+    "call_ok_omit_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {"name": "records_tags_get_all"}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "tag_counts": "{array}"
+                }
+            }
+        }
+    },
+    "after_write": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}"]
+            }
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {"name": "records_tags_get_all", "arguments": {}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "tag_counts": "{array}"
+                }
+            }
+        }
+    },
+    "extra_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_get_all",
+                "arguments": {"foo": 1}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    }
+}
