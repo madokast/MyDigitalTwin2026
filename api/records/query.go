@@ -98,7 +98,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 	}
 	defer rows.Close()
 
-	var records []Record
+	records := []Record{}
 	var total int64
 
 	for rows.Next() {

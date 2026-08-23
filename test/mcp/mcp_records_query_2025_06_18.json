@@ -149,6 +149,42 @@
             }
         }
     },
+    "no_match": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "method": "tools/call",
+            "params": {
+                "name": "records_query",
+                "arguments": {"q": ["{unique:1}"]}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "page": 1,
+                    "page_size": 100,
+                    "total": 0,
+                    "total_page": 0,
+                    "records": []
+                }
+            }
+        }
+    },
     "extra_arguments": {
         "api": "/mcp",
         "method": "POST",
