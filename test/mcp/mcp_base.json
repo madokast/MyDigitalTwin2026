@@ -114,6 +114,15 @@
                             "additionalProperties": false
                         },
                         "outputSchema": "{existed}"
+                    },
+                    {
+                        "name": "time",
+                        "description": "读取服务器当前本地时间（Asia/Shanghai，+08:00）。返回 RFC3339 毫秒时间、时区，以及中文日期、时刻和星期。需要当前时刻做上下文时用它，不要用它探活或读写记录。",
+                        "inputSchema": {
+                            "type": "object",
+                            "additionalProperties": false
+                        },
+                        "outputSchema": "{existed}"
                     }
                 ]
             }

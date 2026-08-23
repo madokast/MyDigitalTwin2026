@@ -4,6 +4,7 @@ import (
 	"context"
 	"dt2026/server/http"
 	"dt2026/server/mcp/api/probe/health"
+	mcptime "dt2026/server/mcp/api/time"
 
 	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -19,6 +20,11 @@ func (s *Server) addAllTools() {
 		Name:        health.Name,
 		Description: health.Description,
 		HandleFunc:  health.ProbeHealth,
+	})
+	s.addTool(McpTool[mcptime.Input, mcptime.Output]{
+		Name:        mcptime.Name,
+		Description: mcptime.Description,
+		HandleFunc:  mcptime.Time,
 	})
 }
 
