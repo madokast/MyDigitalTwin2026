@@ -6,4 +6,5 @@ const ServerInstructions = `This is mdk's personal memory and context service. U
 
 Currently available:
 - probe_health: confirm the service is up and read the current server time (milliseconds, +08:00). Do not use this to query history or write records.
-- time: read the server's current local time (Asia/Shanghai), including the date, clock time, and weekday in Chinese. Use this when you need the current time as context; do not use it as a health check or to read or write records.`
+- time: read the server's current local time (Asia/Shanghai), including the date, clock time, and weekday in Chinese. Use this when you need the current time as context; do not use it as a health check or to read or write records.
+- probe_postgresql: confirm PostgreSQL is reachable and read connection/query latency plus the database clock. Do not use this to query records or write data.`

@@ -5,6 +5,7 @@ import (
 	"dt2026/httpx"
 	"dt2026/server/http"
 	"dt2026/server/mcp/api/probe/health"
+	"dt2026/server/mcp/api/probe/postgresql"
 	mcptime "dt2026/server/mcp/api/time"
 
 	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -26,6 +27,11 @@ func (s *Server) addAllTools() {
 		Name:        mcptime.Name,
 		Description: mcptime.Description,
 		HandleFunc:  mcptime.Time,
+	})
+	s.addTool(McpTool[postgresql.Input, postgresql.Output]{
+		Name:        postgresql.Name,
+		Description: postgresql.Description,
+		HandleFunc:  postgresql.ProbePostgreSQL,
 	})
 }
 

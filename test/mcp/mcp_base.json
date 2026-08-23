@@ -116,6 +116,15 @@
                         "outputSchema": "{existed}"
                     },
                     {
+                        "name": "probe_postgresql",
+                        "description": "Probe whether PostgreSQL is reachable. Opens a fresh connection, runs SELECT NOW()::text, and returns connection/query latency in milliseconds plus the database clock. Do not use this to query records or write data.",
+                        "inputSchema": {
+                            "type": "object",
+                            "additionalProperties": false
+                        },
+                        "outputSchema": "{existed}"
+                    },
+                    {
                         "name": "time",
                         "description": "Read the server's current local time (Asia/Shanghai, +08:00). Returns an RFC 3339 timestamp with milliseconds, the time zone, and the date, clock time, and weekday in Chinese. Use this when you need the current time as context; do not use it as a health check or to read or write records.",
                         "inputSchema": {

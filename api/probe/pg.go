@@ -12,11 +12,11 @@ import (
 )
 
 type ProbePostgreSQLResponse struct {
-	Ok                 bool   `json:"ok"`
-	Status             int    `json:"status"`
-	ConnectionTimeMs   int64  `json:"connection_time_ms"`
-	QueryTimeMs        int64  `json:"query_time_ms"`
-	QueryNowTextResult string `json:"query_now_text_result"`
+	Ok                 bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status             int    `json:"status" jsonschema:"HTTP status code"`
+	ConnectionTimeMs   int64  `json:"connection_time_ms" jsonschema:"Time to open a new database connection, in milliseconds"`
+	QueryTimeMs        int64  `json:"query_time_ms" jsonschema:"Time to run SELECT NOW()::text, in milliseconds"`
+	QueryNowTextResult string `json:"query_now_text_result" jsonschema:"Database clock as returned by SELECT NOW()::text"`
 }
 
 func (r ProbePostgreSQLResponse) GetStatus() int {
