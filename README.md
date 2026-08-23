@@ -10,7 +10,7 @@ AI 在每次新会话中读取 mdk 的长期历史与近期状态，结合当前
 
 ## API
 
-请从 mdk 处获取目前的 base_url 和 token，每个 API 均需要 token 权限。
+请从 mdk 处获取目前的 base_url 和 token，每个 API 均需要 token 权限。若通过 MCP 接入，见 [MCP 使用手册](server/mcp/README.md)。
 
 ### 0. 获取当前时间
 
