@@ -38,7 +38,8 @@ func main() {
 	mux.HandleFunc("DELETE /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagsDetach))
 
 	mcpServer := mcp_serever.NewServer(server)
-	mux.HandleFunc("/mcp", middleware.Auth(mcpServer.HttpHandler().ServeHTTP))
+	mux.HandleFunc("/mcp", middleware.Auth(mcpServer.HttpHandler(true).ServeHTTP))
+	mux.HandleFunc("/mcp-stateful", middleware.Auth(mcpServer.HttpHandler(false).ServeHTTP))
 
 	httpServer := http.Server{
 		Addr:    ":" + env.MustGet(envkeys.ServerPort),

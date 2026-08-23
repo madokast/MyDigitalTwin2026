@@ -4,6 +4,7 @@ import (
 	"dt2026/httpx"
 	"dt2026/server/http"
 	http_sdk "net/http"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -37,11 +38,15 @@ func NewServer(httpServer *http.Server) *Server {
 	return s
 }
 
-func (s *Server) HttpHandler() *mcp_sdk.StreamableHTTPHandler {
+func (s *Server) HttpHandler(stateless bool) *mcp_sdk.StreamableHTTPHandler {
+	opts := &mcp_sdk.StreamableHTTPOptions{
+		Stateless:    stateless,
+		JSONResponse: true,
+	}
+	if !stateless {
+		opts.SessionTimeout = 30 * time.Second
+	}
 	return mcp.NewStreamableHTTPHandler(func(req *http_sdk.Request) *mcp.Server {
 		return s.mcpServer
-	}, &mcp_sdk.StreamableHTTPOptions{
-		Stateless:    true,
-		JSONResponse: true,
-	})
+	}, opts)
 }
