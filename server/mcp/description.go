@@ -1,9 +1,9 @@
 package mcp
 
-const ServerDescription = `mdk 的个人数字孪生：持续记录真实发言、客观上下文、AI 分析和标签，并提供历史查询与当前时间。不规定人格或聊天风格。`
+const ServerDescription = `mdk's personal digital twin: continuously records real utterances, objective context, AI analysis, and tags, and provides history queries and the current time. It does not prescribe a persona or chat style.`
 
-const ServerInstructions = `这是 mdk 的个人记忆与上下文服务。用列出的工具读写，不要猜测未公开的工具名。
+const ServerInstructions = `This is mdk's personal memory and context service. Use the listed tools to read and write; do not guess unpublished tool names.
 
-当前可用：
-- probe_health：确认服务是否可用，并读取服务器当前时间（毫秒，+08:00）。不要用它查询历史或写入记录。
-- time：读取服务器当前本地时间（Asia/Shanghai），含中文日期、时刻和星期。需要当前时刻做上下文时用它，不要用它探活或读写记录。`
+Currently available:
+- probe_health: confirm the service is up and read the current server time (milliseconds, +08:00). Do not use this to query history or write records.
+- time: read the server's current local time (Asia/Shanghai), including the date, clock time, and weekday in Chinese. Use this when you need the current time as context; do not use it as a health check or to read or write records.`

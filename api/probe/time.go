@@ -8,17 +8,17 @@ import (
 )
 
 type TimeResponse struct {
-	Ok       bool   `json:"ok" jsonschema:"是否成功"`
-	Status   int    `json:"status" jsonschema:"HTTP 状态码"`
-	Datetime string `json:"datetime" jsonschema:"服务器当前时间，毫秒精度，RFC3339，时区 +08:00"`
-	Timezone string `json:"timezone" jsonschema:"IANA 时区名，固定 Asia/Shanghai"`
-	Local    Local  `json:"local" jsonschema:"面向人读的本地时间"`
+	Ok       bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status   int    `json:"status" jsonschema:"HTTP status code"`
+	Datetime string `json:"datetime" jsonschema:"Current server time in RFC 3339 with millisecond precision and a +08:00 offset"`
+	Timezone string `json:"timezone" jsonschema:"IANA time zone name; always Asia/Shanghai"`
+	Local    Local  `json:"local" jsonschema:"Human-readable local date and time"`
 }
 
 type Local struct {
-	Date    string `json:"date" jsonschema:"中文日期，如 2026年8月11日"`
-	Time    string `json:"time" jsonschema:"中文时刻，如 10点30分00秒"`
-	Weekday string `json:"weekday" jsonschema:"中文星期，如 星期二"`
+	Date    string `json:"date" jsonschema:"Date in Chinese, e.g. 2026年8月11日"`
+	Time    string `json:"time" jsonschema:"Time of day in Chinese, e.g. 10点30分00秒"`
+	Weekday string `json:"weekday" jsonschema:"Weekday in Chinese, e.g. 星期二"`
 }
 
 func (t TimeResponse) GetStatus() int {

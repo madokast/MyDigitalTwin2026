@@ -60,7 +60,7 @@
                 "instructions": "{existed}",
                 "serverInfo": {
                     "name": "MyDigitalTwin2026",
-                    "title": "mdk 个人的数字孪生项目",
+                    "title": "mdk's personal digital twin",
                     "description": "{existed}",
                     "version": "0.0.1"
                 }
@@ -108,7 +108,7 @@
                 "tools": [
                     {
                         "name": "probe_health",
-                        "description": "探测服务是否可用，返回 ok、HTTP 状态和服务器当前时间（毫秒，+08:00）。不要用它查询历史或写入记录。",
+                        "description": "Probe whether the service is up. Returns ok, the HTTP status, and the current server time (milliseconds, +08:00). Do not use this to query history or write records.",
                         "inputSchema": {
                             "type": "object",
                             "additionalProperties": false
@@ -117,7 +117,7 @@
                     },
                     {
                         "name": "time",
-                        "description": "读取服务器当前本地时间（Asia/Shanghai，+08:00）。返回 RFC3339 毫秒时间、时区，以及中文日期、时刻和星期。需要当前时刻做上下文时用它，不要用它探活或读写记录。",
+                        "description": "Read the server's current local time (Asia/Shanghai, +08:00). Returns an RFC 3339 timestamp with milliseconds, the time zone, and the date, clock time, and weekday in Chinese. Use this when you need the current time as context; do not use it as a health check or to read or write records.",
                         "inputSchema": {
                             "type": "object",
                             "additionalProperties": false

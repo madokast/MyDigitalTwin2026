@@ -7,7 +7,7 @@ import (
 
 const Name = "time"
 
-const Description = "读取服务器当前本地时间（Asia/Shanghai，+08:00）。返回 RFC3339 毫秒时间、时区，以及中文日期、时刻和星期。需要当前时刻做上下文时用它，不要用它探活或读写记录。"
+const Description = "Read the server's current local time (Asia/Shanghai, +08:00). Returns an RFC 3339 timestamp with milliseconds, the time zone, and the date, clock time, and weekday in Chinese. Use this when you need the current time as context; do not use it as a health check or to read or write records."
 
 type Input struct {
 }

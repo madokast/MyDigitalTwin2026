@@ -23,7 +23,7 @@ func NewServer(httpServer *http.Server) *Server {
 		mcpServer: mcp_sdk.NewServer(
 			&mcp_sdk.Implementation{
 				Name:        "MyDigitalTwin2026",
-				Title:       "mdk 个人的数字孪生项目",
+				Title:       "mdk's personal digital twin",
 				Description: ServerDescription,
 				Version:     "0.0.1",
 			},

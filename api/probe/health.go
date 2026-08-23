@@ -7,9 +7,9 @@ import (
 )
 
 type HealthResponse struct {
-	Ok     bool   `json:"ok" jsonschema:"是否成功"`
-	Status int    `json:"status" jsonschema:"HTTP 状态码"`
-	Now    string `json:"now" jsonschema:"服务器当前时间，毫秒精度，时区 +08:00"`
+	Ok     bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status int    `json:"status" jsonschema:"HTTP status code"`
+	Now    string `json:"now" jsonschema:"Current server time in RFC 3339 with millisecond precision and a +08:00 offset"`
 }
 
 func (r HealthResponse) GetStatus() int {
