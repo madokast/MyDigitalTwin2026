@@ -1,0 +1,132 @@
+{
+    "call_ok": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {"name": "probe_qqbot", "arguments": {}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200
+                }
+            }
+        }
+    },
+    "call_ok_omit_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {"name": "probe_qqbot"}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200
+                }
+            }
+        }
+    },
+    "call_ok_with_message": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {"name": "probe_qqbot", "arguments": {"message": "mcp probe {unique:1}"}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200
+                }
+            }
+        }
+    },
+    "empty_message": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {"name": "probe_qqbot", "arguments": {"message": ""}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    },
+    "extra_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "method": "tools/call",
+            "params": {"name": "probe_qqbot", "arguments": {"foo": 1}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    }
+}

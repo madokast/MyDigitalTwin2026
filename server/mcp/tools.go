@@ -6,6 +6,7 @@ import (
 	"dt2026/server/http"
 	"dt2026/server/mcp/api/probe/health"
 	"dt2026/server/mcp/api/probe/postgresql"
+	"dt2026/server/mcp/api/probe/qqbot"
 	mcptime "dt2026/server/mcp/api/time"
 
 	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -32,6 +33,11 @@ func (s *Server) addAllTools() {
 		Name:        postgresql.Name,
 		Description: postgresql.Description,
 		HandleFunc:  postgresql.ProbePostgreSQL,
+	})
+	s.addTool(McpTool[qqbot.Input, qqbot.Output]{
+		Name:        qqbot.Name,
+		Description: qqbot.Description,
+		HandleFunc:  qqbot.ProbeQQBot,
 	})
 }
 

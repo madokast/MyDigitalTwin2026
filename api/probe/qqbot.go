@@ -9,8 +9,8 @@ import (
 )
 
 type ProbeQQBotResponse struct {
-	Ok     bool `json:"ok"`
-	Status int  `json:"status"`
+	Ok     bool `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status int  `json:"status" jsonschema:"HTTP status code"`
 }
 
 func (r ProbeQQBotResponse) GetStatus() int {
