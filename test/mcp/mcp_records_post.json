@@ -112,7 +112,12 @@
             "id": 3,
             "result": {
                 "content": "{array:1}",
-                "isError": true
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "raw content cannot be empty or contain only whitespace"
+                }
             }
         }
     },
@@ -166,7 +171,12 @@
             "id": 5,
             "result": {
                 "content": "{array:1}",
-                "isError": true
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "duplicate tags are not allowed: 'a'"
+                }
             }
         }
     },

@@ -105,7 +105,12 @@
             "id": 4,
             "result": {
                 "content": "{array:1}",
-                "isError": true
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "failed to send message via QQ Bot: message is empty"
+                }
             }
         }
     },

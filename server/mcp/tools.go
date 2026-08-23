@@ -50,8 +50,32 @@ func (s *Server) addAllTools() {
 	})
 }
 
+func mcpErrorOutputSchema() *jsonschema.Schema {
+	okFalse := any(false)
+	return &jsonschema.Schema{
+		Type: "object",
+		Properties: map[string]*jsonschema.Schema{
+			"ok": {
+				Type:        "boolean",
+				Const:       &okFalse,
+				Description: "Whether the request succeeded",
+			},
+			"status": {
+				Type:        "integer",
+				Description: "HTTP status code",
+			},
+			"message": {
+				Type:        "string",
+				Description: "Error message",
+			},
+		},
+		Required:             []string{"ok", "status", "message"},
+		AdditionalProperties: &jsonschema.Schema{Not: &jsonschema.Schema{}},
+	}
+}
+
 func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
-	outSchema, err := jsonschema.For[Out](&jsonschema.ForOptions{
+	successSchema, err := jsonschema.For[Out](&jsonschema.ForOptions{
 		TypeSchemas: map[reflect.Type]*jsonschema.Schema{
 			reflect.TypeFor[records.JSONTime](): {Type: "string"},
 		},
@@ -59,22 +83,27 @@ func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
 	if err != nil {
 		panic(err)
 	}
+	if okProp := successSchema.Properties["ok"]; okProp != nil {
+		okTrue := any(true)
+		okProp.Const = &okTrue
+	}
 	mcp_sdk.AddTool(
 		s.mcpServer,
 		&mcp_sdk.Tool{
-			Name:         tool.Name,
-			Description:  tool.Description,
-			OutputSchema: outSchema,
+			Name:        tool.Name,
+			Description: tool.Description,
+			OutputSchema: &jsonschema.Schema{
+				OneOf: []*jsonschema.Schema{successSchema, mcpErrorOutputSchema()},
+			},
 		},
 		func(
 			ctx context.Context,
 			req *mcp_sdk.CallToolRequest,
 			input In,
-		) (*mcp_sdk.CallToolResult, Out, error) {
+		) (*mcp_sdk.CallToolResult, any, error) {
 			out, httpErr := tool.HandleFunc(s.httpServer, input)
 			if httpErr != nil {
-				var zero Out
-				return nil, zero, httpErr
+				return &mcp_sdk.CallToolResult{IsError: true}, httpErr, nil
 			}
 			return nil, out, nil
 		},
