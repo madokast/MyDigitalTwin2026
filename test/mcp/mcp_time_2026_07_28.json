@@ -1,0 +1,103 @@
+{
+    "call_time": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream",
+            "Mcp-Protocol-Version": "2026-07-28",
+            "Mcp-Method": "tools/call",
+            "Mcp-Name": "time"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+                "name": "time",
+                "arguments": {},
+                "_meta": {
+                    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+                    "io.modelcontextprotocol/clientCapabilities": {},
+                    "io.modelcontextprotocol/clientInfo": {
+                        "name": "test-client",
+                        "version": "1.0.0"
+                    }
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "resultType": "complete",
+                "_meta": {
+                    "io.modelcontextprotocol/serverInfo": {
+                        "name": "MyDigitalTwin2026",
+                        "title": "mdk's personal digital twin",
+                        "description": "{existed}",
+                        "version": "0.0.1"
+                    }
+                },
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "{existed}"
+                    }
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "datetime": "{time}",
+                    "timezone": "Asia/Shanghai",
+                    "local": {
+                        "date": "{existed}",
+                        "time": "{existed}",
+                        "weekday": "{existed}"
+                    }
+                }
+            }
+        }
+    },
+    "call_time_extra_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream",
+            "Mcp-Protocol-Version": "2026-07-28",
+            "Mcp-Method": "tools/call",
+            "Mcp-Name": "time"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {
+                "name": "time",
+                "arguments": {
+                    "foo": 1
+                },
+                "_meta": {
+                    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+                    "io.modelcontextprotocol/clientCapabilities": {},
+                    "io.modelcontextprotocol/clientInfo": {
+                        "name": "test-client",
+                        "version": "1.0.0"
+                    }
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "result": {
+                "resultType": "complete",
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    }
+}
