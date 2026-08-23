@@ -140,6 +140,22 @@
                         "outputSchema": "{existed}"
                     },
                     {
+                        "name": "records_get",
+                        "description": "Fetch one of mdk's records by id. Returns the raw utterance, objective context, AI analysis, tags, and creation time. record_id is required. Do not use this to create records, list history, or as a health check.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "record_id": {
+                                    "type": "integer",
+                                    "description": "Record ID assigned by the server when the record was created"
+                                }
+                            },
+                            "required": ["record_id"],
+                            "additionalProperties": false
+                        },
+                        "outputSchema": "{existed}"
+                    },
+                    {
                         "name": "records_post",
                         "description": "Create a record of mdk's utterance with objective context, AI analysis, and optional tags. raw_content, objective_context, and ai_analysis are required and must not be blank. tags are optional; omit or pass [] for none. Do not use this as a health check or to query history.",
                         "inputSchema": {

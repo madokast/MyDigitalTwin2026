@@ -13,9 +13,9 @@ import (
 )
 
 type GetRecordsResponse struct {
-	Ok     httpx.TrueType `json:"ok"`
-	Status int    `json:"status"`
-	Record Record `json:"record"`
+	Ok     httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status int            `json:"status" jsonschema:"HTTP status code"`
+	Record Record         `json:"record" jsonschema:"The fetched record"`
 }
 
 func (r GetRecordsResponse) GetStatus() int {
