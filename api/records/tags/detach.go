@@ -10,11 +10,11 @@ import (
 )
 
 type DetachTagResponse struct {
-	Ok       httpx.TrueType `json:"ok"`
-	Status   int      `json:"status"`
-	Detached bool     `json:"detached"`
-	Changed  bool     `json:"changed"`
-	Tags     []string `json:"tags"`
+	Ok       httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status   int            `json:"status" jsonschema:"HTTP status code"`
+	Detached bool           `json:"detached" jsonschema:"Whether this call removed the tag; false if it was already absent"`
+	Changed  bool           `json:"changed" jsonschema:"Whether this call removed the tag; false if it was already absent"`
+	Tags     []string       `json:"tags" jsonschema:"Tags on this record after the detach"`
 }
 
 func (r DetachTagResponse) GetStatus() int {
@@ -32,6 +32,7 @@ func Detach(recordID int64, tag string, pool *pgxpool.Pool) httpx.Response {
 		Ok:       httpx.True,
 		Status:   http.StatusOK,
 		Detached: true,
+		Tags:     []string{},
 	}
 
 	var detachResult int
@@ -63,6 +64,10 @@ func Detach(recordID int64, tag string, pool *pgxpool.Pool) httpx.Response {
 			"unknown detach result %d while executing %s with %v",
 			detachResult, detachTagSQL, []any{recordID, tag},
 		))
+	}
+
+	if response.Tags == nil {
+		response.Tags = []string{}
 	}
 
 	return response

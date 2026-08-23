@@ -1,0 +1,274 @@
+{
+    "call_ok": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_detach",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:4}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "detached": true,
+                    "changed": true,
+                    "tags": []
+                }
+            }
+        }
+    },
+    "idempotent": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}"
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_detach",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:4}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "detached": false,
+                    "changed": false,
+                    "tags": []
+                }
+            }
+        }
+    },
+    "one_of_many": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}", "{unique:6}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_detach",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:5}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "detached": true,
+                    "changed": true,
+                    "tags": ["{unique:4}", "{unique:6}"]
+                }
+            }
+        }
+    },
+    "not_found": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_detach",
+                "arguments": {"record_id": -1, "tag": "{unique:1}"}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 404,
+                    "message": "record -1 not found"
+                }
+            }
+        }
+    },
+    "whitespace_tag": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_detach",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": " "
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "tag cannot be empty or contain only whitespace"
+                }
+            }
+        }
+    },
+    "missing_required": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "method": "tools/call",
+            "params": {"name": "records_tags_detach", "arguments": {}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    },
+    "extra_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 7,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_detach",
+                "arguments": {"record_id": -1, "tag": "x", "foo": 1}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 7,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    }
+}

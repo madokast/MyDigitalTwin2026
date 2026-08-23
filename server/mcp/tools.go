@@ -10,6 +10,7 @@ import (
 	"dt2026/server/mcp/api/posts/post"
 	"dt2026/server/mcp/api/posts/query"
 	"dt2026/server/mcp/api/posts/tags/attach"
+	"dt2026/server/mcp/api/posts/tags/detach"
 	tagsget "dt2026/server/mcp/api/posts/tags/get"
 	"dt2026/server/mcp/api/posts/tags/get_all"
 	"dt2026/server/mcp/api/probe/health"
@@ -67,6 +68,11 @@ func (s *Server) addAllTools() {
 		Name:        attach.Name,
 		Description: attach.Description,
 		HandleFunc:  attach.RecordsTagsAttach,
+	})
+	s.addTool(McpTool[detach.Input, detach.Output]{
+		Name:        detach.Name,
+		Description: detach.Description,
+		HandleFunc:  detach.RecordsTagsDetach,
 	})
 	s.addTool(McpTool[tagsget.Input, tagsget.Output]{
 		Name:        tagsget.Name,

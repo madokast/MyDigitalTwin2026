@@ -242,6 +242,26 @@
                         "outputSchema": "{existed}"
                     },
                     {
+                        "name": "records_tags_detach",
+                        "description": "Detach one tag from one of mdk's records. record_id and tag are required; tag is trimmed and must not be blank. Returns the record's tags after the detach. Removing a present tag is detached true and changed true; repeating when it is already gone is detached false and changed false. Status is always 200 on success. Do not use this to attach a tag, create a record, or list every tag in the library.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "record_id": {
+                                    "type": "integer",
+                                    "description": "Record ID assigned by the server when the record was created"
+                                },
+                                "tag": {
+                                    "type": "string",
+                                    "description": "Tag to detach; trimmed, must not be blank"
+                                }
+                            },
+                            "required": ["record_id", "tag"],
+                            "additionalProperties": false
+                        },
+                        "outputSchema": "{existed}"
+                    },
+                    {
                         "name": "records_tags_get",
                         "description": "Fetch the tags on one of mdk's records by id. Returns tags as a string array; empty if the record has none. record_id is required. Do not use this to list every tag in the library, search records, or as a health check.",
                         "inputSchema": {
