@@ -1,0 +1,178 @@
+{
+    "call_ok": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]
+            },
+            "extractions": ["record.id", "record.created_at"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+                "name": "records_query",
+                "arguments": {"q": ["{unique:1}"]}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "page": 1,
+                    "page_size": 100,
+                    "total": 1,
+                    "total_page": 1,
+                    "records": [
+                        {
+                            "id": "{extracted:record.id}",
+                            "created_at": "{extracted:record.created_at}",
+                            "raw_content": "{unique:1}",
+                            "objective_context": "{unique:2}",
+                            "ai_analysis": "{unique:3}",
+                            "tags": ["{unique:4}"]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "empty_query": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+                "name": "records_query",
+                "arguments": {"q": [""]}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "query cannot be empty"
+                }
+            }
+        }
+    },
+    "page_zero": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+                "name": "records_query",
+                "arguments": {"page": 0}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "page must be greater than 0, but got: '0'"
+                }
+            }
+        }
+    },
+    "invalid_from": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {
+                "name": "records_query",
+                "arguments": {"from": "not-a-time"}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "time value expected in RFC3339 or DateOnly, but got 'not-a-time'"
+                }
+            }
+        }
+    },
+    "extra_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "method": "tools/call",
+            "params": {
+                "name": "records_query",
+                "arguments": {"q": ["x"], "foo": 1}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    }
+}

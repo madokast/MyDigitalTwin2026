@@ -8,6 +8,7 @@ import (
 	"dt2026/server/http"
 	"dt2026/server/mcp/api/posts/get"
 	"dt2026/server/mcp/api/posts/post"
+	"dt2026/server/mcp/api/posts/query"
 	"dt2026/server/mcp/api/probe/health"
 	"dt2026/server/mcp/api/probe/postgresql"
 	"dt2026/server/mcp/api/probe/qqbot"
@@ -53,6 +54,11 @@ func (s *Server) addAllTools() {
 		Name:        post.Name,
 		Description: post.Description,
 		HandleFunc:  post.RecordsPost,
+	})
+	s.addTool(McpTool[query.Input, query.Output]{
+		Name:        query.Name,
+		Description: query.Description,
+		HandleFunc:  query.RecordsQuery,
 	})
 }
 

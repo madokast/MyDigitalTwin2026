@@ -68,13 +68,13 @@ func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
 }
 
 type QueryRecordResponse struct {
-	Ok        httpx.TrueType `json:"ok"`
-	Status    int      `json:"status"`
-	Page      int64    `json:"page"`
-	PageSize  int64    `json:"page_size"`
-	Total     int64    `json:"total"`
-	TotalPage int64    `json:"total_page"`
-	Records   []Record `json:"records"`
+	Ok        httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status    int            `json:"status" jsonschema:"HTTP status code"`
+	Page      int64          `json:"page" jsonschema:"Current page number"`
+	PageSize  int64          `json:"page_size" jsonschema:"Page size used for this response"`
+	Total     int64          `json:"total" jsonschema:"Total number of matching records"`
+	TotalPage int64          `json:"total_page" jsonschema:"Total number of pages"`
+	Records   []Record       `json:"records" jsonschema:"Matching records on this page, ordered by id ascending"`
 }
 
 func (r QueryRecordResponse) GetStatus() int {

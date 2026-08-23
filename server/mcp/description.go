@@ -10,4 +10,5 @@ Currently available:
 - probe_postgresql: confirm PostgreSQL is reachable and read connection/query latency plus the database clock. Do not use this to query records or write data.
 - probe_qqbot: confirm the QQ bot can send a message. Optional message: omit for the default probe text; empty or whitespace-only is rejected. Do not use this to query records or write data.
 - records_get: fetch one record by id. Do not use this to create records, list history, or as a health check.
-- records_post: create a record of mdk's utterance, objective context, AI analysis, and optional tags. Do not use this as a health check or to query history.`
+- records_post: create a record of mdk's utterance, objective context, AI analysis, and optional tags. Do not use this as a health check or to query history.
+- records_query: search records by text (q), tags, and created_at range. Do not use this to create a record or fetch a single id.`
