@@ -6,12 +6,21 @@ import (
 	"dt2026/lib/optional"
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
 	"time"
+
+	"github.com/google/jsonschema-go/jsonschema"
 )
 
 // JSONTime 序列化为 JSON 后总是 +08:00 时区
 type JSONTime time.Time
+
+// JSONSchemaTypes 给 jsonschema.For 用。JSONTime 是 time.Time 的定义类型，
+// JSON 编成 RFC3339 字符串，但 For 只特殊处理 time.Time，否则会推断成空 object。
+var JSONSchemaTypes = map[reflect.Type]*jsonschema.Schema{
+	reflect.TypeFor[JSONTime](): {Type: "string"},
+}
 
 var tzSpace = regexp.MustCompile(`^(\S+) (\d{2}:\d{2})$`)
 

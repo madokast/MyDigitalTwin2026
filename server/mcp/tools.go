@@ -10,7 +10,6 @@ import (
 	"dt2026/server/mcp/api/probe/postgresql"
 	"dt2026/server/mcp/api/probe/qqbot"
 	mcptime "dt2026/server/mcp/api/time"
-	"reflect"
 
 	"github.com/google/jsonschema-go/jsonschema"
 	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -50,35 +49,9 @@ func (s *Server) addAllTools() {
 	})
 }
 
-func mcpErrorOutputSchema() *jsonschema.Schema {
-	okFalse := any(false)
-	return &jsonschema.Schema{
-		Type: "object",
-		Properties: map[string]*jsonschema.Schema{
-			"ok": {
-				Type:        "boolean",
-				Const:       &okFalse,
-				Description: "Whether the request succeeded",
-			},
-			"status": {
-				Type:        "integer",
-				Description: "HTTP status code",
-			},
-			"message": {
-				Type:        "string",
-				Description: "Error message",
-			},
-		},
-		Required:             []string{"ok", "status", "message"},
-		AdditionalProperties: &jsonschema.Schema{Not: &jsonschema.Schema{}},
-	}
-}
-
 func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
 	successSchema, err := jsonschema.For[Out](&jsonschema.ForOptions{
-		TypeSchemas: map[reflect.Type]*jsonschema.Schema{
-			reflect.TypeFor[records.JSONTime](): {Type: "string"},
-		},
+		TypeSchemas: records.JSONSchemaTypes,
 	})
 	if err != nil {
 		panic(err)
@@ -93,7 +66,7 @@ func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
 			Name:        tool.Name,
 			Description: tool.Description,
 			OutputSchema: &jsonschema.Schema{
-				OneOf: []*jsonschema.Schema{successSchema, mcpErrorOutputSchema()},
+				OneOf: []*jsonschema.Schema{successSchema, httpx.ErrorSchema()},
 			},
 		},
 		func(

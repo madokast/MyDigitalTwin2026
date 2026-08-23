@@ -2,6 +2,9 @@ package httpx
 
 import (
 	"net/http"
+	"sync"
+
+	"github.com/google/jsonschema-go/jsonschema"
 )
 
 type Error struct {
@@ -37,3 +40,20 @@ func NewInternalServerError(message string) *Error {
 func (e Error) GetStatus() int {
 	return e.Status
 }
+
+// ErrorSchema is the JSON Schema for [Error], with ok fixed to false.
+func ErrorSchema() *jsonschema.Schema {
+	return errorSchema()
+}
+
+var errorSchema = sync.OnceValue(func() *jsonschema.Schema {
+	s, err := jsonschema.For[Error](nil)
+	if err != nil {
+		panic(err)
+	}
+	okFalse := any(false)
+	if ok := s.Properties["ok"]; ok != nil {
+		ok.Const = &okFalse
+	}
+	return s
+})
