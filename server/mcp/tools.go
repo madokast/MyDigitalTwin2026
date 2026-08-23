@@ -40,12 +40,11 @@ func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
 			ctx context.Context,
 			req *mcp_sdk.CallToolRequest,
 			input In,
-		) (res *mcp_sdk.CallToolResult, out Out, err error) {
-
-			out, err = tool.HandleFunc(s.httpServer, input)
-			if err != nil {
+		) (*mcp_sdk.CallToolResult, Out, error) {
+			out, httpErr := tool.HandleFunc(s.httpServer, input)
+			if httpErr != nil {
 				var zero Out
-				return nil, zero, err
+				return nil, zero, httpErr
 			}
 			return nil, out, nil
 		},
