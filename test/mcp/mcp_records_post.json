@@ -1,0 +1,204 @@
+{
+    "call_ok": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+                "name": "records_post",
+                "arguments": {
+                    "raw_content": "{unique:1}",
+                    "objective_context": "{unique:2}",
+                    "ai_analysis": "{unique:3}",
+                    "tags": ["{unique:4}", "{unique:5}"]
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 201,
+                    "record": {
+                        "id": "{integer}",
+                        "created_at": "{time}",
+                        "raw_content": "{unique:1}",
+                        "objective_context": "{unique:2}",
+                        "ai_analysis": "{unique:3}",
+                        "tags": ["{unique:4}", "{unique:5}"]
+                    }
+                }
+            }
+        }
+    },
+    "omit_tags": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+                "name": "records_post",
+                "arguments": {
+                    "raw_content": "{unique:1}",
+                    "objective_context": "{unique:2}",
+                    "ai_analysis": "{unique:3}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 201,
+                    "record": {
+                        "id": "{integer}",
+                        "created_at": "{time}",
+                        "raw_content": "{unique:1}",
+                        "objective_context": "{unique:2}",
+                        "ai_analysis": "{unique:3}",
+                        "tags": []
+                    }
+                }
+            }
+        }
+    },
+    "empty_raw_content": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+                "name": "records_post",
+                "arguments": {
+                    "raw_content": "   ",
+                    "objective_context": "{unique:2}",
+                    "ai_analysis": "{unique:3}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    },
+    "missing_required": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {"name": "records_post", "arguments": {}}
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    },
+    "duplicate_tags": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "method": "tools/call",
+            "params": {
+                "name": "records_post",
+                "arguments": {
+                    "raw_content": "{unique:1}",
+                    "objective_context": "{unique:2}",
+                    "ai_analysis": "{unique:3}",
+                    "tags": ["a", "b", "a"]
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    },
+    "extra_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "method": "tools/call",
+            "params": {
+                "name": "records_post",
+                "arguments": {
+                    "raw_content": "{unique:1}",
+                    "objective_context": "{unique:2}",
+                    "ai_analysis": "{unique:3}",
+                    "foo": 1
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    }
+}

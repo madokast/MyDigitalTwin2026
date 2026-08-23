@@ -14,9 +14,9 @@ import (
 )
 
 type PostResponse struct {
-	Ok     bool   `json:"ok"`
-	Status int    `json:"status"`
-	Record Record `json:"record"`
+	Ok     bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Status int    `json:"status" jsonschema:"HTTP status code"`
+	Record Record `json:"record" jsonschema:"The created record"`
 }
 
 func (r PostResponse) GetStatus() int {
