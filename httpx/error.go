@@ -8,14 +8,14 @@ import (
 )
 
 type Error struct {
-	Ok      bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Ok      FalseType `json:"ok" jsonschema:"Whether the request succeeded"`
 	Status  int    `json:"status" jsonschema:"HTTP status code"`
 	Message string `json:"message" jsonschema:"Error message"`
 }
 
 func NewError(status int, message string) *Error {
 	return &Error{
-		Ok:      false,
+		Ok:      False,
 		Status:  status,
 		Message: message,
 	}
@@ -41,19 +41,16 @@ func (e Error) GetStatus() int {
 	return e.Status
 }
 
-// ErrorSchema is the JSON Schema for [Error], with ok fixed to false.
 func ErrorSchema() *jsonschema.Schema {
 	return errorSchema()
 }
 
 var errorSchema = sync.OnceValue(func() *jsonschema.Schema {
-	s, err := jsonschema.For[Error](nil)
+	s, err := jsonschema.For[Error](&jsonschema.ForOptions{
+		TypeSchemas: FalseTypeSchemaTypes,
+	})
 	if err != nil {
 		panic(err)
-	}
-	okFalse := any(false)
-	if ok := s.Properties["ok"]; ok != nil {
-		ok.Const = &okFalse
 	}
 	return s
 })

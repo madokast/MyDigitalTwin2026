@@ -10,7 +10,7 @@ import (
 )
 
 type AttachTagResponse struct {
-	Ok       bool     `json:"ok"`
+	Ok       httpx.TrueType `json:"ok"`
 	Status   int      `json:"status"`
 	Attached bool     `json:"attached"`
 	Changed  bool     `json:"changed"`
@@ -29,7 +29,7 @@ func Attach(recordID int64, tag string, pool *pgxpool.Pool) httpx.Response {
 	}
 
 	var response = AttachTagResponse{
-		Ok:       true,
+		Ok:       httpx.True,
 		Attached: true,
 	}
 

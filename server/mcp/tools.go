@@ -54,14 +54,11 @@ func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
 	successSchema, err := jsonschema.For[Out](&jsonschema.ForOptions{
 		TypeSchemas: lib.MapsMerge(
 			records.JSONSchemaTypes,
+			httpx.TrueTypeSchemaTypes,
 		),
 	})
 	if err != nil {
 		panic(err)
-	}
-	if okProp := successSchema.Properties["ok"]; okProp != nil {
-		okTrue := any(true)
-		okProp.Const = &okTrue
 	}
 	mcp_sdk.AddTool(
 		s.mcpServer,

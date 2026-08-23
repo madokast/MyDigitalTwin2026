@@ -14,7 +14,7 @@ import (
 )
 
 type PostResponse struct {
-	Ok     bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Ok     httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
 	Status int    `json:"status" jsonschema:"HTTP status code"`
 	Record Record `json:"record" jsonschema:"The created record"`
 }
@@ -35,7 +35,7 @@ func Post(record *NewRecord, pool *pgxpool.Pool, bot *qqbot.Sender) httpx.Respon
 	}
 
 	var response = PostResponse{
-		Ok:     true,
+		Ok:     httpx.True,
 		Status: http.StatusCreated,
 		Record: Record{
 			CreatedAt:        JSONTime(time.Now().UTC()),

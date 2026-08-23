@@ -12,7 +12,7 @@ import (
 )
 
 type ProbePostgreSQLResponse struct {
-	Ok                 bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Ok                 httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
 	Status             int    `json:"status" jsonschema:"HTTP status code"`
 	ConnectionTimeMs   int64  `json:"connection_time_ms" jsonschema:"Time to open a new database connection, in milliseconds"`
 	QueryTimeMs        int64  `json:"query_time_ms" jsonschema:"Time to run SELECT NOW()::text, in milliseconds"`
@@ -25,7 +25,7 @@ func (r ProbePostgreSQLResponse) GetStatus() int {
 
 func ProbePostgreSQL(ctx context.Context) httpx.Response {
 	var response = ProbePostgreSQLResponse{
-		Ok:     true,
+		Ok:     httpx.True,
 		Status: http.StatusOK,
 	}
 

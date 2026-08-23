@@ -13,7 +13,7 @@ import (
 )
 
 type GetRecordsResponse struct {
-	Ok     bool   `json:"ok"`
+	Ok     httpx.TrueType `json:"ok"`
 	Status int    `json:"status"`
 	Record Record `json:"record"`
 }
@@ -26,7 +26,7 @@ var getByIDSQL = queryRecordSQL + " AND id = $1;"
 
 func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
 	var response = GetRecordsResponse{
-		Ok:     true,
+		Ok:     httpx.True,
 		Status: http.StatusOK,
 	}
 

@@ -68,7 +68,7 @@ func NewQueryCriteria(q httpx.QueryParams) (*QueryCriteria, *httpx.Error) {
 }
 
 type QueryRecordResponse struct {
-	Ok        bool     `json:"ok"`
+	Ok        httpx.TrueType `json:"ok"`
 	Status    int      `json:"status"`
 	Page      int64    `json:"page"`
 	PageSize  int64    `json:"page_size"`
@@ -145,7 +145,7 @@ func Query(criteria *QueryCriteria, pool *pgxpool.Pool) httpx.Response {
 
 	totalPage := (total + pageSize - 1) / pageSize
 	return QueryRecordResponse{
-		Ok:        true,
+		Ok:        httpx.True,
 		Status:    http.StatusOK,
 		Page:      page,
 		PageSize:  pageSize,

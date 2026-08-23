@@ -1,6 +1,7 @@
 package probe
 
 import (
+	"dt2026/httpx"
 	"dt2026/lib"
 	"fmt"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 )
 
 type TimeResponse struct {
-	Ok       bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Ok       httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
 	Status   int    `json:"status" jsonschema:"HTTP status code"`
 	Datetime string `json:"datetime" jsonschema:"Current server time in RFC 3339 with millisecond precision and a +08:00 offset"`
 	Timezone string `json:"timezone" jsonschema:"IANA time zone name; always Asia/Shanghai"`
@@ -39,7 +40,7 @@ func Time() TimeResponse {
 	now := time.Now().In(lib.UTC8)
 
 	return TimeResponse{
-		Ok:       true,
+		Ok:       httpx.True,
 		Status:   http.StatusOK,
 		Datetime: now.Format(lib.RFC3339Milli),
 		Timezone: "Asia/Shanghai",

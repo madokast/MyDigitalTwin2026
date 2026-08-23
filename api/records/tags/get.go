@@ -12,7 +12,7 @@ import (
 )
 
 type GetTagResponse struct {
-	Ok     bool     `json:"ok"`
+	Ok     httpx.TrueType `json:"ok"`
 	Status int      `json:"status"`
 	Tags   []string `json:"tags"`
 }
@@ -24,7 +24,7 @@ func (r GetTagResponse) GetStatus() int {
 func Get(recordID int64, pool *pgxpool.Pool) httpx.Response {
 
 	var response = GetTagResponse{
-		Ok:     true,
+		Ok:     httpx.True,
 		Status: http.StatusOK,
 	}
 

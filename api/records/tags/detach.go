@@ -10,7 +10,7 @@ import (
 )
 
 type DetachTagResponse struct {
-	Ok       bool     `json:"ok"`
+	Ok       httpx.TrueType `json:"ok"`
 	Status   int      `json:"status"`
 	Detached bool     `json:"detached"`
 	Changed  bool     `json:"changed"`
@@ -29,7 +29,7 @@ func Detach(recordID int64, tag string, pool *pgxpool.Pool) httpx.Response {
 	}
 
 	var response = DetachTagResponse{
-		Ok:       true,
+		Ok:       httpx.True,
 		Status:   http.StatusOK,
 		Detached: true,
 	}

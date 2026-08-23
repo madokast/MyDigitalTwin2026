@@ -10,7 +10,7 @@ import (
 )
 
 type ProbeQQBotResponse struct {
-	Ok      bool   `json:"ok" jsonschema:"Whether the request succeeded"`
+	Ok      httpx.TrueType `json:"ok" jsonschema:"Whether the request succeeded"`
 	Status  int    `json:"status" jsonschema:"HTTP status code"`
 	Message string `json:"message" jsonschema:"The message that was actually sent"`
 }
@@ -31,7 +31,7 @@ func ProbeQQBot(message optional.Optional[string], sender *qqbot.Sender) httpx.R
 	}
 
 	return ProbeQQBotResponse{
-		Ok:      true,
+		Ok:      httpx.True,
 		Status:  http.StatusOK,
 		Message: sent,
 	}

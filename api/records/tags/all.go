@@ -15,7 +15,7 @@ type TagCount struct {
 }
 
 type GetAllTagsResponse struct {
-	Ok        bool       `json:"ok"`
+	Ok        httpx.TrueType `json:"ok"`
 	Status    int        `json:"status"`
 	TagCounts []TagCount `json:"tag_counts"`
 }
@@ -27,7 +27,7 @@ func (r GetAllTagsResponse) GetStatus() int {
 func GetAll(pool *pgxpool.Pool) httpx.Response {
 
 	var response = GetAllTagsResponse{
-		Ok:     true,
+		Ok:     httpx.True,
 		Status: http.StatusOK,
 	}
 
