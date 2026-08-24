@@ -102,6 +102,7 @@ func (s *Server) addTool[In McpInput, Out McpOutput](tool McpTool[In, Out]) {
 			Name:        tool.Name,
 			Description: tool.Description,
 			OutputSchema: &jsonschema.Schema{
+				Type:  "object",
 				OneOf: []*jsonschema.Schema{successSchema, httpx.ErrorSchema()},
 			},
 		},
