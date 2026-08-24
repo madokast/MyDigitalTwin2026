@@ -21,6 +21,11 @@ const (
 	detachResultTagDetached      = 4
 	detachResultRecordNotFound   = 5
 	detachResultTagNotExists     = 6
+	renameResultTagRenamed       = 7
+	renameResultRecordNotFound   = 8
+	renameResultTagNotExists     = 9
+	renameResultNewTagSameAsOld  = 10
+	renameResultNewTagExists     = 11
 )
 
 const attachTagSQL = `
@@ -67,6 +72,36 @@ SELECT
         WHEN EXISTS (SELECT 1 FROM updated) THEN 4 -- tag detached
         WHEN NOT EXISTS (SELECT 1 FROM target) THEN 5 -- record not found
         ELSE 6 -- tag not exists
+    END AS result,
+    COALESCE(
+        (SELECT tags FROM updated),
+        (SELECT tags FROM target),
+        ARRAY[]::TEXT[]
+    ) AS tags;
+`
+
+const renameTagSQL = `
+WITH target AS (
+    SELECT tags
+    FROM records
+    WHERE id = $1
+),
+updated AS (
+    UPDATE records
+    SET tags = array_replace(tags, $2, $3)
+    WHERE id = $1
+      AND $2 = ANY(tags)
+      AND $2 <> $3
+      AND NOT ($3 = ANY(tags))
+    RETURNING tags
+)
+SELECT
+    CASE
+        WHEN EXISTS (SELECT 1 FROM updated) THEN 7 -- tag renamed
+        WHEN NOT EXISTS (SELECT 1 FROM target) THEN 8 -- record not found
+        WHEN NOT EXISTS (SELECT 1 FROM target WHERE $2 = ANY(target.tags)) THEN 9 -- tag not exists
+        WHEN $2 = $3 THEN 10 -- new tag same as old
+        ELSE 11 -- new tag already exists
     END AS result,
     COALESCE(
         (SELECT tags FROM updated),

@@ -36,6 +36,7 @@ func main() {
 	mux.HandleFunc("GET /api/records/{record_id}/tags", middleware.Auth(server.RecordTagsGet))
 	mux.HandleFunc("PUT /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagsAttach))
 	mux.HandleFunc("DELETE /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagsDetach))
+	mux.HandleFunc("PATCH /api/records/{record_id}/tags/{tag}", middleware.Auth(server.RecordTagRename))
 
 	mcpServer := mcp_serever.NewServer(server)
 	mux.HandleFunc("/mcp", middleware.Auth(mcpServer.HttpHandler(true).ServeHTTP))

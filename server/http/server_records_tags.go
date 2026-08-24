@@ -81,3 +81,34 @@ func (s *Server) RecordTagsDetach(w http.ResponseWriter, r *http.Request) {
 
 	httpx.WriteJSON(w, tags.Detach(recordID, tag, pool))
 }
+
+func (s *Server) RecordTagRename(w http.ResponseWriter, r *http.Request) {
+	pv := httpx.PathParams{Request: r}
+
+	recordID, err := pv.Int64("record_id")
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	tag, err := pv.String("tag")
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	var request tags.RenameTagRequest
+	err = s.JsonUnmarshal(r, &request)
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	pool, err := s.DB()
+	if err != nil {
+		httpx.WriteJSON(w, err)
+		return
+	}
+
+	httpx.WriteJSON(w, tags.Rename(recordID, tag, request.NewTag, pool))
+}
