@@ -1,0 +1,285 @@
+{
+    "rename_new":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:5}"},
+        "expected": {"ok":true,"status":200,"renamed":true,"changed":true,"tags":["{unique:5}"]}
+    },
+    "rename_again_idempotent":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                    "tags": ["{unique:4}"]},
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+                "method": "PATCH",
+                "headers": {"Authorization": "{token}"},
+                "data": {"new_tag": "{unique:5}"}
+            }
+        ],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:6}"},
+        "expected": {"ok":true,"status":200,"renamed":false,"changed":false,"tags":["{unique:5}"]}
+    },
+    "rename_one_of_many":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}", "{unique:6}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:5}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:7}"},
+        "expected": {"ok":true,"status":200,"renamed":true,"changed":true,"tags":["{unique:4}", "{unique:7}", "{unique:6}"]}
+    },
+    "rename_new_tag_same_as_old":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:4}"},
+        "expected": {"ok":true,"status":200,"renamed":true,"changed":false,"tags":["{unique:4}"]}
+    },
+    "rename_new_tag_already_exists":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:5}"},
+        "expected": {"ok":false,"status":409,"message":"tag '{unique:5}' already exists on record {extracted:record.id}"}
+    },
+    "rename_tag_not_exists":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:5}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:6}"},
+        "expected": {"ok":true,"status":200,"renamed":false,"changed":false,"tags":["{unique:4}"]}
+    },
+    "rename_tag_used_by_other_record":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                    "tags": ["{unique:4}"]},
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:5}","objective_context": "{unique:6}","ai_analysis": "{unique:7}",
+                    "tags": ["{unique:8}"]}
+            }
+        ],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:8}"},
+        "expected": {"ok":true,"status":200,"renamed":true,"changed":true,"tags":["{unique:8}"]}
+    },
+    "rename_after_attach":{
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}"},
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+                "method": "PUT",
+                "headers": {"Authorization": "{token}"}
+            }
+        ],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:5}"},
+        "expected": {"ok":true,"status":200,"renamed":true,"changed":true,"tags":["{unique:5}"]}
+    },
+    "rename_chinese":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["学习", "健身"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/学习",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "阅读"},
+        "expected": {"ok":true,"status":200,"renamed":true,"changed":true,"tags":["阅读", "健身"]}
+    },
+    "rename_trim_new_tag":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": " {unique:5} "},
+        "expected": {"ok":true,"status":200,"renamed":true,"changed":true,"tags":["{unique:5}"]}
+    },
+    "rename_not_found":{
+        "api": "/api/records/-1/tags/{unique:1}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:2}"},
+        "expected": {"ok":false,"status":404,"message":"record -1 not found"}
+    },
+    "rename_not_integer":{
+        "api": "/api/records/abc/tags/{unique:1}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:2}"},
+        "expected": {"ok":false,"status":400,"message":"parameter record_id in path PATCH /api/records/{record_id}/tags/{tag} expected an integer, but got: 'abc'"}
+    },
+    "rename_whitespace_old_tag":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/ ",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:5}"},
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
+    },
+    "rename_empty_new_tag":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": ""},
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
+    },
+    "rename_whitespace_new_tag":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "   "},
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
+    },
+    "rename_null_new_tag":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": null},
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
+    },
+    "rename_missing_new_tag":{
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {"raw_content": "{unique:1}","objective_context": "{unique:2}","ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]},
+            "extractions": ["record.id"]
+        }],
+        "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {},
+        "expected": {"ok":false,"status":400,"message":"tag cannot be empty or contain only whitespace"}
+    },
+    "rename_empty_body":{
+        "api": "/api/records/1/tags/{unique:1}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": "{empty}",
+        "expected": {"ok":false,"status":400,"message":"failed to unmarshal request body: jsontext: unexpected EOF"}
+    },
+    "rename_unknown_member":{
+        "api": "/api/records/1/tags/{unique:1}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": "{unique:2}", "extra": 1},
+        "expected": {"ok":false,"status":400,"message":"failed to unmarshal request body: json: unable to unmarshal JSON string into Go tags.RenameTagRequest: unknown object member name \"extra\""}
+    },
+    "rename_wrong_type_new_tag":{
+        "api": "/api/records/1/tags/{unique:1}",
+        "method": "PATCH",
+        "headers": {"Authorization": "{token}"},
+        "data": {"new_tag": 123},
+        "expected": {"ok":false,"status":400,"message":"failed to unmarshal request body: json: unable to unmarshal JSON number into Go string within \"/new_tag\""}
+    }
+}
