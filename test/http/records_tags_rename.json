@@ -273,13 +273,13 @@
         "method": "PATCH",
         "headers": {"Authorization": "{token}"},
         "data": {"new_tag": "{unique:2}", "extra": 1},
-        "expected": {"ok":false,"status":400,"message":"failed to unmarshal request body: json: unable to unmarshal JSON string into Go tags.RenameTagRequest: unknown object member name \"extra\""}
+        "expected": {"ok":false,"status":400,"message":"failed to unmarshal request body: json: cannot unmarshal JSON string into Go tags.RenameTagRequest: unknown object member name \"extra\""}
     },
     "rename_wrong_type_new_tag":{
         "api": "/api/records/1/tags/{unique:1}",
         "method": "PATCH",
         "headers": {"Authorization": "{token}"},
         "data": {"new_tag": 123},
-        "expected": {"ok":false,"status":400,"message":"failed to unmarshal request body: json: unable to unmarshal JSON number into Go string within \"/new_tag\""}
+        "expected": {"ok":false,"status":400,"message":"failed to unmarshal request body: json: cannot unmarshal JSON number into Go string within \"/new_tag\""}
     }
 }

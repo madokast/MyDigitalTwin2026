@@ -14,5 +14,6 @@ Currently available:
 - records_query: search records by text (q), tags, and created_at range. Do not use this to create a record or fetch a single id.
 - records_tags_attach: attach one tag to a record by id. Do not use this to create a record or list every tag.
 - records_tags_detach: remove one tag from a record by id. Do not use this to attach a tag or list every tag.
+- records_tags_rename: rename one tag on a record by id. Do not use this to attach or detach a tag, or to list every tag.
 - records_tags_get: fetch the tags on one record by id. Do not use this to list every tag in the library.
 - records_tags_get_all: list every tag that appears in records, with counts. Do not use this to fetch one record's tags.`

@@ -1,0 +1,484 @@
+{
+    "call_ok": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:4}",
+                    "new_tag": "{unique:5}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "renamed": true,
+                    "changed": true,
+                    "tags": ["{unique:5}"]
+                }
+            }
+        }
+    },
+    "idempotent": {
+        "before": [
+            {
+                "api": "/api/records",
+                "method": "POST",
+                "headers": {"Authorization": "{token}"},
+                "data": {
+                    "raw_content": "{unique:1}",
+                    "objective_context": "{unique:2}",
+                    "ai_analysis": "{unique:3}",
+                    "tags": ["{unique:4}"]
+                },
+                "extractions": ["record.id"]
+            },
+            {
+                "api": "/api/records/{extracted:record.id}/tags/{unique:4}",
+                "method": "PATCH",
+                "headers": {"Authorization": "{token}"},
+                "data": {"new_tag": "{unique:5}"}
+            }
+        ],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:4}",
+                    "new_tag": "{unique:6}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "renamed": false,
+                    "changed": false,
+                    "tags": ["{unique:5}"]
+                }
+            }
+        }
+    },
+    "one_of_many": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}", "{unique:6}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:5}",
+                    "new_tag": "{unique:7}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "renamed": true,
+                    "changed": true,
+                    "tags": ["{unique:4}", "{unique:7}", "{unique:6}"]
+                }
+            }
+        }
+    },
+    "new_tag_same_as_old": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:4}",
+                    "new_tag": "{unique:4}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "renamed": true,
+                    "changed": false,
+                    "tags": ["{unique:4}"]
+                }
+            }
+        }
+    },
+    "new_tag_already_exists": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}", "{unique:5}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:4}",
+                    "new_tag": "{unique:5}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 409,
+                    "message": "tag '{unique:5}' already exists on record {extracted:record.id}"
+                }
+            }
+        }
+    },
+    "chinese": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["学习", "健身"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "学习",
+                    "new_tag": "阅读"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 6,
+            "result": {
+                "content": [
+                    {"type": "text", "text": "{existed}"}
+                ],
+                "structuredContent": {
+                    "ok": true,
+                    "status": 200,
+                    "renamed": true,
+                    "changed": true,
+                    "tags": ["阅读", "健身"]
+                }
+            }
+        }
+    },
+    "not_found": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 7,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {"record_id": -1, "tag": "{unique:1}", "new_tag": "{unique:2}"}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 7,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 404,
+                    "message": "record -1 not found"
+                }
+            }
+        }
+    },
+    "whitespace_tag": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 8,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": " ",
+                    "new_tag": "{unique:5}"
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 8,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "tag cannot be empty or contain only whitespace"
+                }
+            }
+        }
+    },
+    "whitespace_new_tag": {
+        "before": [{
+            "api": "/api/records",
+            "method": "POST",
+            "headers": {"Authorization": "{token}"},
+            "data": {
+                "raw_content": "{unique:1}",
+                "objective_context": "{unique:2}",
+                "ai_analysis": "{unique:3}",
+                "tags": ["{unique:4}"]
+            },
+            "extractions": ["record.id"]
+        }],
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 9,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {
+                    "record_id": "{extracted:record.id}",
+                    "tag": "{unique:4}",
+                    "new_tag": " "
+                }
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 9,
+            "result": {
+                "content": "{array:1}",
+                "isError": true,
+                "structuredContent": {
+                    "ok": false,
+                    "status": 400,
+                    "message": "tag cannot be empty or contain only whitespace"
+                }
+            }
+        }
+    },
+    "missing_required": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 10,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {"record_id": -1, "tag": "x"}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 10,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    },
+    "extra_arguments": {
+        "api": "/mcp",
+        "method": "POST",
+        "headers": {
+            "Authorization": "{token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream"
+        },
+        "data": {
+            "jsonrpc": "2.0",
+            "id": 11,
+            "method": "tools/call",
+            "params": {
+                "name": "records_tags_rename",
+                "arguments": {"record_id": -1, "tag": "x", "new_tag": "y", "foo": 1}
+            }
+        },
+        "expected": {
+            "jsonrpc": "2.0",
+            "id": 11,
+            "result": {
+                "content": "{array:1}",
+                "isError": true
+            }
+        }
+    }
+}
