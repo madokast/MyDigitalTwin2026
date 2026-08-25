@@ -209,6 +209,32 @@ curl -X DELETE $base_url/api/records/{record_id:2504}/tags/健身 \
 
 说明：删除不存在的标签返回 `200` 且 `detached`/`changed` 均为 `false`（幂等）。
 
+**重命名标签**
+
+```bash
+curl -X PATCH $base_url/api/records/{record_id:2504}/tags/健身 \
+  -H "Authorization: Bearer $token" \
+  -H "Content-Type: application/json" \
+  -d '{"new_tag": "运动"}'
+```
+
+- `tag`：要改名的标签，必填，会 trim space，不能为空白；标签含特殊字符时需 URL 编码（如 `/` 编码为 `%2F`）
+- `new_tag`：新名称，必填，会 trim space，不能为空白
+
+成功响应（`200 OK`）：
+
+```json
+{
+  "ok": true,
+  "status": 200,
+  "renamed": true,
+  "changed": true,
+  "tags": ["生活", "休息", "闲聊", "运动"]
+}
+```
+
+说明：只改这一条记录上的该标签，顺序保留。其他记录已有同名标签时仍允许。新旧同名返回 `200` 且 `renamed` 为 `true`、`changed` 为 `false`。旧标签不在这条记录上返回 `200` 且 `renamed`/`changed` 均为 `false`（幂等）。新名已在同一条记录上返回 `409`。记录不存在返回 `404`。
+
 ## 4. 使用方法
 
 ### 4.1 新建聊天：初始化mdk  mdk 上下文
