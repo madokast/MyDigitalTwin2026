@@ -14,6 +14,9 @@ GROUP BY tag
 ORDER BY cnt DESC, tag;
 `
 
+// attachResult* / detachResult* / renameResult* 必须与下面三条 SQL 的 CASE 字面量一致。
+// 改一边忘一边：未知码在 handler 走 default → 500，或映射错语义。
+// 1–11 不重叠是有意的：错用常量会落到 default，而不是 quietly 映射到另一操作。
 const (
 	attachResultTagAttached      = 1
 	attachResultRecordNotFound   = 2
@@ -28,6 +31,7 @@ const (
 	renameResultNewTagExists     = 11
 )
 
+// CASE 数字见上 attachResult*。
 const attachTagSQL = `
 WITH target AS (
     SELECT tags
@@ -54,6 +58,7 @@ SELECT
     ) AS tags;
 `
 
+// CASE 数字见上 detachResult*。
 const detachTagSQL = `
 WITH target AS (
     SELECT tags
@@ -80,6 +85,7 @@ SELECT
     ) AS tags;
 `
 
+// CASE 数字见上 renameResult*。
 const renameTagSQL = `
 WITH target AS (
     SELECT tags
