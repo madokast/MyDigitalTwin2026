@@ -98,6 +98,9 @@ def check_result(expected: str | dict | list, result: str | dict | list):
                 raise AssertionError(f"Expected '{key}' to be a array, but got: {result[key]}")
             if len(result[key]) != int(m.group(1)):
                 raise AssertionError(f"Expected '{key}' to be a array with length {m.group(1)}, but got: {result[key]}")
+        elif (m := re.fullmatch(r"\{regex:(.*)\}", str(value), re.DOTALL)): # 正则匹配
+            if not re.fullmatch(m.group(1), str(result[key])):
+                raise AssertionError(f"Expected '{key}' to match regex '{m.group(1)}', but got: {result[key]}")
         elif isinstance(value, list):
             if not isinstance(result[key], list):
                 raise AssertionError(f"Expected '{key}' to be a array, but got: {result[key]}")
